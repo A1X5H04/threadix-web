@@ -59,7 +59,7 @@ function PostItem() {
           </Button>
         </div>
         <div className="flex-1">
-          <p>
+          <p className="text-[15px]">
             badsdsf dfasdfasdfsd <br /> asdfasd dfgsd fsdg dsg gfs gdf <br />{" "}
             fasdfasdff
           </p>
