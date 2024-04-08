@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import {
   RiCompass4Fill,
@@ -26,46 +28,49 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Separator } from "./ui/separator";
-
-const routes = [
-  {
-    name: "Home",
-    path: "/",
-    icon: RiHomeLine,
-    activeIcon: RiHomeFill,
-    isActive: true,
-  },
-  {
-    name: "Search",
-    path: "/search",
-    icon: RiSearchLine,
-    activeIcon: RiSearchFill,
-    isActive: false,
-  },
-  {
-    name: "Explore",
-    path: "/explore",
-    icon: RiCompass4Line,
-    activeIcon: RiCompass4Fill,
-    isActive: false,
-  },
-  {
-    name: "Activity",
-    path: "/activity",
-    icon: RiHeartLine,
-    activeIcon: RiHeartFill,
-    isActive: false,
-  },
-  {
-    name: "Profile",
-    path: "/profile",
-    icon: RiUserLine,
-    activeIcon: RiUserFill,
-    isActive: false,
-  },
-];
+import { usePathname } from "next/navigation";
 
 function Navbar() {
+  const pathname = usePathname();
+
+  const routes = [
+    {
+      name: "Home",
+      path: "/",
+      icon: RiHomeLine,
+      activeIcon: RiHomeFill,
+      isActive: pathname === "/",
+    },
+    {
+      name: "Search",
+      path: "/search",
+      icon: RiSearchLine,
+      activeIcon: RiSearchFill,
+      isActive: pathname === "/search",
+    },
+    {
+      name: "Explore",
+      path: "/explore",
+      icon: RiCompass4Line,
+      activeIcon: RiCompass4Fill,
+      isActive: pathname === "/explore",
+    },
+    {
+      name: "Activity",
+      path: "/activity",
+      icon: RiHeartLine,
+      activeIcon: RiHeartFill,
+      isActive: pathname === "/activity",
+    },
+    {
+      name: "Profile",
+      path: "/profile",
+      icon: RiUserLine,
+      activeIcon: RiUserFill,
+      isActive: pathname === "/profile",
+    },
+  ];
+
   return (
     <nav className="w-full py-5 px-2.5">
       <ul className="w-full inline-flex items-center justify-center gap-x-10">
