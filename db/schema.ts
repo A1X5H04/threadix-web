@@ -20,7 +20,7 @@ const createId = init({
 export const users = pgTable(
   "user",
   {
-    id: uuid("id").primaryKey(),
+    id: text("id").primaryKey(),
     email: text("email").unique().notNull(),
     username: text("username").unique().notNull(),
     password: text("password").notNull(),
@@ -30,8 +30,8 @@ export const users = pgTable(
     bio: text("bio"),
     link: text("link"),
 
-    createdAt: timestamp("created_at").notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
+    createdAt: timestamp("created_at").$default(() => new Date()),
+    updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
   },
   (table) => ({
     usernameIdx: index("username").on(table.username),
