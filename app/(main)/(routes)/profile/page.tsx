@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RiMoreFill } from "@remixicon/react";
 import React from "react";
 
 function ProfilePage() {
@@ -30,11 +31,11 @@ function ProfilePage() {
             </Button>
             •
             <Button variant="link" className="px-0 text-muted-foreground">
-              100 Following
+              https://example.com
             </Button>
           </div>
-          <Button variant="link" className="px-0 text-muted-foreground">
-            https://example.com
+          <Button variant="ghost" size="icon">
+            <RiMoreFill />
           </Button>
         </div>
         <div>
