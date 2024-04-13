@@ -8,7 +8,6 @@ import {
   RiHeartLine,
   RiHomeFill,
   RiHomeLine,
-  RiMenu3Line,
   RiSearchFill,
   RiSearchLine,
   RiUserFill,
@@ -18,16 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import Link from "next/link";
 import React from "react";
-import { Icon } from "@radix-ui/react-select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Separator } from "./ui/separator";
 import { usePathname } from "next/navigation";
 
 function Navbar() {
