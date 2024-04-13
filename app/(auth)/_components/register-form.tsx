@@ -15,6 +15,7 @@ import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,8 +25,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { registerSchema } from "@/types";
-import Register from "@/actions/register";
-import register from "@/actions/register";
+import { register } from "@/actions/register";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
@@ -47,22 +47,21 @@ export function RegisterForm() {
     console.log(values);
     register(values)
       .then((res) => {
-        console.log("Response", res);
         toast({
           title: res.title,
           description: res.message,
           variant: res.status ? "default" : "destructive",
-          action: (
+          action: res.status ? (
             <ToastAction
               altText="Login Now"
               onClick={() => router.push("/login")}
             >
               Login Now!
             </ToastAction>
-          ),
+          ) : undefined,
         });
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log("Register Error", err);
       });
   };
@@ -89,6 +88,7 @@ export function RegisterForm() {
                       <FormControl>
                         <Input placeholder="John Doe" {...field} />
                       </FormControl>
+
                       <FormMessage />
                     </FormItem>
                   )}
