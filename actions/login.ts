@@ -4,8 +4,8 @@ import { eq } from "drizzle-orm";
 import * as z from "zod";
 
 import db from "@/lib/db";
-import { users } from "@/db/schema";
-import { loginSchema } from "@/types";
+import { users } from "@/db/schemas/auth";
+import { loginSchema } from "@/types/auth";
 import { Argon2id } from "oslo/password";
 import { lucia } from "@/lib/auth";
 import { cookies } from "next/headers";

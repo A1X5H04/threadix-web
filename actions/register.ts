@@ -1,9 +1,9 @@
 "use server";
 
-import { users } from "@/db/schema";
+import { users } from "@/db/schemas/auth";
 import db from "@/lib/db";
-import { registerSchema } from "@/types";
-import { eq, or } from "drizzle-orm";
+import { registerSchema } from "@/types/auth";
+import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 
 import { Argon2id } from "oslo/password";
