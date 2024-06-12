@@ -1,12 +1,14 @@
 import { migrate } from "drizzle-orm/neon-http/migrator";
 import db from "@/lib/db";
 
-export async function runMigrate() {
-  console.log("⏳ Running migrations...");
+export async function startMigration() {
+  console.log("🌧️ Drizzle Migration Script \n\n\n");
+
+  console.log("⏳ Running migrations...\n\n");
 
   const start = Date.now();
 
-  await migrate(db, { migrationsFolder: "drizzle" });
+  await migrate(db, { migrationsFolder: "./db/migrations" });
 
   const end = Date.now();
 
@@ -15,7 +17,7 @@ export async function runMigrate() {
   process.exit(0);
 }
 
-runMigrate().catch((err) => {
+startMigration().catch((err) => {
   console.error("❌ Migration failed");
   console.error(err);
   process.exit(1);
