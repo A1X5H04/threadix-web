@@ -14,7 +14,7 @@ import {
   RiChat1Line,
   RiHeart3Line,
   RiMoreFill,
-  RiShareFill,
+  RiRepeatLine,
 } from "@remixicon/react";
 import { Separator } from "./ui/separator";
 
@@ -23,7 +23,7 @@ function PostItem() {
     <div className="w-full p-1 flex gap-y-2 justify-start">
       <div className="flex flex-col items-center">
         <Avatar className="w-9 h-9">
-          <AvatarImage src="https://api.dicebear.com/8.x/lorelei-neutral/svg" />
+          <AvatarImage src="https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Felix" />
           <AvatarFallback>N</AvatarFallback>
         </Avatar>
         <div className="flex-1">
@@ -31,11 +31,11 @@ function PostItem() {
         </div>
         <div className="flex items-center -space-x-2 p-1.5 mt-3">
           <Avatar className="w-5 h-5">
-            <AvatarImage src="https://api.dicebear.com/8.x/lorelei-neutral/svg" />
+            <AvatarImage src="https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Felix" />
             <AvatarFallback>N</AvatarFallback>
           </Avatar>
           <Avatar className="w-5 h-5">
-            <AvatarImage src="https://api.dicebear.com/8.x/lorelei-neutral/svg" />
+            <AvatarImage src="https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Felix" />
             <AvatarFallback>N</AvatarFallback>
           </Avatar>
           <Avatar className="w-5 h-5 bg-muted">
@@ -71,7 +71,7 @@ function PostItem() {
               <RiChat1Line className="w-5 h-5 text-muted-foreground" />
             </Button>
             <Button variant="ghost" size="icon">
-              <RiShareFill className="w-5 h-5 text-muted-foreground" />
+              <RiRepeatLine className="w-5 h-5 text-muted-foreground" />
             </Button>
             <Button variant="ghost" size="icon">
               <RiBookmarkLine className="w-5 h-5 text-muted-foreground" />
@@ -99,7 +99,7 @@ export default PostItem;
         <div>
           <div className="inline-flex items-center gap-x-2">
             <Avatar className="w-9 h-9">
-              <AvatarImage src="https://api.dicebear.com/8.x/lorelei-neutral/svg" />
+              <AvatarImage src="https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Felix" />
               <AvatarFallback>N</AvatarFallback>
             </Avatar>
             <div className="inline-flex flex-col">
