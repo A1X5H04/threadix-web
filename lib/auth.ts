@@ -1,16 +1,9 @@
 import { Lucia } from "lucia";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { users, sessions } from "../db/schema";
+import { users, sessions } from "../db/schemas/auth";
 import db from "./db";
 import { cache } from "react";
 import { cookies } from "next/headers";
-
-declare module "lucia" {
-  interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: DatabaseUserAttributes;
-  }
-}
 
 interface DatabaseUserAttributes {
   avatar: string;
@@ -19,6 +12,13 @@ interface DatabaseUserAttributes {
   email: string;
   bio: string;
   link: string;
+}
+
+declare module "lucia" {
+  interface Register {
+    Lucia: typeof lucia;
+    DatabaseUserAttributes: DatabaseUserAttributes;
+  }
 }
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
