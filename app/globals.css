@@ -80,3 +80,12 @@
     repeating-linear-gradient(45deg, #0c0c0c -6.25% 6.25%, #000000 0 18.75%);
   background-size: 26px 26px;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
