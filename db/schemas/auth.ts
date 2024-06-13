@@ -1,25 +1,30 @@
+import { createId } from "@paralleldrive/cuid2";
 import {
+  boolean,
   index,
   integer,
   pgTable,
   primaryKey,
   text,
   timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable(
   "user",
   {
-    id: text("id").primaryKey(),
+    id: varchar("id", { length: 128 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     email: text("email").unique().notNull(),
-    username: text("username").unique().notNull(),
+    username: varchar("username", { length: 16 }).unique().notNull(),
     password: text("password").notNull(),
-
-    name: text("name"),
+    name: varchar("name", { length: 64 }),
     avatar: text("avatar"),
     bio: text("bio"),
-    link: text("link"),
-    visibility: text("visibility").$default(() => "public"),
+    link: varchar("link", { length: 256 }),
+    visibility: boolean("visibility").$default(() => true),
 
     createdAt: timestamp("created_at").$default(() => new Date()),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
