@@ -1,10 +1,10 @@
 import { relations } from "drizzle-orm";
 import { users } from "./auth";
-import { posts, likes, hashTags, userFollowers, postsHashTags } from "./tables";
+import { posts, likes, tags, userFollowers, postsTags } from "./tables";
 
 export const userRelation = relations(users, ({ many }) => ({
   posts: many(posts),
-  hashTags: many(hashTags),
+  tags: many(tags),
 }));
 
 export const postRelation = relations(posts, ({ one, many }) => ({
@@ -14,7 +14,7 @@ export const postRelation = relations(posts, ({ one, many }) => ({
   }),
 
   likes: many(likes),
-  hashTags: many(hashTags),
+  hashTags: many(tags),
 
   parent: one(posts, {
     fields: [posts.parentId],
@@ -45,21 +45,21 @@ export const followerRelation = relations(userFollowers, ({ one }) => ({
   }),
 }));
 
-export const hashTagRelation = relations(hashTags, ({ many, one }) => ({
+export const tagRelation = relations(tags, ({ many, one }) => ({
   user: one(users, {
-    fields: [hashTags.userId],
+    fields: [tags.userId],
     references: [users.id],
   }),
   posts: many(posts),
 }));
 
-export const postToHashTagRelation = relations(postsHashTags, ({ one }) => ({
+export const postToHashTagRelation = relations(postsTags, ({ one }) => ({
   post: one(posts, {
-    fields: [postsHashTags.postId],
+    fields: [postsTags.postId],
     references: [posts.id],
   }),
-  hashTag: one(hashTags, {
-    fields: [postsHashTags.hashTagId],
-    references: [hashTags.id],
+  hashTag: one(tags, {
+    fields: [postsTags.tagId],
+    references: [tags.id],
   }),
 }));
