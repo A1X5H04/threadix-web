@@ -7,22 +7,21 @@ import {
   serial,
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
-import { relations } from "drizzle-orm";
 
 const createId = init({
   random: Math.random,
-  length: 8,
+  length: 64,
 });
 
 export const posts = pgTable(
   "post",
   {
-    id: varchar("id", { length: 8 })
+    id: varchar("id", { length: 64 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => createId()),
     userId: text("user_id").notNull(),
-    parentId: varchar("parent_id", { length: 8 }),
+    parentId: varchar("parent_id", { length: 64 }),
 
     content: text("content").notNull(),
     media: text("media"),
@@ -40,7 +39,7 @@ export const likes = pgTable(
   {
     id: serial("id").primaryKey().notNull(),
     userId: text("user_id").notNull(),
-    postId: varchar("post_id", { length: 8 }).notNull(),
+    postId: varchar("post_id", { length: 64 }).notNull(),
     createdAt: timestamp("created_at").notNull(),
   },
   (table) => ({
@@ -48,17 +47,17 @@ export const likes = pgTable(
   })
 );
 
-export const hashTags = pgTable("hash_tag", {
+export const tags = pgTable("tag", {
   id: text("id").primaryKey(),
-  tag: text("name").unique().notNull(),
+  name: varchar("name", { length: 128 }).unique().notNull(),
   userId: text("user_id").notNull(),
   createdAt: timestamp("created_at").notNull(),
 });
 
-export const postsHashTags = pgTable("post_hash_tags", {
+export const postsTags = pgTable("post_tag", {
   id: serial("id").primaryKey().notNull(),
-  postId: varchar("post_id", { length: 8 }).notNull(),
-  hashTagId: text("hash_tag_id").notNull(),
+  postId: varchar("post_id", { length: 64 }).notNull(),
+  tagId: text("tag_id").notNull(),
   createdAt: timestamp("created_at").notNull(),
 });
 
