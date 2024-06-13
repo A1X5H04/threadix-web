@@ -1,5 +1,5 @@
 {
-  "name": "threadle-web",
+  "name": "cascade-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,8 @@
     "migrate": "tsx ./db/migrate.ts"
   },
   "dependencies": {
+    "@edgestore/react": "^0.1.6",
+    "@edgestore/server": "^0.1.6",
     "@hookform/resolvers": "^3.3.4",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@neondatabase/serverless": "^0.9.0",
@@ -39,7 +41,7 @@
     "react-hook-form": "^7.51.2",
     "react-textarea-autosize": "^8.5.3",
     "tailwind-merge": "^2.2.2",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
