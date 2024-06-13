@@ -39,13 +39,6 @@ function Navbar() {
       isActive: pathname === "/search",
     },
     {
-      name: "Explore",
-      path: "/explore",
-      icon: RiCompass4Line,
-      activeIcon: RiCompass4Fill,
-      isActive: pathname === "/explore",
-    },
-    {
       name: "Activity",
       path: "/activity",
       icon: RiHeartLine,
@@ -79,7 +72,7 @@ function Navbar() {
             </Link>
           </li>
         ))}
-        <li>
+        {/* <li>
           <Button
             variant="link"
             onClick={async () => {
@@ -88,7 +81,7 @@ function Navbar() {
           >
             <RiLogoutBoxLine className="w-6 h-6" />
           </Button>
-        </li>
+        </li> */}
       </ul>
     </nav>
   );
