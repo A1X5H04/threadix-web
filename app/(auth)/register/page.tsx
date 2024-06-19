@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { useRouter } from "next/navigation";
+import { useTransition, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
 
-import { Button } from "@/components/ui/button";
+import { registerSchema } from "@/types/auth";
+import { register } from "@/actions/register";
+
 import {
   Card,
   CardContent,
@@ -10,8 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
 import {
   Form,
   FormControl,
@@ -21,17 +27,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { registerSchema } from "@/types/auth";
-import { register } from "@/actions/register";
-import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ToastAction } from "@/components/ui/toast";
-import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 function RegisterPage() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -43,34 +47,35 @@ function RegisterPage() {
     },
   });
 
-  // useEffect(() => {
-  //   const watchUsername = form.watch("username");
-  //   if (watchUsername) {
-  //     console.log("Checking username availability", watchUsername);
-  //   }
-  // }, [form]);
+  useEffect(() => {
+    const watchUsername = form.watch("username");
+    if (watchUsername) {
+      console.log("Checking username availability", watchUsername);
+    }
+  }, [form]);
 
   const onFormSubmit = (values: z.infer<typeof registerSchema>) => {
-    console.log(values);
-    register(values)
-      .then((res) => {
-        toast({
-          title: res.title,
-          description: res.message,
-          variant: res.status ? "default" : "destructive",
-          action: res.status ? (
-            <ToastAction
-              altText="Login Now"
-              onClick={() => router.push("/login")}
-            >
-              Login Now
-            </ToastAction>
-          ) : undefined,
-        });
-      })
-      .catch((err: any) => {
-        console.log("Register Error", err);
-      });
+    startTransition(() =>
+      register(values)
+        .then((res) => {
+          toast({
+            title: res.title,
+            description: res.message,
+            variant: res.status ? "default" : "destructive",
+            action: res.status ? (
+              <ToastAction
+                altText="Login Now"
+                onClick={() => router.push("/login")}
+              >
+                Login Now
+              </ToastAction>
+            ) : undefined,
+          });
+        })
+        .catch((err: any) => {
+          console.log("Register Error", err);
+        })
+    );
   };
 
   return (
@@ -95,7 +100,6 @@ function RegisterPage() {
                       <FormControl>
                         <Input placeholder="John Doe" {...field} />
                       </FormControl>
-
                       <FormMessage />
                     </FormItem>
                   )}
@@ -111,8 +115,10 @@ function RegisterPage() {
                       <FormControl>
                         <Input placeholder="john_doe12" {...field} />
                       </FormControl>
-                      <FormDescription className="">
-                        checking username...
+                      <FormDescription className={cn("text-muted-foreground")}>
+                        {form.getFieldState("username").isTouched
+                          ? "Checking username availability..."
+                          : ""}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -158,7 +164,12 @@ function RegisterPage() {
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                loading={isPending}
+                disabled={isPending}
+              >
                 Create an account
               </Button>
               <div className="grid grid-cols-2 gap-4">

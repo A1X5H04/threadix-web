@@ -1,6 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { loginSchema } from "@/types/auth";
+import { login } from "@/actions/login";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,12 +19,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ToastAction } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
-
-import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/types/auth";
 import {
   Form,
   FormControl,
@@ -24,14 +29,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { login } from "@/actions/login";
 import { useToast } from "@/components/ui/use-toast";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
 
 function LoginPage() {
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -41,24 +45,33 @@ function LoginPage() {
   });
 
   const onFormSubmit = (data: z.infer<typeof loginSchema>) => {
-    login(data)
-      .then((res) => {
-        toast({
-          title: res.title,
-          description: res.message,
-          variant: res.status ? "default" : "destructive",
-        });
-        if (res.status) {
-          router.push("/");
-        }
-      })
-      .catch(() => {
-        toast({
-          title: "An error occurred",
-          description: "An error occurred while trying to login",
-          variant: "destructive",
-        });
-      });
+    startTransition(() =>
+      login(data)
+        .then((res) => {
+          toast({
+            title: res.title,
+            description: res.message,
+            action: res.action ? (
+              <ToastAction
+                onClick={() => router.push(res.action.href)}
+                altText="Helo"
+              >
+                {res.action.title}
+              </ToastAction>
+            ) : undefined,
+          });
+          if (res.status) {
+            router.push("/");
+          }
+        })
+        .catch(() => {
+          toast({
+            title: "An error occurred",
+            description: "An error occurred while trying to login",
+            variant: "destructive",
+          });
+        })
+    );
   };
 
   return (
@@ -112,7 +125,12 @@ function LoginPage() {
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                loading={isPending}
+                disabled={isPending}
+              >
                 Login
               </Button>
               <div className="grid grid-cols-2 gap-4">

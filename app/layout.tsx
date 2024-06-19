@@ -7,8 +7,9 @@ import { EdgeStoreProvider } from "@/lib/edgestore";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Threads Clone",
-  description: "A threads clone made with nextjs, lucia auth",
+  title: "Cascade - A Threads Clone",
+  description:
+    "Explore the world of threads and posts. Share your thoughts and ideas with the world. A Instagram's Threads Clone.",
 };
 
 export default function RootLayout({
