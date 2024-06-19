@@ -13,8 +13,6 @@ import { cookies } from "next/headers";
 export async function login(values: z.infer<typeof loginSchema>) {
   const validatedForm = loginSchema.safeParse(values);
 
-  console.log(validatedForm);
-
   if (!validatedForm.success) {
     return {
       status: false,
@@ -31,8 +29,12 @@ export async function login(values: z.infer<typeof loginSchema>) {
   if (!existingUser) {
     return {
       status: false,
-      title: "Incorrect Credentials!",
-      message: "The credentials you provided are incorrect!",
+      title: "User Does not Exist!",
+      message: "The user you are trying to login does not exist!",
+      action: {
+        title: "Register",
+        href: "/register",
+      },
     };
   }
 
