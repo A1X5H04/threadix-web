@@ -2,8 +2,6 @@ import { migrate } from "drizzle-orm/neon-http/migrator";
 import db from "@/lib/db";
 
 export async function startMigration() {
-  console.log("🌧️ Drizzle Migration Script \n\n\n");
-
   console.log("⏳ Running migrations...\n\n");
 
   const start = Date.now();
