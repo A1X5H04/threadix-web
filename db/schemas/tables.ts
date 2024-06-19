@@ -5,71 +5,185 @@ import {
   timestamp,
   varchar,
   serial,
+  pgEnum,
+  primaryKey,
+  char,
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
+import { users } from "./auth";
 
 const createId = init({
   random: Math.random,
-  length: 64,
+  length: 32,
 });
+
+export const postVisibilityStatus = pgEnum("post_visibility_status", [
+  "public",
+  "followers",
+  "private",
+]);
+
+// export const activityType = pgEnum("activity_type", [
+//   "post",
+//   "like",
+//   "repost",
+//   "follow",
+//   "reply",
+//   "tag",
+//   "mention",
+//   "quote",
+// ])
 
 export const posts = pgTable(
   "post",
   {
-    id: varchar("id", { length: 64 })
+    id: varchar("id", { length: 32 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => createId()),
-    userId: text("user_id").notNull(),
-    parentId: varchar("parent_id", { length: 64 }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    parentId: varchar("parent_id", { length: 32 }),
+
+    quotePostId: varchar("quote_post_id", { length: 32 }),
 
     content: text("content").notNull(),
-    media: text("media"),
+
+    visibilityStatus: postVisibilityStatus("visibility_status")
+      .notNull()
+      .$default(() => "public"),
 
     createdAt: timestamp("created_at").$default(() => new Date()),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
   },
   (table) => ({
-    userIdx: index("userId").on(table.userId),
+    userIdx: index("user_post_idx").on(table.userId),
+  })
+);
+
+export const postMedia = pgTable(
+  "post_media",
+  {
+    postId: varchar("post_id", { length: 32 })
+      .references(() => posts.id, { onDelete: "cascade" })
+      .notNull(),
+    mediaPath: text("media_path").notNull(),
+    // mimeType: varchar("mime_type", { length: 16 }).notNull(),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    postMediaIdx: index("post_media_idx").on(table.postId),
+    compositeKey: primaryKey({ columns: [table.postId, table.mediaPath] }),
+  })
+);
+
+export const reposts = pgTable(
+  "repost",
+  {
+    id: serial("id").primaryKey().notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    postId: varchar("post_id", { length: 32 })
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    repostPostIdx: index("repost_post_id").on(table.postId),
   })
 );
 
 export const likes = pgTable(
   "like",
   {
-    id: serial("id").primaryKey().notNull(),
-    userId: text("user_id").notNull(),
-    postId: varchar("post_id", { length: 64 }).notNull(),
-    createdAt: timestamp("created_at").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    postId: char("post_id", { length: 32 }).notNull(),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
   },
   (table) => ({
     postIdx: index("postId").on(table.postId),
+    userPostCompositeKey: primaryKey({ columns: [table.userId, table.postId] }),
   })
 );
 
-export const tags = pgTable("tag", {
-  id: text("id").primaryKey(),
-  name: varchar("name", { length: 128 }).unique().notNull(),
-  userId: text("user_id").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-});
+export const tags = pgTable(
+  "tag",
+  {
+    id: text("id").primaryKey(),
+    name: varchar("name", { length: 128 }).unique().notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    tagNameIdx: index("tag_name_idx").on(table.name),
+  })
+);
 
-export const postsTags = pgTable("post_tag", {
-  id: serial("id").primaryKey().notNull(),
-  postId: varchar("post_id", { length: 64 }).notNull(),
-  tagId: text("tag_id").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-});
+export const postsTags = pgTable(
+  "post_tag",
+  {
+    id: serial("id").primaryKey().notNull(),
+    postId: varchar("post_id", { length: 32 })
+      .notNull()
+      .references(() => posts.id),
+    tagId: text("tag_id")
+      .notNull()
+      .references(() => tags.id),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    postTagIdx: index("post_tag_idx").on(table.postId, table.tagId),
+  })
+);
 
 export const userFollowers = pgTable(
   "user_followers",
   {
     id: serial("id").primaryKey().notNull(),
-    userId: text("user_id").notNull(),
-    followerId: text("follower_id").notNull(),
-    createdAt: timestamp("created_at").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    followerId: text("follower_id")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
   },
   (table) => ({
     userFollowerIdx: index("user_follower").on(table.userId, table.followerId),
   })
 );
+
+// export const userActivity = pgTable(
+//   "user_activity",
+//   {
+//     id: serial("id").primaryKey().notNull(),
+//     userId: text("user_id")
+//       .notNull()
+//       .references(() => users.id, { onDelete: "cascade" }),
+//     activity: text("activity").notNull(),
+//     activityType: varchar("")
+//     createdAt: timestamp("created_at").$default(() => new Date()),
+//   },
+//   (table) => ({
+//     userActivityIdx: index("user_activity_idx").on(table.userId),
+//   })
+// );

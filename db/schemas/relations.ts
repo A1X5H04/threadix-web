@@ -1,6 +1,13 @@
 import { relations } from "drizzle-orm";
 import { users } from "./auth";
-import { posts, likes, tags, userFollowers, postsTags } from "./tables";
+import {
+  posts,
+  likes,
+  tags,
+  userFollowers,
+  postsTags,
+  postMedia,
+} from "./tables";
 
 export const userRelation = relations(users, ({ many }) => ({
   posts: many(posts),
@@ -14,7 +21,9 @@ export const postRelation = relations(posts, ({ one, many }) => ({
   }),
 
   likes: many(likes),
-  hashTags: many(tags),
+  tags: many(tags),
+
+  media: many(postMedia),
 
   parent: one(posts, {
     fields: [posts.parentId],
@@ -53,13 +62,20 @@ export const tagRelation = relations(tags, ({ many, one }) => ({
   posts: many(posts),
 }));
 
-export const postToHashTagRelation = relations(postsTags, ({ one }) => ({
+export const postToTagRelation = relations(postsTags, ({ one }) => ({
   post: one(posts, {
     fields: [postsTags.postId],
     references: [posts.id],
   }),
-  hashTag: one(tags, {
+  tag: one(tags, {
     fields: [postsTags.tagId],
     references: [tags.id],
+  }),
+}));
+
+export const postMediaRelation = relations(postMedia, ({ one }) => ({
+  post: one(posts, {
+    fields: [postMedia.postId],
+    references: [posts.id],
   }),
 }));
