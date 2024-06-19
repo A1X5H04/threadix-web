@@ -6,7 +6,7 @@ import * as relations from "@/db/schemas/relations";
 
 const dbClient = neon(
   process.env.DATABASE_URL ||
-    "postgresql://neondb_owner:itz4PS1xfDon@ep-fancy-shadow-a1zbk90d.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+    "postgresql://neondb_owner:0QPch8jrDgHT@ep-long-term-a13w3t08.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
 );
 const db = drizzle(dbClient, { schema: { ...auth, ...tables, ...relations } });
 

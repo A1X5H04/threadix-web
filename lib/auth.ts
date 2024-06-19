@@ -48,13 +48,14 @@ export const validateRequest = cache(async () => {
   try {
     if (result.session && result.session.fresh) {
       const sessionCookie = lucia.createSessionCookie(result.session.id);
+
       cookies().set(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes
       );
     }
-    if (result.session) {
+    if (!result.session) {
       const blankSessionCookie = lucia.createBlankSessionCookie();
       cookies().set(
         blankSessionCookie.name,
@@ -63,7 +64,7 @@ export const validateRequest = cache(async () => {
       );
     }
   } catch (error) {
-    console.error("Error Creating or Validating Session: ", error);
+    console.error("Error Creating or Validating Session");
   }
 
   return result;
