@@ -4,6 +4,12 @@ const nextConfig = {
     config.externals.push("@node-rs/argon2", "@node-rs/bcrypt");
     return config;
   },
+  images: {
+    remotePatterns: [
+      { hostname: "api.dicebear.com", pathname: "/avatars/**" },
+      { hostname: "images.unsplash.com", protocol: "https" },
+    ],
+  },
 };
 
 export default nextConfig;
