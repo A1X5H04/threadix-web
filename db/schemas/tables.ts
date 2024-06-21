@@ -7,7 +7,6 @@ import {
   serial,
   pgEnum,
   primaryKey,
-  char,
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
@@ -21,6 +20,17 @@ export const postVisibilityStatus = pgEnum("post_visibility_status", [
   "public",
   "followers",
   "private",
+]);
+
+export const mimeType = pgEnum("mime_type", [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "video/mp4",
+  "video/webm",
+  "audio/mpeg",
+  "audio/webm",
 ]);
 
 // export const activityType = pgEnum("activity_type", [
@@ -47,6 +57,8 @@ export const posts = pgTable(
     parentId: varchar("parent_id", { length: 32 }),
 
     quotePostId: varchar("quote_post_id", { length: 32 }),
+
+    location: text("location"),
 
     content: text("content").notNull(),
 
@@ -106,7 +118,7 @@ export const likes = pgTable(
       .notNull()
       .unique()
       .references(() => users.id, { onDelete: "cascade" }),
-    postId: char("post_id", { length: 32 }).notNull(),
+    postId: varchar("post_id", { length: 32 }).notNull().unique(),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
