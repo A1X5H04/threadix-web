@@ -33,6 +33,10 @@ body {
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --radius: 0.5rem;
+
+    /* React Gif Picker */
+    --gpr-bg-color: var(--background);
+    --gpr-text-color: var(--foreground);
   }
 
   .dark {
@@ -55,7 +59,25 @@ body {
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
+
+    /* React Gif Picker */
   }
+}
+
+.GifPickerReact {
+  border: none !important;
+  --gpr-bg-color: var(--background) !important;
+  --gpr-text-color: var(--foreground) !important;
+  --gpr-border-color: var(--muted) !important;
+
+  --gpr-search-input-bg-color: var(--muted) !important;
+  --gpr-search-input-padding: 0.25rem 2rem !important;
+  --gpr-search-input-height: auto !important;
+  --gpr-search-input-text-color: var(--muted-foreground) !important;
+}
+
+.gpr-search {
+  font-size: small;
 }
 
 @layer base {
