@@ -1,7 +1,7 @@
 import { posts } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import db from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -30,6 +30,7 @@ export async function GET(req: Request) {
         parent: true,
         media: true,
       },
+      orderBy: [desc(posts.createdAt)],
     });
 
     return NextResponse.json(allPosts);
