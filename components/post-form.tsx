@@ -11,8 +11,9 @@ import { Separator } from "./ui/separator";
 import {
   RiBarChartHorizontalLine,
   RiFileGifLine,
-  RiImage2Line,
   RiMapPin2Line,
+  RiMic2Line,
+  RiUploadLine,
 } from "@remixicon/react";
 
 import { useToast } from "./ui/use-toast";
@@ -20,6 +21,9 @@ import { Textarea } from "./ui/textarea";
 
 import { Form, FormControl, FormField } from "./ui/form";
 import { User } from "@/db/schemas/auth";
+import PostLocationDialog from "./location-dialog";
+import GifPickerPopover from "./gif-picker";
+import RecordDialog from "./record-dialog";
 // import PostTextArea from "./post-textarea";
 
 const postSchema = z.object({
@@ -53,15 +57,12 @@ function PostForm({ user }: { user: User | null }) {
   };
 
   return (
-    <div className="flex items-start gap-x-2 w-full h-full p-4 rounded-xl border text-card-foreground shadow">
+    <div className="flex items-start gap-x-2 w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
       <div className="flex flex-col items-center gap-y-1 ">
         <Avatar className="w-8 h-8">
-          <AvatarImage src={user.avatar} />
+          <AvatarImage src={user.avatar ?? ""} />
           <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
         </Avatar>
-        <div className="flex-1">
-          <Separator orientation="vertical" className="h-full mx-4" />
-        </div>
       </div>
       <div className="w-full space-y-2 ">
         <Form {...form}>
@@ -89,18 +90,27 @@ function PostForm({ user }: { user: User | null }) {
         </Form>
         <div className="inline-flex items-center justify-between w-full">
           <div>
+            {/* <Button variant="ghost" size="icon">
+              <RiEmotionLine className="w-4 h-4 text-muted-foreground" />
+            </Button> */}
             <Button variant="ghost" size="icon">
-              <RiImage2Line className="w-4 h-4 text-muted-foreground" />
+              <RiUploadLine className="w-4 h-4 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
-            </Button>
+            <GifPickerPopover>
+              <Button variant="ghost" size="icon">
+                <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </GifPickerPopover>
+            <PostLocationDialog>
+              <Button variant="ghost" size="icon">
+                <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </PostLocationDialog>
+            <RecordDialog>
+              <Button variant="ghost" size="icon">
+                <RiMic2Line className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </RecordDialog>
             <Button variant="ghost" size="icon">
               <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
             </Button>
@@ -113,3 +123,5 @@ function PostForm({ user }: { user: User | null }) {
 }
 
 export default PostForm;
+
+// AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk

@@ -1,7 +1,7 @@
 import React from "react";
 
 function PostContent({ content }: { content: string }) {
-  return <div>PostContent</div>;
+  return <div>{content}</div>;
 }
 
 export default PostContent;
