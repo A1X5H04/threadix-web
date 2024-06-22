@@ -6,10 +6,10 @@ import { formatDate } from "@/lib/format";
 
 import { RiMoreFill } from "@remixicon/react";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
 
 import PostContent from "./post-content";
 import PostActions from "./post-actions";
+import PostPoll from "./post-poll";
 
 function PostItem({ data, user }: any) {
   // const isPostLiked = data.likes;
@@ -71,7 +71,7 @@ function PostItem({ data, user }: any) {
               fill
               alt="Post Image"
               />
-              </div> */}
+            </div> */}
 
           <PostActions postId={data.id} />
         </div>

@@ -9,9 +9,9 @@ function PostPoll() {
         <h3 className="text-lg font-semibold">What do you like the most ?</h3>
 
         <div className="mt-6 space-y-2">
-          <PostOption optionText="New Option" percentage={25} />
+          <PostOption optionText="New Option" percentage={20} />
           <PostOption optionText="Old Option" percentage={45} />
-          <PostOption optionText="What ?" percentage={23} />
+          <PostOption optionText="What?" percentage={23} />
           <PostOption optionText="Wasdf" percentage={15} />
         </div>
       </div>
@@ -52,7 +52,7 @@ function PostOption({
       </span>
       {/* Inverted text view (only visible when it overlaps with the progress bar) */}
       <span
-        className="absolute left-0 pl-2"
+        className="absolute left-0 pl-2 transition-all"
         style={{
           color: percentage > 10 ? "white" : "inherit", // Change '10' based on when you want the color to switch
           zIndex: 1,
