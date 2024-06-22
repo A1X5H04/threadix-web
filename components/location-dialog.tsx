@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
@@ -41,9 +42,11 @@ function PostLocationDialog({ children }: PostLocationDialogProps) {
             `https://geokeo.com/geocode/v1/reverse.php?lat=${position.coords.latitude}&lng=${position.coords.longitude}&api=83329523f93b1b0d8159dd61159df112`
           )
           .then((res) => {
+            console.log(res.data);
             setLocations(res.data.results);
           })
           .catch((err) => {
+            console.log(err);
             toast({
               title: "Failed to get location information",
               description: "Error: " + err.message,
@@ -68,8 +71,10 @@ function PostLocationDialog({ children }: PostLocationDialogProps) {
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
-        <DialogTitle>Choose Location</DialogTitle>
-        <DialogDescription>Choose a location for your post</DialogDescription>
+        <DialogHeader>
+          <DialogTitle>Choose Location</DialogTitle>
+          <DialogDescription>Select a location for your post</DialogDescription>
+        </DialogHeader>
         <div className="my-2">
           <div className="flex items-center gap-x-2 my-2">
             <Input
@@ -85,12 +90,18 @@ function PostLocationDialog({ children }: PostLocationDialogProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  Get your current location
+                  Find current location
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="w-full min-h-72">{JSON.stringify(locations)}</div>
+          <div className="w-full min-h-72">
+            {locations.map((item, idx) => (
+              <div key={idx} className="p-2 border-b">
+                Location
+              </div>
+            ))}
+          </div>
 
           <Button className="w-full">Add Location</Button>
         </div>

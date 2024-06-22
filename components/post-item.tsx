@@ -55,12 +55,12 @@ function PostItem({ data, user }: any) {
           </Button>
         </div>
         <div className="flex-1">
-          <p className="py-2">
+          <p className="pb-2">
             <PostContent content={data.content} />
-            {/* The sea provides a source of food, transportation, and
-            recreation for humans. It is a place of beauty and tranquility, with
-            its shimmering blue waters and gentle waves. However, the sea can
-            also be unpredictable and powerful, capable of causing storms and
+            {/* The sea provides a source of food, transportation, and recreation
+            for humans. It is a place of beauty and tranquility, with its
+            shimmering blue waters and gentle waves. However, the sea can also
+            be unpredictable and powerful, capable of causing storms and
             tsunamis. Exploring the depths of the sea has always been a
             fascination for scientists and adventurers alike. */}
           </p>
@@ -70,8 +70,9 @@ function PostItem({ data, user }: any) {
               src="https://images.unsplash.com/photo-1542397284385-6010376c5337?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               fill
               alt="Post Image"
-            />
-          </div> */}
+              />
+              </div> */}
+
           <PostActions postId={data.id} />
         </div>
         <div className="inline-flex items-center gap-x-2">

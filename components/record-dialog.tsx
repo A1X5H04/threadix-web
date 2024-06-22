@@ -9,6 +9,7 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import {
+  RiDownloadLine,
   RiMic2Fill,
   RiPauseFill,
   RiPauseLine,
@@ -48,7 +49,7 @@ function RecordDialog({ children }: RecordDialogProps) {
         </DialogHeader>
         <div className="space-y-6">
           <div className="w-full p-2 grid place-items-center gap-y-5">
-            <div className="bg-black w-full border h-24 rounded-lg px-1 overflow-hidden">
+            <div className="bg-black w-full border h-24 rounded-lg overflow-hidden">
               <VoiceVisualizer
                 height={95}
                 controls={recorder}
@@ -64,16 +65,20 @@ function RecordDialog({ children }: RecordDialogProps) {
             )}
             <Separator />
             <div className="inline-flex items-center gap-x-3">
-              {recorder.isAvailableRecordedAudio && (
-                <Button
-                  onClick={() => recorder.audioRef.current?.play()}
-                  size="lg"
-                  variant="outline"
-                >
-                  <RiPlayFill className="w-5 h-5" />
-                </Button>
-              )}
-              {recorder.isRecordingInProgress ? (
+              {recorder.isAvailableRecordedAudio ? (
+                <>
+                  <Button onClick={recorder.togglePauseResume} size="lg">
+                    <RiPlayFill className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    onClick={recorder.saveAudioFile}
+                    size="lg"
+                    variant="outline"
+                  >
+                    <RiDownloadLine className="w-5 h-5" />
+                  </Button>
+                </>
+              ) : recorder.isRecordingInProgress ? (
                 <>
                   <Button
                     onClick={() => recorder.stopRecording()}

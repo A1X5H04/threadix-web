@@ -24,11 +24,14 @@ import { User } from "@/db/schemas/auth";
 import PostLocationDialog from "./location-dialog";
 import GifPickerPopover from "./gif-picker";
 import RecordDialog from "./record-dialog";
+import PollDialog, { pollSchema } from "./poll-dialog";
+import PostPoll from "./post-poll";
 // import PostTextArea from "./post-textarea";
 
 const postSchema = z.object({
   content: z.string().min(50),
   media: z.array(z.string()),
+  poll: pollSchema.optional(),
 });
 
 function PostForm({ user }: { user: User | null }) {
@@ -37,6 +40,7 @@ function PostForm({ user }: { user: User | null }) {
     defaultValues: {
       content: "",
       media: [],
+      poll: undefined,
     },
   });
 
@@ -69,21 +73,21 @@ function PostForm({ user }: { user: User | null }) {
           <form onSubmit={form.handleSubmit(onFormSubmit)}>
             <div className="flex gap-x-2">
               <div className="flex-1">
-                <FormControl>
-                  <FormField
-                    name="content"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Textarea
-                        {...field}
-                        placeholder="What's on your mind?"
-                        className="resize-none"
-                        rows={3}
-                      />
-                    )}
-                  />
-                </FormControl>
+                <FormField
+                  name="content"
+                  control={form.control}
+                  render={({ field }) => (
+                    <textarea
+                      {...field}
+                      placeholder="What's on your mind?"
+                      className="flex w-full bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                      rows={1}
+                    />
+                  )}
+                />
+                <PostPoll />
               </div>
+
               <Button className="font-semibold">Post</Button>
             </div>
           </form>
@@ -111,9 +115,11 @@ function PostForm({ user }: { user: User | null }) {
                 <RiMic2Line className="w-4 h-4 text-muted-foreground" />
               </Button>
             </RecordDialog>
-            <Button variant="ghost" size="icon">
-              <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
+            <PollDialog>
+              <Button variant="ghost" size="icon">
+                <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </PollDialog>
           </div>
           <span className="text-xs text-muted-foreground">Anyone</span>
         </div>
