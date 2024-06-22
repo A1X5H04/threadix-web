@@ -8,6 +8,7 @@ import {
   pgEnum,
   primaryKey,
   boolean,
+  bigint,
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
@@ -161,12 +162,10 @@ export const polls = pgTable(
   })
 );
 
-export const votes = pgTable(
-  "vote",
+export const pollOptions = pgTable(
+  "poll_option",
   {
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    id: serial("id").primaryKey().notNull(),
     pollId: varchar("poll_id", { length: 12 })
       .notNull()
       .references(() => polls.id, { onDelete: "cascade" }),
@@ -177,8 +176,30 @@ export const votes = pgTable(
       .$default(() => new Date()),
   },
   (table) => ({
-    votesPollIdx: index("votes_poll_idx").on(table.pollId),
-    userPollCompositeKey: primaryKey({ columns: [table.userId, table.pollId] }),
+    pollOptionIdx: index("poll_option_idx").on(table.pollId),
+  })
+);
+
+export const votes = pgTable(
+  "vote",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    optionId: bigint("option_id", {
+      mode: "number",
+    })
+      .notNull()
+      .references(() => pollOptions.id),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    votesPollIdx: index("votes_poll_idx").on(table.optionId),
+    userPollCompositeKey: primaryKey({
+      columns: [table.userId, table.optionId],
+    }),
   })
 );
 
