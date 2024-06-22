@@ -7,6 +7,7 @@ import {
   serial,
   pgEnum,
   primaryKey,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
@@ -20,17 +21,6 @@ export const postVisibilityStatus = pgEnum("post_visibility_status", [
   "public",
   "followers",
   "private",
-]);
-
-export const mimeType = pgEnum("mime_type", [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "video/mp4",
-  "video/webm",
-  "audio/mpeg",
-  "audio/webm",
 ]);
 
 // export const activityType = pgEnum("activity_type", [
@@ -81,7 +71,7 @@ export const postMedia = pgTable(
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
     mediaPath: text("media_path").notNull(),
-    // mimeType: varchar("mime_type", { length: 16 }).notNull(),
+    mimeType: varchar("mime_type", { length: 16 }).notNull(),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
@@ -143,6 +133,52 @@ export const tags = pgTable(
   },
   (table) => ({
     tagNameIdx: index("tag_name_idx").on(table.name),
+  })
+);
+
+export const polls = pgTable(
+  "poll",
+  {
+    id: varchar("id", { length: 12 })
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
+    postId: varchar("post_id", { length: 32 })
+      .notNull()
+      .unique()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    question: text("question"),
+    duration: timestamp("duration").notNull(),
+    multipleVotes: boolean("multiple_votes").notNull(),
+    anonymousVoting: boolean("anonymous_voting").notNull(),
+    quizMode: boolean("quiz_mode").notNull(),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    postPollIdx: index("post_poll_idx").on(table.postId),
+  })
+);
+
+export const votes = pgTable(
+  "vote",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    pollId: varchar("poll_id", { length: 12 })
+      .notNull()
+      .references(() => polls.id, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    isCorrect: boolean("is_correct"),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    votesPollIdx: index("votes_poll_idx").on(table.pollId),
+    userPollCompositeKey: primaryKey({ columns: [table.userId, table.pollId] }),
   })
 );
 
