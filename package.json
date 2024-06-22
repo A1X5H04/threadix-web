@@ -45,10 +45,11 @@
     "pg": "^8.11.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.2",
     "rich-textarea": "^0.26.2",
     "swr": "^2.2.5",
-    "tailwind-merge": "^2.2.2",
+    "tailwind-merge": "^2.3.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
