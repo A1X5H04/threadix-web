@@ -42,11 +42,12 @@ async function ProfilePage() {
         </p>
         <div className="flex items-center justify-between gap-x-2">
           <div className="inline-flex items-center gap-x-2">
-            <Button variant="link" className="px-0 text-muted-foreground">
-              No Followers
-            </Button>
+            <FollowDialog>
+              <Button variant="link" className="px-0">
+                No Followers
+              </Button>
+            </FollowDialog>
             -
-            <FollowDialog />
             {user.link && (
               <Button variant="link" className="px-0 text-muted-foreground">
                 {user.link}

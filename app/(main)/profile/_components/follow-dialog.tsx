@@ -10,14 +10,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-function FollowDialog() {
+interface FollowDialogProps {
+  children: React.ReactNode;
+}
+
+function FollowDialog({ children }: FollowDialogProps) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
-          Edit Dialog
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Your Circle</DialogTitle>
