@@ -169,7 +169,7 @@ export const pollOptions = pgTable(
     pollId: varchar("poll_id", { length: 12 })
       .notNull()
       .references(() => polls.id, { onDelete: "cascade" }),
-    content: text("content").notNull(),
+    title: text("title").notNull(),
     isCorrect: boolean("is_correct"),
     createdAt: timestamp("created_at")
       .notNull()
