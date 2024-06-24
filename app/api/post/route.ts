@@ -18,7 +18,7 @@ export async function GET(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const allPosts = await db.query.posts.findMany({
+    const [allPosts] = await db.query.posts.findMany({
       with: {
         user: {
           columns: {
@@ -60,50 +60,52 @@ export async function POST(req: Request) {
       return new NextResponse("Content is a required field!", { status: 400 });
     }
 
-    await db.transaction(async (tx) => {
-      const [postObj] = await tx
-        .insert(posts)
-        .values({
-          userId: user.id,
-          content,
-          parentId,
-        })
-        .returning({ id: posts.id });
-
-      if (media && postObj.id) {
-        await tx.insert(postMedia).values(
-          media.map((media) => ({
-            postId: postObj.id,
-            mediaPath: media.path,
-            mimeType: media.mimeType,
-          }))
-        );
-      }
-
-      if (poll && postObj.id) {
-        const [pollObj] = await tx
-          .insert(polls)
+    if (media || poll) {
+      await db.transaction(async (tx) => {
+        const [postObj] = await tx
+          .insert(posts)
           .values({
-            postId: postObj.id,
-            anonymousVoting: poll.anonymousVoting,
-            duration: poll.duration,
-            multipleVotes: poll.multipleVotes,
-            quizMode: poll.quizMode,
-            question: poll.question,
+            userId: user.id,
+            content,
+            parentId,
           })
-          .returning({ id: polls.id });
+          .returning({ id: posts.id });
 
-        if (pollObj.id) {
+        if (media) {
+          await tx.insert(postMedia).values(
+            media.map((media: any) => ({
+              postId: postObj.id,
+              mediaPath: media.path,
+              mimeType: media.mimeType,
+            }))
+          );
+        }
+
+        if (poll) {
+          const [pollObj] = await tx
+            .insert(polls)
+            .values({
+              postId: postObj.id,
+              anonymousVoting: poll.anonymousVoting,
+              duration: poll.duration,
+              multipleVotes: poll.multipleVotes,
+              quizMode: poll.quizMode,
+              question: poll.question,
+            })
+            .returning({ id: polls.id });
+
           await tx.insert(pollOptions).values(
-            poll.options.map((option) => ({
+            poll.options.map((option: any) => ({
               pollId: pollObj.id,
               title: option.title,
               isCorrect: option.isCorrect,
             }))
           );
         }
-      }
-    });
+      });
+
+      return NextResponse.json({ id: posts.id });
+    }
 
     const [post] = await db
       .insert(posts)
