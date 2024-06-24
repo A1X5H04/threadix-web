@@ -13,7 +13,6 @@
   "dependencies": {
     "@edgestore/react": "^0.1.6",
     "@edgestore/server": "^0.1.6",
-    "@hasma/react-voice-visualizer": "^1.8.16",
     "@hookform/resolvers": "^3.3.4",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@neondatabase/serverless": "^0.9.0",
@@ -47,6 +46,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.2",
+    "react-voice-visualizer": "^2.0.2",
     "rich-textarea": "^0.26.2",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
