@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1718637716929,
-      "tag": "0000_fresh_colonel_america",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1718852089107,
-      "tag": "0001_tranquil_jubilee",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1719047208468,
-      "tag": "0002_supreme_la_nuit",
+      "when": 1719159556008,
+      "tag": "0000_new_whiplash",
       "breakpoints": true
     }
   ]

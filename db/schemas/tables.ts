@@ -24,6 +24,13 @@ export const postVisibilityStatus = pgEnum("post_visibility_status", [
   "private",
 ]);
 
+export const mediaType = pgEnum("media_type", [
+  "image",
+  "audio",
+  "video",
+  "voice",
+]);
+
 // export const activityType = pgEnum("activity_type", [
 //   "post",
 //   "like",
@@ -72,7 +79,7 @@ export const postMedia = pgTable(
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
     mediaPath: text("media_path").notNull(),
-    mimeType: varchar("mime_type", { length: 16 }).notNull(),
+    mediaType: mediaType("media_type"),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),

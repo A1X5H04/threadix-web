@@ -1,4 +1,10 @@
 DO $$ BEGIN
+ CREATE TYPE "media_type" AS ENUM('image', 'audio', 'video', 'voice');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "post_visibility_status" AS ENUM('public', 'followers', 'private');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -42,15 +48,37 @@ CREATE TABLE IF NOT EXISTS "user" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "like" (
 	"user_id" text NOT NULL,
-	"post_id" char(32) NOT NULL,
+	"post_id" varchar(32) NOT NULL,
 	"created_at" timestamp NOT NULL,
 	CONSTRAINT "like_user_id_post_id_pk" PRIMARY KEY("user_id","post_id"),
-	CONSTRAINT "like_user_id_unique" UNIQUE("user_id")
+	CONSTRAINT "like_user_id_unique" UNIQUE("user_id"),
+	CONSTRAINT "like_post_id_unique" UNIQUE("post_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "poll_option" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"poll_id" varchar(12) NOT NULL,
+	"title" text NOT NULL,
+	"is_correct" boolean,
+	"created_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "poll" (
+	"id" varchar(12) PRIMARY KEY NOT NULL,
+	"post_id" varchar(32) NOT NULL,
+	"question" text,
+	"duration" timestamp NOT NULL,
+	"multiple_votes" boolean NOT NULL,
+	"anonymous_voting" boolean NOT NULL,
+	"quiz_mode" boolean NOT NULL,
+	"created_at" timestamp NOT NULL,
+	CONSTRAINT "poll_post_id_unique" UNIQUE("post_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "post_media" (
 	"post_id" varchar(32) NOT NULL,
 	"media_path" text NOT NULL,
+	"media_type" "media_type",
 	"created_at" timestamp NOT NULL,
 	CONSTRAINT "post_media_post_id_media_path_pk" PRIMARY KEY("post_id","media_path")
 );
@@ -60,6 +88,7 @@ CREATE TABLE IF NOT EXISTS "post" (
 	"user_id" text NOT NULL,
 	"parent_id" varchar(32),
 	"quote_post_id" varchar(32),
+	"location" text,
 	"content" text NOT NULL,
 	"visibility_status" "post_visibility_status" NOT NULL,
 	"created_at" timestamp,
@@ -95,14 +124,24 @@ CREATE TABLE IF NOT EXISTS "user_followers" (
 	"created_at" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "vote" (
+	"user_id" text NOT NULL,
+	"option_id" bigint NOT NULL,
+	"created_at" timestamp NOT NULL,
+	CONSTRAINT "vote_user_id_option_id_pk" PRIMARY KEY("user_id","option_id")
+);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "username" ON "user" ("username");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "postId" ON "like" ("post_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "poll_option_idx" ON "poll_option" ("poll_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "post_poll_idx" ON "poll" ("post_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "post_media_idx" ON "post_media" ("post_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_post_idx" ON "post" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "post_tag_idx" ON "post_tag" ("post_id","tag_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "repost_post_id" ON "repost" ("post_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tag_name_idx" ON "tag" ("name");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_follower" ON "user_followers" ("user_id","follower_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "votes_poll_idx" ON "vote" ("option_id");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
@@ -117,6 +156,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "like" ADD CONSTRAINT "like_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "poll_option" ADD CONSTRAINT "poll_option_poll_id_poll_id_fk" FOREIGN KEY ("poll_id") REFERENCES "poll"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "poll" ADD CONSTRAINT "poll_post_id_post_id_fk" FOREIGN KEY ("post_id") REFERENCES "post"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -171,6 +222,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_followers" ADD CONSTRAINT "user_followers_follower_id_user_id_fk" FOREIGN KEY ("follower_id") REFERENCES "user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "vote" ADD CONSTRAINT "vote_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "vote" ADD CONSTRAINT "vote_option_id_poll_option_id_fk" FOREIGN KEY ("option_id") REFERENCES "poll_option"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
