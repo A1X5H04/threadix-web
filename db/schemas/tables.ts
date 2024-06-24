@@ -78,15 +78,21 @@ export const postMedia = pgTable(
     postId: varchar("post_id", { length: 32 })
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
-    mediaPath: text("media_path").notNull(),
-    mediaType: mediaType("media_type"),
+    name: text("name").notNull(),
+    path: text("path").notNull(),
+    type: mediaType("type").notNull(),
+    duration: bigint("duration", {
+      mode: "number",
+    }),
+    isVoiceRecording: boolean("is_voice_recording").$default(() => false),
+    description: text("description"),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
   },
   (table) => ({
     postMediaIdx: index("post_media_idx").on(table.postId),
-    compositeKey: primaryKey({ columns: [table.postId, table.mediaPath] }),
+    compositeKey: primaryKey({ columns: [table.postId, table.path] }),
   })
 );
 
