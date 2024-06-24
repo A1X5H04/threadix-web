@@ -39,7 +39,7 @@ function PostItem({ data, user }: any) {
           </Avatar>
         </div>
       </div>
-      <div className="w-full space-y-2">
+      <div className="w-full">
         <div className="flex items-center justify-between">
           <div className="inline-flex items-start">
             <div className="inline-flex flex-col">
@@ -54,28 +54,23 @@ function PostItem({ data, user }: any) {
             <RiMoreFill className="w-5 h-5 text-muted-foreground" />
           </Button>
         </div>
-        <div className="flex-1">
-          <p className="pb-2">
+        <div className="flex-1 mt-4 mb-5 space-y-5">
+          {data.poll.question && <PostContent content={data.content} />}
+          {data.poll ? (
+            <PostPoll data={data} />
+          ) : (
             <PostContent content={data.content} />
-            {/* The sea provides a source of food, transportation, and recreation
+          )}
+
+          {/* The sea provides a source of food, transportation, and recreation
             for humans. It is a place of beauty and tranquility, with its
             shimmering blue waters and gentle waves. However, the sea can also
             be unpredictable and powerful, capable of causing storms and
             tsunamis. Exploring the depths of the sea has always been a
             fascination for scientists and adventurers alike. */}
-          </p>
-          {/* <div className="relative w-full h-72 my-2">
-            <Image
-              className="rounded-lg object-cover"
-              src="https://images.unsplash.com/photo-1542397284385-6010376c5337?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              fill
-              alt="Post Image"
-              />
-            </div> */}
-
-          <PostActions postId={data.id} />
         </div>
-        <div className="inline-flex items-center gap-x-2">
+        <PostActions postId={data.id} />
+        <div className="inline-flex items-center gap-x-2 mt-4">
           <Button variant="link" size="sm" className="px-0 py-1">
             25 likes
           </Button>
