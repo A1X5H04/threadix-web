@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Dialog,
@@ -18,12 +20,8 @@ import {
   RiStopFill,
 } from "@remixicon/react";
 
-import {
-  VoiceVisualizer,
-  useVoiceVisualizer,
-} from "@hasma/react-voice-visualizer";
+import { VoiceVisualizer, useVoiceVisualizer } from "react-voice-visualizer";
 
-import { formatSecondsToMinutes } from "@/lib/format";
 import { Separator } from "../ui/separator";
 
 interface RecordDialogProps {
@@ -88,10 +86,7 @@ function RecordDialog({ children }: RecordDialogProps) {
                     <RiStopFill className="w-5 h-5" />
                   </Button>
 
-                  <Button
-                    onClick={() => recorder.togglePauseResume()}
-                    size="lg"
-                  >
+                  <Button onClick={recorder.togglePauseResume} size="lg">
                     {recorder.isPausedRecording ? (
                       <RiPlayFill className="w-5 h-5" />
                     ) : (
