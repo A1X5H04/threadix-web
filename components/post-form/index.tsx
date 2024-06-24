@@ -26,6 +26,7 @@ import PollDialog, { pollSchema } from "./poll-dialog";
 import PostPoll from "../post-poll";
 import MediaDialog from "./media-dialog";
 import Poll from "./poll";
+import useSWRMutation from "swr/mutation";
 // import PostTextArea from "./post-textarea";
 
 const postSchema = z.object({
@@ -35,9 +36,17 @@ const postSchema = z.object({
   poll: pollSchema.optional(),
 });
 
+async function sayHello(
+  url: string,
+  { arg }: { arg: z.infer<typeof postSchema> }
+) {
+  console.log("Post Values", arg);
+}
+
 function PostForm({ user }: { user: User | null }) {
+  const { trigger } = useSWRMutation("/api/post", sayHello);
   const { toast } = useToast();
-  const [isPoll, setIsPoll] = React.useState(false);
+
   const form = useForm<z.infer<typeof postSchema>>({
     defaultValues: {
       content: "",
@@ -50,6 +59,18 @@ function PostForm({ user }: { user: User | null }) {
   if (!user) return <div>Not Logged In</div>;
 
   const onFormSubmit = (values: z.infer<typeof postSchema>) => {
+    trigger(values, {
+      onSuccess: () => {
+        toast({
+          title: "Post Created",
+          description: "Your post has been created successfully!",
+        });
+        form.reset();
+      },
+      onError: (err) => {
+        console.error(err);
+      },
+    });
     // axios
     //   .post("/api/post", values)
     //   .then((res: any) => {
@@ -65,7 +86,7 @@ function PostForm({ user }: { user: User | null }) {
   };
 
   return (
-    <div className="flex items-start gap-x-2 w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
+    <div className="flex items-start gap-y-2 w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
       <div className="flex flex-col items-center gap-y-1 ">
         <Avatar className="w-8 h-8">
           <AvatarImage src={user.avatar ?? ""} />
@@ -76,7 +97,7 @@ function PostForm({ user }: { user: User | null }) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)}>
             <div className="flex gap-x-2">
-              <div className="flex-1">
+              <div className="flex-1 relative">
                 <FormField
                   name="content"
                   control={form.control}
@@ -85,15 +106,12 @@ function PostForm({ user }: { user: User | null }) {
                       {...field}
                       placeholder="What's on your mind?"
                       className="flex w-full bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                      rows={1}
+                      rows={4}
                     />
                   )}
                 />
               </div>
-
-              <Button type="submit" className="font-semibold">
-                Post
-              </Button>
+              <span className=" text-xs text-muted-foreground">Anyone</span>
             </div>
           </form>
         </Form>
@@ -132,7 +150,9 @@ function PostForm({ user }: { user: User | null }) {
               </Button>
             </PollDialog>
           </div>
-          <span className="text-xs text-muted-foreground">Anyone</span>
+          <Button type="submit" className="font-semibold">
+            Post
+          </Button>
         </div>
       </div>
     </div>

@@ -48,7 +48,7 @@ export const pollSchema = z.object({
   options: z
     .array(
       z.object({
-        value: z.string(),
+        title: z.string(),
         isCorrect: z.boolean().optional(),
       })
     )
@@ -64,7 +64,7 @@ function PollDialog({ children, poll, setPoll }: PollDialogProps) {
   const form = useForm<z.infer<typeof pollSchema>>({
     defaultValues: poll || {
       question: "",
-      options: [{ value: "" }],
+      options: [{ title: "" }],
       duration: "1h",
       anonymousVoting: false,
       multipleAnswers: false,
@@ -120,7 +120,7 @@ function PollDialog({ children, poll, setPoll }: PollDialogProps) {
                         This field is optional.
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button className="px-1" variant="link">
+                            <Button className="p-1" variant="link">
                               learn more
                             </Button>
                           </PopoverTrigger>
@@ -155,7 +155,7 @@ function PollDialog({ children, poll, setPoll }: PollDialogProps) {
                         )}
                         <FormField
                           control={form.control}
-                          name={`options.${index}.value`}
+                          name={`options.${index}.title`}
                           render={({ field }) => (
                             <FormItem className="w-full">
                               <FormControl>
@@ -180,12 +180,12 @@ function PollDialog({ children, poll, setPoll }: PollDialogProps) {
                     ))}
                   </RadioGroup>
                   <p className="text-destructive text-sm">
-                    {form.formState.errors.options?.root?.message}
+                    {form.formState.errors.root?.message}
                   </p>
                   <Button
                     variant="secondary"
                     className="w-full"
-                    onClick={() => fieldArray.append({ value: "" })}
+                    onClick={() => fieldArray.append({ title: "" })}
                     disabled={fieldArray.fields.length == 6}
                   >
                     Add Option
@@ -308,7 +308,7 @@ function PollDialog({ children, poll, setPoll }: PollDialogProps) {
             </div>
             <DialogFooter className="my-4">
               <Button variant="outline">Discard</Button>
-              <DialogClose>
+              <DialogClose asChild>
                 <Button type="submit">{poll ? "Edit" : "Create"} Poll</Button>
               </DialogClose>
             </DialogFooter>

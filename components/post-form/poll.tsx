@@ -1,13 +1,29 @@
+import { RiBarChartHorizontalLine, RiInfoI } from "@remixicon/react";
 import React from "react";
 
-function Poll() {
+function PollDisplay() {
+  const MockData = {
+    question: "This is a question",
+    options: [
+      { title: "Red" },
+      { title: "Blue" },
+      { title: "Green" },
+      { title: "Yellow" },
+    ],
+  };
   return (
-    <div className="p-3">
-      <div className="border-t">
-        <h4>This is a poll question and can be too long ?</h4>
-      </div>
+    <div className="flex items-center p-3 border w-full rounded-md space-y-4">
+      <RiBarChartHorizontalLine className="w-4 h-4" />
+
+      {MockData.question ? (
+        MockData.question
+      ) : (
+        <div className="flex items-center gap-x-2">
+          <p>Post content will be taken as question</p>
+        </div>
+      )}
     </div>
   );
 }
 
-export default Poll;
+export default PollDisplay;
