@@ -5,13 +5,17 @@ import React from "react";
 import Image from "next/image";
 
 import { VoiceVisualizer, useVoiceVisualizer } from "react-voice-visualizer";
+import PostRecording from "./post-recording";
+import { Separator } from "./ui/separator";
 
 function PostMedia() {
   //   const recorderControls = useVoiceVisualizer();
 
   return (
-    <div className="w-full">
-      {/* <div className="w-full flex justify-between items-center text-xs text-muted-foreground">
+    <div className="w-full space-y-2">
+      <PostRecording />
+      {/* <Separator />
+      <div className="w-full flex justify-between items-center text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-x-2">
           <RiFilmLine className="w-3 h-3 text-muted-foreground" />
           <p>Shared some media</p>

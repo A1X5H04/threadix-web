@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { formatDate } from "@/lib/format";
 
-import { RiMoreFill } from "@remixicon/react";
+import { RiMoreFill, RiVerifiedBadgeFill } from "@remixicon/react";
 import { Separator } from "@/components/ui/separator";
 
 import PostContent from "./post-content";
@@ -43,7 +43,10 @@ function PostItem({ data, user }: any) {
         <div className="flex items-center justify-between">
           <div className="inline-flex items-start">
             <div className="inline-flex flex-col">
-              <span className="text-sm font-medium">{data.user.name}</span>
+              <span className="text-sm font-medium inline-flex items-center gap-x-1">
+                {data.user.name}
+                <RiVerifiedBadgeFill className="w-3.5 h-3.5" />
+              </span>
               <p className="text-muted-foreground text-xs">
                 {formatDate(new Date(data.createdAt))}&nbsp;·&nbsp;
                 <span className="text-gray-300">Pune Maharashtra</span>
