@@ -84,7 +84,6 @@ export const postMedia = pgTable(
     duration: bigint("duration", {
       mode: "number",
     }),
-    isVoiceRecording: boolean("is_voice_recording").$default(() => false),
     description: text("description"),
     createdAt: timestamp("created_at")
       .notNull()
