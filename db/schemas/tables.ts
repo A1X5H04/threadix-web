@@ -81,7 +81,7 @@ export const postMedia = pgTable(
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
     name: text("name").notNull(),
-    path: text("path").notNull(),
+    url: text("url").notNull(),
     width: bigint("width", {
       mode: "number",
     }),
@@ -96,7 +96,7 @@ export const postMedia = pgTable(
   },
   (table) => ({
     postMediaIdx: index("post_media_idx").on(table.postId),
-    compositeKey: primaryKey({ columns: [table.postId, table.path] }),
+    compositeKey: primaryKey({ columns: [table.postId, table.url] }),
   })
 );
 
