@@ -17,7 +17,13 @@ import {
 
 import { useToast } from "../ui/use-toast";
 
-import { Form, FormControl, FormField } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../ui/form";
 import { User } from "@/db/schemas/auth";
 import PostLocationDialog from "./location-dialog";
 import GifPickerPopover from "./gif-picker";
@@ -27,12 +33,16 @@ import PostPoll from "../post-poll";
 import MediaDialog from "./media-dialog";
 import Poll from "./poll";
 import useSWRMutation from "swr/mutation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { postMediaSchema } from "@/types/schemas";
+import FormOptions from "./form-options";
+import { Separator } from "../ui/separator";
 // import PostTextArea from "./post-textarea";
 
 const postSchema = z.object({
-  content: z.string().min(50),
+  content: z.string().min(50, "Post content should be at least 50 characters"),
   location: z.string().optional(),
-  media: z.array(z.string()).optional(),
+  media: z.array(postMediaSchema).optional(),
   poll: pollSchema.optional(),
 });
 
@@ -54,23 +64,24 @@ function PostForm({ user }: { user: User | null }) {
       media: [],
       poll: undefined,
     },
+    resolver: zodResolver(postSchema),
   });
 
   if (!user) return <div>Not Logged In</div>;
 
   const onFormSubmit = (values: z.infer<typeof postSchema>) => {
-    trigger(values, {
-      onSuccess: () => {
-        toast({
-          title: "Post Created",
-          description: "Your post has been created successfully!",
-        });
-        form.reset();
-      },
-      onError: (err) => {
-        console.error(err);
-      },
-    });
+    // trigger(values, {
+    //   onSuccess: () => {
+    //     toast({
+    //       title: "Post Created",
+    //       description: "Your post has been created successfully!",
+    //     });
+    //     form.reset();
+    //   },
+    //   onError: (err) => {
+    //     console.error(err);
+    //   },
+    // });
     // axios
     //   .post("/api/post", values)
     //   .then((res: any) => {
@@ -86,36 +97,57 @@ function PostForm({ user }: { user: User | null }) {
   };
 
   return (
-    <div className="flex items-start gap-y-2 w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
-      <div className="flex flex-col items-center gap-y-1 ">
-        <Avatar className="w-8 h-8">
-          <AvatarImage src={user.avatar ?? ""} />
-          <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
-        </Avatar>
+    <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
+      <div className="flex justify-between items-center gap-x-2">
+        <div className="inline-flex items-center gap-x-2">
+          <Avatar className="w-9 h-9">
+            <AvatarImage src={user.avatar ?? ""} />
+            <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <p className="inline-flex flex-col ">
+            <span className="text-sm font-semibold">{user.name}</span>
+            <span className="text-xs text-muted-foreground italic">
+              anyone can see this post
+            </span>
+          </p>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          type="submit"
+          className="font-semibold"
+        >
+          Anyone
+        </Button>
       </div>
-      <div className="w-full space-y-2 ">
+      <div className="w-full space-y-2 pl-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)}>
-            <div className="flex gap-x-2">
-              <div className="flex-1 relative">
+            <div className="flex gap-x-2 relative">
+              <div className="flex-1">
                 <FormField
                   name="content"
                   control={form.control}
                   render={({ field }) => (
-                    <textarea
-                      {...field}
-                      placeholder="What's on your mind?"
-                      className="flex w-full bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                      rows={4}
-                    />
+                    <FormItem>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          placeholder="What's on your mind?"
+                          className="flex w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                          rows={4}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </div>
-              <span className=" text-xs text-muted-foreground">Anyone</span>
             </div>
           </form>
         </Form>
 
+        <FormOptions />
         <div className="inline-flex items-center justify-between w-full">
           <div>
             {/* <Button variant="ghost" size="icon">
