@@ -23,6 +23,7 @@ import {
 import { VoiceVisualizer, useVoiceVisualizer } from "react-voice-visualizer";
 
 import { Separator } from "../ui/separator";
+import { Input } from "../ui/input";
 
 interface RecordDialogProps {
   children: React.ReactNode;
@@ -31,7 +32,7 @@ function RecordDialog({ children }: RecordDialogProps) {
   const recorder = useVoiceVisualizer();
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={recorder.clearCanvas}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -47,6 +48,7 @@ function RecordDialog({ children }: RecordDialogProps) {
         </DialogHeader>
         <div className="space-y-6">
           <div className="w-full p-2 grid place-items-center gap-y-5">
+            <Input placeholder="Add a title for your recording" />
             <div className="bg-black w-full border h-24 rounded-lg overflow-hidden">
               <VoiceVisualizer
                 height={95}
@@ -61,7 +63,9 @@ function RecordDialog({ children }: RecordDialogProps) {
                 {recorder.formattedRecordingTime}
               </p>
             )}
+
             <Separator />
+
             <div className="inline-flex items-center gap-x-3">
               {recorder.isAvailableRecordedAudio ? (
                 <>

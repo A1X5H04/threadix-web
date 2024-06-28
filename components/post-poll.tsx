@@ -11,7 +11,6 @@ import {
 } from "./ui/tooltip";
 
 function PostPoll({ data }) {
-  const { poll } = data;
   return (
     <TooltipProvider>
       <div className="px-2 border-t w-full">
@@ -33,7 +32,7 @@ function PostPoll({ data }) {
               {data.poll.question}
             </h2>
           ) : (
-            <PostContent content="Post content will be taken as question" />
+            <PostContent content={data.content} />
           )}
 
           <div className="mt-6 space-y-2">
@@ -94,7 +93,7 @@ function PostOption({
 }) {
   // Assuming optionText and percentage are props for this component
   return (
-    <button className="relative py-2 px-4 border w-full rounded-md text-muted-foreground flex items-center justify-between gap-x-2 overflow-hidden hover:border-muted-foreground">
+    <button className="relative py-2 px-4 border w-full rounded-md text-muted-foreground flex items-center justify-between gap-x-2 overflow-hidden">
       <div
         style={{
           width: `${percentage}%`,

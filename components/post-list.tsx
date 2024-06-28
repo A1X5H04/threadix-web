@@ -59,7 +59,7 @@ function PostList({ user }: { user: any }) {
         content: "Enternalzz just posted a new banger!",
         parentId: "1",
         poll: {
-          question: "What do you think of eternalzz ?",
+          question: "Slayashi! What's your favorite color?",
           options: [
             { title: "Red" },
             { title: "Blue" },

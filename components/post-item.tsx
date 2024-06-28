@@ -6,16 +6,16 @@ import { formatDate } from "@/lib/format";
 
 import { RiMoreFill, RiVerifiedBadgeFill } from "@remixicon/react";
 import { Separator } from "@/components/ui/separator";
+import PostQuoted from "./post-quote";
 
 import PostContent from "./post-content";
 import PostActions from "./post-actions";
 import PostPoll from "./post-poll";
+import { TooltipProvider } from "./ui/tooltip";
 
 function PostItem({ data, user }: any) {
-  // const isPostLiked = data.likes;
-
   return (
-    <div className="w-full p-2 flex gap-y-2 justify-start">
+    <div className="w-full pr-4 py-4 flex gap-y-2 justify-start">
       <div className="flex flex-col items-center">
         <Avatar className="w-9 h-9">
           <AvatarImage src="https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Felix" />
@@ -24,6 +24,7 @@ function PostItem({ data, user }: any) {
         <div className="flex-1">
           <Separator orientation="vertical" className="mx-5 my-2 h-full" />
         </div>
+
         <div className="flex items-center -space-x-2 p-1.5 mt-3">
           <Avatar className="w-5 h-5">
             <AvatarImage src="https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Felix" />
@@ -43,10 +44,11 @@ function PostItem({ data, user }: any) {
         <div className="flex items-center justify-between">
           <div className="inline-flex items-start">
             <div className="inline-flex flex-col">
-              <span className="text-sm font-medium inline-flex items-center gap-x-1">
-                {data.user.name}
-                <RiVerifiedBadgeFill className="w-3.5 h-3.5" />
-              </span>
+              <p className="text-sm font-medium inline-flex items-center gap-x-1">
+                {data.user.username}
+
+                <RiVerifiedBadgeFill className="w-3.5 h-3.5 " />
+              </p>
               <p className="text-muted-foreground text-xs">
                 {formatDate(new Date(data.createdAt))}&nbsp;·&nbsp;
                 <span className="text-gray-300">Pune Maharashtra</span>
@@ -57,13 +59,16 @@ function PostItem({ data, user }: any) {
             <RiMoreFill className="w-5 h-5 text-muted-foreground" />
           </Button>
         </div>
-        <div className="flex-1 mt-4 mb-5 space-y-5">
+        <div className="flex-1 mt-4 mb-5 space-y-4">
           {data.poll.question && <PostContent content={data.content} />}
+
           {data.poll ? (
             <PostPoll data={data} />
           ) : (
             <PostContent content={data.content} />
           )}
+
+          <PostQuoted data={data} />
 
           {/* The sea provides a source of food, transportation, and recreation
             for humans. It is a place of beauty and tranquility, with its
@@ -73,17 +78,19 @@ function PostItem({ data, user }: any) {
             fascination for scientists and adventurers alike. */}
         </div>
         <PostActions postId={data.id} />
-        <div className="inline-flex items-center gap-x-2 mt-4">
+        <div className="flex items-center mt-4 px-2 gap-x-4 justify-between">
+          <div className="inline-flex items-center gap-x-2 text-xs text-muted-foreground">
+            <span>25 likes</span>&#183;
+            <Button variant="link" size="sm" className="px-0 py-1">
+              30 replies
+            </Button>
+            &#183;
+            <Button variant="link" size="sm" className="px-0 py-1">
+              0 reposts
+            </Button>
+          </div>
           <Button variant="link" size="sm" className="px-0 py-1">
-            25 likes
-          </Button>
-          ·
-          <Button variant="link" size="sm" className="px-0 py-1">
-            30 replies
-          </Button>
-          ·
-          <Button variant="link" size="sm" className="px-0 py-1">
-            0 reposts
+            View Activity
           </Button>
         </div>
       </div>
