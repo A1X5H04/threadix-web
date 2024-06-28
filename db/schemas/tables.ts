@@ -12,6 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
+import { integer } from "drizzle-orm/sqlite-core";
 
 const createId = init({
   random: Math.random,
@@ -29,6 +30,7 @@ export const mediaType = pgEnum("media_type", [
   "audio",
   "video",
   "voice",
+  "gif",
 ]);
 
 // export const activityType = pgEnum("activity_type", [
@@ -80,11 +82,14 @@ export const postMedia = pgTable(
       .notNull(),
     name: text("name").notNull(),
     path: text("path").notNull(),
-    type: mediaType("type").notNull(),
-    duration: bigint("duration", {
+    width: bigint("width", {
       mode: "number",
     }),
-    description: text("description"),
+    height: bigint("height", {
+      mode: "number",
+    }),
+    type: mediaType("type").notNull(),
+
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
