@@ -2,7 +2,7 @@
 
 import { users } from "@/db/schemas/auth";
 import db from "@/lib/db";
-import { registerSchema } from "@/types/auth";
+import { registerSchema } from "@/types/schemas";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 

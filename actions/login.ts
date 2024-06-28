@@ -5,7 +5,7 @@ import * as z from "zod";
 
 import db from "@/lib/db";
 import { users } from "@/db/schemas/auth";
-import { loginSchema } from "@/types/auth";
+import { loginSchema } from "@/types/schemas";
 import { Argon2id } from "oslo/password";
 import { lucia } from "@/lib/auth";
 import { cookies } from "next/headers";
