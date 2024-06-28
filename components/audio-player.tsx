@@ -23,6 +23,7 @@ function AudioPlayer() {
     if (blob) {
       visualizerControls.setPreloadedAudioBlob(blob);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blob]);
 
   if (!isClient) return null;
