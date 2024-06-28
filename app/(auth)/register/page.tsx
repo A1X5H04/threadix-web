@@ -8,7 +8,7 @@ import { useTransition, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
 
-import { registerSchema } from "@/types/auth";
+import { registerSchema } from "@/types/schemas";
 import { register } from "@/actions/register";
 
 import {

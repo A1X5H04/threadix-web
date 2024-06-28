@@ -8,7 +8,7 @@ import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { loginSchema } from "@/types/auth";
+import { loginSchema } from "@/types/schemas";
 import { login } from "@/actions/login";
 
 import { Button } from "@/components/ui/button";
