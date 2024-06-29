@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   RiBarChartHorizontalLine,
   RiFileGifLine,
+  RiFilmFill,
+  RiImageFill,
   RiMapPin2Line,
   RiMic2Line,
   RiUploadLine,
@@ -29,14 +31,13 @@ import PostLocationDialog from "./location-dialog";
 import GifPickerPopover from "./gif-picker";
 import RecordDialog from "./record-dialog";
 import PollDialog, { pollSchema } from "./poll-dialog";
-import PostPoll from "../post-poll";
 import MediaDialog from "./media-dialog";
-import Poll from "./poll";
 import useSWRMutation from "swr/mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postMediaSchema } from "@/types/schemas";
-import FormOptions from "./form-options";
-import { Separator } from "../ui/separator";
+import Image from "next/image";
+import { Badge } from "../ui/badge";
+import PostOptions from "./post-options";
 // import PostTextArea from "./post-textarea";
 
 const postSchema = z.object({
@@ -104,10 +105,10 @@ function PostForm({ user }: { user: User | null }) {
             <AvatarImage src={user.avatar ?? ""} />
             <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
           </Avatar>
-          <p className="inline-flex flex-col ">
+          <p className="inline-flex flex-col">
             <span className="text-sm font-semibold">{user.name}</span>
-            <span className="text-xs text-muted-foreground italic">
-              anyone can see this post
+            <span className="text-xs text-muted-foreground italic tracking-tight">
+              No post location set
             </span>
           </p>
         </div>
@@ -135,7 +136,7 @@ function PostForm({ user }: { user: User | null }) {
                           {...field}
                           placeholder="What's on your mind?"
                           className="flex w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                          rows={4}
+                          rows={2}
                         />
                       </FormControl>
                       <FormMessage />
@@ -147,8 +148,9 @@ function PostForm({ user }: { user: User | null }) {
           </form>
         </Form>
 
-        <FormOptions />
-        <div className="inline-flex items-center justify-between w-full">
+        <PostOptions />
+
+        <div className="inline-flex items-center justify-between w-full pt-4">
           <div>
             {/* <Button variant="ghost" size="icon">
               <RiEmotionLine className="w-4 h-4 text-muted-foreground" />
