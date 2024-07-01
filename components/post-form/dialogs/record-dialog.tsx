@@ -8,8 +8,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
 import {
   RiDownloadLine,
   RiMic2Fill,
@@ -22,18 +22,18 @@ import {
 
 import { VoiceVisualizer, useVoiceVisualizer } from "react-voice-visualizer";
 
-import { Separator } from "../ui/separator";
-import { Input } from "../ui/input";
+import { Separator } from "../../ui/separator";
+import { Input } from "../../ui/input";
 
 interface RecordDialogProps {
-  children: React.ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
-function RecordDialog({ children }: RecordDialogProps) {
+function RecordDialog({ open, setOpen }: RecordDialogProps) {
   const recorder = useVoiceVisualizer();
 
   return (
-    <Dialog onOpenChange={recorder.clearCanvas}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="inline-flex items-center gap-x-2">

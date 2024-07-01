@@ -9,16 +9,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { MultiMediaDropDown, type FileState } from "../media-uploader";
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { MultiMediaDropDown, type FileState } from "../../media-uploader";
 import { useEdgeStore } from "@/lib/edgestore";
 
 interface MediaDialogProps {
-  children: React.ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-function MediaDialog({ children }: MediaDialogProps) {
+function MediaDialog({ open, setOpen }: MediaDialogProps) {
   const [fileStates, setFileStates] = useState<FileState[]>([]);
 
   function updateFileProgress(key: string, progress: FileState["progress"]) {
@@ -35,8 +36,7 @@ function MediaDialog({ children }: MediaDialogProps) {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Upload Media</DialogTitle>

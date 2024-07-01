@@ -6,25 +6,26 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+} from "../../ui/dialog";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
 import { RiMapPin2Fill } from "@remixicon/react";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../../ui/use-toast";
 import useDebounce from "@/hooks/use-debounce";
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from "../ui/tooltip";
+} from "../../ui/tooltip";
 import axios from "axios";
 
 interface PostLocationDialogProps {
-  children: React.ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-function PostLocationDialog({ children }: PostLocationDialogProps) {
+function PostLocationDialog({ open, setOpen }: PostLocationDialogProps) {
   const [search, setSearch] = React.useState("");
   const [locations, setLocations] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -67,8 +68,7 @@ function PostLocationDialog({ children }: PostLocationDialogProps) {
   console.log("Locations", locations);
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Choose Location</DialogTitle>

@@ -1,22 +1,22 @@
 "use client";
 
 import React from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import GifPicker from "gif-picker-react";
-import "../../app/globals.css";
+import "@/app/globals.css";
 import { useIsClient } from "@/hooks/use-isclient";
 
 interface GifPickerProps {
-  children: React.ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-function GifPickerPopover({ children }: GifPickerProps) {
+function GifPickerPopover({ open, setOpen }: GifPickerProps) {
   const isClient = useIsClient();
 
   if (!isClient) return null;
   return (
-    <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverContent className="p-0 w-fit">
         <GifPicker
           onGifClick={(gif) => {

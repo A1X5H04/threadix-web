@@ -10,18 +10,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Separator } from "../../ui/separator";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Switch } from "../ui/switch";
+} from "../../ui/select";
+import { Switch } from "../../ui/switch";
 import { useFieldArray, useForm, useFormState } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -32,15 +32,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "../../ui/form";
 import { RiCloseLine } from "@remixicon/react";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
 interface PollDialogProps {
-  children: React.ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   setPoll: (poll: z.infer<typeof pollSchema>) => void;
-  poll: z.infer<typeof pollSchema> | undefined;
+  poll?: z.infer<typeof pollSchema> | undefined;
 }
 
 export const pollSchema = z.object({
@@ -60,7 +61,7 @@ export const pollSchema = z.object({
   quizMode: z.boolean(),
 });
 
-function PollDialog({ children, poll, setPoll }: PollDialogProps) {
+function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
   const form = useForm<z.infer<typeof pollSchema>>({
     defaultValues: poll || {
       question: "",
@@ -90,8 +91,7 @@ function PollDialog({ children, poll, setPoll }: PollDialogProps) {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{poll ? "Edit this Poll" : "Create a poll"}</DialogTitle>
