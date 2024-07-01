@@ -7,33 +7,23 @@ import {
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
+import FormMedia from "./form-media";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
 
 function PostOptions() {
   return (
     <>
-      <div className="w-full border rounded-md p-3 space-y-4">
-        <div className="text-sm">
-          <div className="flex gap-x-2 items-center mb-3">
-            <RiFilmFill className="w-3 h-3 text-muted-foreground" />
-            <span className="text-muted-foreground text-xs">
-              Attached Media
-            </span>
-          </div>
-          <div className="flex gap-x-2">
-            {Array.from({ length: 3 }).map((_, idx) => (
-              <div className="relative w-24 h-24 bg-gray-200 rounded-md group">
-                <div className="absolute inset-0 flex items-center justify-center w-full h-full z-[1] bg-black bg-opacity-75 group-hover:opacity-0 transition-opacity">
-                  <RiImageFill className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <Image
-                  src="https://images.unsplash.com/photo-1542397284385-6010376c5337?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  fill
-                  alt="Post Image"
-                  className="rounded-md object-cover"
-                />
-              </div>
-            ))}
-          </div>
+      <div className="w-full p-3 space-y-4">
+        <div className="w-full text-sm flex gap-x-2 overflow-y-scroll">
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <FormMedia key={idx} />
+          ))}
         </div>
         <Separator />
         <div className="cursor-pointer">
