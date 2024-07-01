@@ -11,6 +11,7 @@ import {
   RiBarChartHorizontalLine,
   RiFileGifLine,
   RiFilmFill,
+  RiFilmLine,
   RiImageFill,
   RiMapPin2Line,
   RiMic2Line,
@@ -27,23 +28,25 @@ import {
   FormMessage,
 } from "../ui/form";
 import { User } from "@/db/schemas/auth";
-import PostLocationDialog from "./location-dialog";
-import GifPickerPopover from "./gif-picker";
-import RecordDialog from "./record-dialog";
-import PollDialog, { pollSchema } from "./poll-dialog";
-import MediaDialog from "./media-dialog";
+import PostLocationDialog from "./dialogs/location-dialog";
+import GifPickerPopover from "./dialogs/gif-picker";
+import RecordDialog from "./dialogs/record-dialog";
+import PollDialog, { pollSchema } from "./dialogs/poll-dialog";
+import MediaDialog from "./dialogs/media-dialog";
 import useSWRMutation from "swr/mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postMediaSchema } from "@/types/schemas";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import PostOptions from "./post-options";
+import RichTextArea from "../rich-textarea";
 // import PostTextArea from "./post-textarea";
 
 const postSchema = z.object({
   content: z.string().min(50, "Post content should be at least 50 characters"),
   location: z.string().optional(),
   media: z.array(postMediaSchema).optional(),
+  tags: z.array(z.string()).optional(),
   poll: pollSchema.optional(),
 });
 
@@ -55,6 +58,13 @@ async function sayHello(
 }
 
 function PostForm({ user }: { user: User | null }) {
+  const [dialogs, setDialogs] = React.useState({
+    location: false,
+    gif: false,
+    record: false,
+    poll: false,
+    media: false,
+  });
   const { trigger } = useSWRMutation("/api/post", sayHello);
   const { toast } = useToast();
 
@@ -63,6 +73,7 @@ function PostForm({ user }: { user: User | null }) {
       content: "",
       location: "",
       media: [],
+      tags: [],
       poll: undefined,
     },
     resolver: zodResolver(postSchema),
@@ -107,9 +118,9 @@ function PostForm({ user }: { user: User | null }) {
           </Avatar>
           <p className="inline-flex flex-col">
             <span className="text-sm font-semibold">{user.name}</span>
-            <span className="text-xs text-muted-foreground italic tracking-tight">
-              No post location set
-            </span>
+            {/* <span className="text-xs text-muted-foreground">
+              Rich text supported
+            </span> */}
           </p>
         </div>
         <Button
@@ -132,10 +143,10 @@ function PostForm({ user }: { user: User | null }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <textarea
+                        <RichTextArea
                           {...field}
                           placeholder="What's on your mind?"
-                          className="flex w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                           rows={2}
                         />
                       </FormControl>
@@ -148,47 +159,88 @@ function PostForm({ user }: { user: User | null }) {
           </form>
         </Form>
 
-        <PostOptions />
+        {/* <PostOptions /> */}
 
         <div className="inline-flex items-center justify-between w-full pt-4">
           <div>
             {/* <Button variant="ghost" size="icon">
               <RiEmotionLine className="w-4 h-4 text-muted-foreground" />
             </Button> */}
-            <MediaDialog>
-              <Button variant="ghost" size="icon">
-                <RiUploadLine className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </MediaDialog>
-            <GifPickerPopover>
-              <Button variant="ghost" size="icon">
-                <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </GifPickerPopover>
-            <PostLocationDialog>
-              <Button variant="ghost" size="icon">
-                <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </PostLocationDialog>
-            <RecordDialog>
-              <Button variant="ghost" size="icon">
-                <RiMic2Line className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </RecordDialog>
-            <PollDialog
-              poll={form.getValues("poll")}
-              setPoll={(value) => form.setValue("poll", value)}
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, media: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
             >
-              <Button variant="ghost" size="icon">
-                <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </PollDialog>
+              <RiFilmLine className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, gif: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() =>
+                setDialogs((prev) => ({ ...prev, location: true }))
+              }
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, record: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiMic2Line className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, poll: true }))}
+              type="button"
+              disabled={form.getValues("poll") !== undefined}
+              variant="ghost"
+              size="icon"
+            >
+              <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+            </Button>
           </div>
           <Button type="submit" className="font-semibold">
             Post
           </Button>
         </div>
       </div>
+      <MediaDialog
+        open={dialogs.media}
+        setOpen={(open) => setDialogs((prev) => ({ ...prev, media: open }))}
+      />
+      <PollDialog
+        open={dialogs.poll}
+        setOpen={(open) => setDialogs((prev) => ({ ...prev, poll: open }))}
+        setPoll={(poll) => form.setValue("poll", poll)}
+      />
+      <RecordDialog
+        open={dialogs.record}
+        setOpen={(open) => setDialogs((prev) => ({ ...prev, record: open }))}
+      />
+      <GifPickerPopover
+        open={dialogs.gif}
+        setOpen={(open) => setDialogs((prev) => ({ ...prev, gif: open }))}
+      />
+      <PostLocationDialog
+        open={dialogs.location}
+        setOpen={(open) => setDialogs((prev) => ({ ...prev, location: open }))}
+      />
     </div>
   );
 }
