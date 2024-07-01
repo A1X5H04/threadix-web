@@ -22,7 +22,7 @@ function FormMedia() {
 
   if (random === 0) {
     return (
-      <div className="relative w-32 h-32 bg-gray-200 rounded-md group ">
+      <div className="relative object-cover flex-shrink-0 flex-grow-0 basis-full h-32 bg-gray-200 rounded-md">
         <Image
           src="https://images.unsplash.com/photo-1719386217659-6bde4641915c?q=80&w=1588&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           width={500}

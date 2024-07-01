@@ -23,6 +23,7 @@ import { useToast } from "../ui/use-toast";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -156,69 +157,71 @@ function PostForm({ user }: { user: User | null }) {
                 />
               </div>
             </div>
+
+            <PostOptions />
+
+            <div className="inline-flex items-center justify-between w-full pt-4">
+              <div>
+                <Button
+                  onClick={() =>
+                    setDialogs((prev) => ({ ...prev, media: true }))
+                  }
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                >
+                  <RiFilmLine className="w-4 h-4 text-muted-foreground" />
+                </Button>
+
+                <Button
+                  onClick={() => setDialogs((prev) => ({ ...prev, gif: true }))}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                >
+                  <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
+                </Button>
+
+                <Button
+                  onClick={() =>
+                    setDialogs((prev) => ({ ...prev, location: true }))
+                  }
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                >
+                  <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
+                </Button>
+
+                <Button
+                  onClick={() =>
+                    setDialogs((prev) => ({ ...prev, record: true }))
+                  }
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                >
+                  <RiMic2Line className="w-4 h-4 text-muted-foreground" />
+                </Button>
+
+                <Button
+                  onClick={() =>
+                    setDialogs((prev) => ({ ...prev, poll: true }))
+                  }
+                  type="button"
+                  disabled={form.getValues("poll") !== undefined}
+                  variant="ghost"
+                  size="icon"
+                >
+                  <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </div>
+              <Button type="submit" className="font-semibold">
+                Post
+              </Button>
+            </div>
           </form>
         </Form>
-
-        {/* <PostOptions /> */}
-
-        <div className="inline-flex items-center justify-between w-full pt-4">
-          <div>
-            {/* <Button variant="ghost" size="icon">
-              <RiEmotionLine className="w-4 h-4 text-muted-foreground" />
-            </Button> */}
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, media: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiFilmLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, gif: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() =>
-                setDialogs((prev) => ({ ...prev, location: true }))
-              }
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, record: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiMic2Line className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, poll: true }))}
-              type="button"
-              disabled={form.getValues("poll") !== undefined}
-              variant="ghost"
-              size="icon"
-            >
-              <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          </div>
-          <Button type="submit" className="font-semibold">
-            Post
-          </Button>
-        </div>
       </div>
       <MediaDialog
         open={dialogs.media}
@@ -241,6 +244,9 @@ function PostForm({ user }: { user: User | null }) {
         open={dialogs.location}
         setOpen={(open) => setDialogs((prev) => ({ ...prev, location: open }))}
       />
+      <span className="text-xs text-muted italic pl-8 cursor-help">
+        *Actual post will be displayed differently on the feed
+      </span>
     </div>
   );
 }

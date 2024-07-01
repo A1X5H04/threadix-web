@@ -1,7 +1,7 @@
 "use client";
 
 import * as z from "zod";
-import { profileSchema } from "@/types/profile";
+import { profileSchema } from "@/types/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -36,7 +36,7 @@ function EditForm() {
   return (
     <Form {...form}>
       <form
-        className="space-y-3 max-h-64 p-2 overflow-y-scroll no-scrollbar"
+        className="space-y-3 max-h-64 px-0.5 overflow-y-scroll no-scrollbar"
         onSubmit={form.handleSubmit(onFormSubmit)}
       >
         <FormField

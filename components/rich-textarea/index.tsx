@@ -37,7 +37,7 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
   return (
     <div className="relative">
       <RTInfoPopover>
-        <button className="absolute top-2 z-10 right-4 p-1 bg-background hover:bg-muted text-muted-foreground transition-colors rounded ">
+        <button className="absolute top-2 z-10 right-2 p-1 bg-background hover:bg-muted text-muted-foreground transition-colors rounded ">
           <RiTextSnippet className="w-4 h-4 text-muted-foreground" />
         </button>
       </RTInfoPopover>
@@ -61,7 +61,6 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
       >
         {mentionRenderer}
       </RichTextarea>
-
       {mentionListProps.left &&
         mentionListProps.top &&
         createPortal(
