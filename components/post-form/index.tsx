@@ -39,11 +39,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { postMediaSchema } from "@/types/schemas";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
-import PostOptions from "./post-options";
+
 import RichTextArea from "../rich-textarea";
+import PostFormOptions from "./post-form-options";
 // import PostTextArea from "./post-textarea";
 
-const postSchema = z.object({
+export const postSchema = z.object({
   content: z.string().min(50, "Post content should be at least 50 characters"),
   location: z.string().optional(),
   media: z.array(postMediaSchema).optional(),
@@ -109,6 +110,8 @@ function PostForm({ user }: { user: User | null }) {
     console.log("Post Values", values);
   };
 
+  console.log("Rerendered Form");
+
   return (
     <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
       <div className="flex justify-between items-center gap-x-2">
@@ -135,7 +138,7 @@ function PostForm({ user }: { user: User | null }) {
       </div>
       <div className="w-full space-y-2 pl-8">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onFormSubmit)}>
+          <form id="post-form" onSubmit={form.handleSubmit(onFormSubmit)}>
             <div className="flex gap-x-2 relative">
               <div className="flex-1">
                 <FormField
@@ -157,71 +160,63 @@ function PostForm({ user }: { user: User | null }) {
                 />
               </div>
             </div>
-
-            <PostOptions />
-
-            <div className="inline-flex items-center justify-between w-full pt-4">
-              <div>
-                <Button
-                  onClick={() =>
-                    setDialogs((prev) => ({ ...prev, media: true }))
-                  }
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                >
-                  <RiFilmLine className="w-4 h-4 text-muted-foreground" />
-                </Button>
-
-                <Button
-                  onClick={() => setDialogs((prev) => ({ ...prev, gif: true }))}
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                >
-                  <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
-                </Button>
-
-                <Button
-                  onClick={() =>
-                    setDialogs((prev) => ({ ...prev, location: true }))
-                  }
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                >
-                  <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
-                </Button>
-
-                <Button
-                  onClick={() =>
-                    setDialogs((prev) => ({ ...prev, record: true }))
-                  }
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                >
-                  <RiMic2Line className="w-4 h-4 text-muted-foreground" />
-                </Button>
-
-                <Button
-                  onClick={() =>
-                    setDialogs((prev) => ({ ...prev, poll: true }))
-                  }
-                  type="button"
-                  disabled={form.getValues("poll") !== undefined}
-                  variant="ghost"
-                  size="icon"
-                >
-                  <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-                </Button>
-              </div>
-              <Button type="submit" className="font-semibold">
-                Post
-              </Button>
-            </div>
           </form>
         </Form>
+
+        <PostFormOptions formControl={form.control} />
+        <div className="inline-flex items-center justify-between w-full pt-4">
+          <div>
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, media: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiFilmLine className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, gif: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() =>
+                setDialogs((prev) => ({ ...prev, location: true }))
+              }
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, record: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiMic2Line className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              onClick={() => setDialogs((prev) => ({ ...prev, poll: true }))}
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+            </Button>
+          </div>
+          <Button form="post-form" type="submit" className="font-semibold">
+            Post
+          </Button>
+        </div>
       </div>
       <MediaDialog
         open={dialogs.media}

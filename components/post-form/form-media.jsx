@@ -1,5 +1,4 @@
 import React from "react";
-import { RiImageFill, RiMusicFill, RiVideoFill } from "@remixicon/react";
 
 import Image from "next/image";
 
@@ -22,11 +21,11 @@ function FormMedia() {
 
   if (random === 0) {
     return (
-      <div className="relative object-cover flex-shrink-0 flex-grow-0 basis-full h-32 bg-gray-200 rounded-md">
+      <div className="relative w-60 h-44">
         <Image
           src="https://images.unsplash.com/photo-1719386217659-6bde4641915c?q=80&w=1588&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          width={500}
-          height={500}
+          width={150}
+          height={150}
           alt="Post Image"
           className="rounded-md object-cover"
         />
@@ -38,13 +37,13 @@ function FormMedia() {
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full h-full max-w-lg max-h-lg bg-secondary rounded-md grid place-items-center"
+      className="relative w-full h-full bg-secondary rounded-md grid place-items-center"
     >
       <video
         ref={videoRef}
         src="https://videos.pexels.com/video-files/856382/856382-hd_1920_1080_30fps.mp4"
         alt="Post Image"
-        className="rounded-md"
+        className="rounded-md object-cover"
         muted
       />
     </div>

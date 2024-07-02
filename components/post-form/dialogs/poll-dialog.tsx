@@ -36,6 +36,7 @@ import {
 import { RiCloseLine } from "@remixicon/react";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface PollDialogProps {
   open: boolean;
@@ -49,7 +50,7 @@ export const pollSchema = z.object({
   options: z
     .array(
       z.object({
-        title: z.string(),
+        title: z.string().max(8),
         isCorrect: z.boolean().optional(),
       })
     )
@@ -63,13 +64,14 @@ export const pollSchema = z.object({
 
 function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
   const form = useForm<z.infer<typeof pollSchema>>({
+    resolver: zodResolver(pollSchema),
     defaultValues: poll || {
       question: "",
-      options: [{ title: "" }],
+      options: [{ title: "", isCorrect: false }],
       duration: "1h",
       anonymousVoting: false,
       multipleAnswers: false,
-      quizMode: false,
+      quizMode: true,
     },
   });
 
@@ -80,6 +82,16 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
       validate: (value) => {
         if (value.length < 2) {
           return "Poll must have atleast 2 options";
+        }
+
+        const isCorrect = value.filter((item) => item.isCorrect).length;
+
+        if (isCorrect > 1 && form.getValues("quizMode")) {
+          return "Poll must have only one correct option";
+        }
+
+        if (isCorrect < 1 && form.getValues("quizMode")) {
+          return "Poll must have atleast one correct option";
         }
       },
     },
@@ -116,6 +128,7 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
                       <FormDescription>
                         This field is optional.
                         <Popover>
@@ -138,7 +151,6 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
                           </PopoverContent>
                         </Popover>
                       </FormDescription>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -147,7 +159,7 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
               <div>
                 <h5 className="mb-5 font-semibold">Options</h5>
                 <div className="space-y-2">
-                  <RadioGroup>
+                  <RadioGroup value="isCorrect">
                     {fieldArray.fields.map((item, index) => (
                       <div key={item.id} className="flex items-center gap-x-4">
                         {form.getValues("quizMode") && (
@@ -164,6 +176,7 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
                                   {...field}
                                 />
                               </FormControl>
+                              <FormMessage />
                             </FormItem>
                           )}
                         />
@@ -171,6 +184,7 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
                         <Button
                           variant="link"
                           size="icon"
+                          type="button"
                           disabled={index == 0}
                           onClick={() => fieldArray.remove(index)}
                         >
@@ -180,12 +194,15 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
                     ))}
                   </RadioGroup>
                   <p className="text-destructive text-sm">
-                    {form.formState.errors.root?.message}
+                    {form.formState.errors.options?.message}
                   </p>
                   <Button
                     variant="secondary"
                     className="w-full"
-                    onClick={() => fieldArray.append({ title: "" })}
+                    type="button"
+                    onClick={() =>
+                      fieldArray.append({ title: "", isCorrect: false })
+                    }
                     disabled={fieldArray.fields.length == 6}
                   >
                     Add Option
