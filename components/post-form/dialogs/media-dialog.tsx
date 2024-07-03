@@ -13,13 +13,9 @@ import {
 import { Button } from "../../ui/button";
 import { MultiMediaDropDown, type FileState } from "../../media-uploader";
 import { useEdgeStore } from "@/lib/edgestore";
+import { RiFilmLine } from "@remixicon/react";
 
-interface MediaDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-function MediaDialog({ open, setOpen }: MediaDialogProps) {
+function MediaDialog() {
   const [fileStates, setFileStates] = useState<FileState[]>([]);
 
   function updateFileProgress(key: string, progress: FileState["progress"]) {
@@ -36,7 +32,12 @@ function MediaDialog({ open, setOpen }: MediaDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <RiFilmLine className="w-4 h-4 text-muted-foreground" />
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Upload Media</DialogTitle>

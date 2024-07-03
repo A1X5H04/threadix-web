@@ -12,7 +12,7 @@ export default async function Home({}) {
   return (
     <>
       <PostForm user={user} />
-      <PostList user={user} />
+      {/* <PostList user={user} /> */}
     </>
   );
 }

@@ -33,20 +33,18 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import { RiCloseLine } from "@remixicon/react";
+import { RiBarChartHorizontalLine, RiCloseLine } from "@remixicon/react";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface PollDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  setPoll: (poll: z.infer<typeof pollSchema>) => void;
   poll?: z.infer<typeof pollSchema> | undefined;
+  setPoll: (poll: z.infer<typeof pollSchema>) => void;
 }
 
 export const pollSchema = z.object({
-  question: z.string().min(10).optional(),
+  question: z.string().optional(),
   options: z
     .array(
       z.object({
@@ -62,7 +60,7 @@ export const pollSchema = z.object({
   quizMode: z.boolean(),
 });
 
-function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
+function PollDialog({ poll, setPoll }: PollDialogProps) {
   const form = useForm<z.infer<typeof pollSchema>>({
     resolver: zodResolver(pollSchema),
     defaultValues: poll || {
@@ -103,7 +101,12 @@ function PollDialog({ open, setOpen, poll, setPoll }: PollDialogProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{poll ? "Edit this Poll" : "Create a poll"}</DialogTitle>

@@ -48,7 +48,7 @@ function PostFormOptions({
           ))}
         </CarouselContent>
       </Carousel> */}
-      {dirtyFields.poll && poll && (
+      {poll && (
         <div className="cursor-pointer hover:opacity-75 transition-opacity px-2 py-4 border-t">
           <div className="flex gap-x-2 items-center justify-between mb-3">
             <p className="inline-flex items-center gap-x-2">

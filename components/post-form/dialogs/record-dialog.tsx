@@ -33,7 +33,12 @@ function RecordDialog({ open, setOpen }: RecordDialogProps) {
   const recorder = useVoiceVisualizer();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <RiMic2Fill className="w-4 h-4 text-muted-foreground" />
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="inline-flex items-center gap-x-2">

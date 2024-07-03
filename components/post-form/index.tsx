@@ -7,16 +7,6 @@ import axios from "axios";
 
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import {
-  RiBarChartHorizontalLine,
-  RiFileGifLine,
-  RiFilmFill,
-  RiFilmLine,
-  RiImageFill,
-  RiMapPin2Line,
-  RiMic2Line,
-  RiUploadLine,
-} from "@remixicon/react";
 
 import { useToast } from "../ui/use-toast";
 
@@ -39,13 +29,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { postMediaSchema } from "@/types/schemas";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
+import { FormOptions } from "./form-options";
 
 import RichTextArea from "../rich-textarea";
 import PostFormOptions from "./post-form-options";
 // import PostTextArea from "./post-textarea";
 
+// .min(50, "Post content should be at least 50 characters")
 export const postSchema = z.object({
-  content: z.string().min(50, "Post content should be at least 50 characters"),
+  content: z.string(),
   location: z.string().optional(),
   media: z.array(postMediaSchema).optional(),
   tags: z.array(z.string()).optional(),
@@ -60,13 +52,6 @@ async function sayHello(
 }
 
 function PostForm({ user }: { user: User | null }) {
-  const [dialogs, setDialogs] = React.useState({
-    location: false,
-    gif: false,
-    record: false,
-    poll: false,
-    media: false,
-  });
   const { trigger } = useSWRMutation("/api/post", sayHello);
   const { toast } = useToast();
 
@@ -81,7 +66,7 @@ function PostForm({ user }: { user: User | null }) {
     resolver: zodResolver(postSchema),
   });
 
-  if (!user) return <div>Not Logged In</div>;
+  if (!user) return null;
 
   const onFormSubmit = (values: z.infer<typeof postSchema>) => {
     // trigger(values, {
@@ -165,80 +150,13 @@ function PostForm({ user }: { user: User | null }) {
 
         <PostFormOptions formControl={form.control} />
         <div className="inline-flex items-center justify-between w-full pt-4">
-          <div>
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, media: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiFilmLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, gif: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() =>
-                setDialogs((prev) => ({ ...prev, location: true }))
-              }
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, record: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiMic2Line className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              onClick={() => setDialogs((prev) => ({ ...prev, poll: true }))}
-              type="button"
-              variant="ghost"
-              size="icon"
-            >
-              <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          </div>
+          <FormOptions />
           <Button form="post-form" type="submit" className="font-semibold">
             Post
           </Button>
         </div>
       </div>
-      <MediaDialog
-        open={dialogs.media}
-        setOpen={(open) => setDialogs((prev) => ({ ...prev, media: open }))}
-      />
-      <PollDialog
-        open={dialogs.poll}
-        setOpen={(open) => setDialogs((prev) => ({ ...prev, poll: open }))}
-        setPoll={(poll) => form.setValue("poll", poll)}
-      />
-      <RecordDialog
-        open={dialogs.record}
-        setOpen={(open) => setDialogs((prev) => ({ ...prev, record: open }))}
-      />
-      <GifPickerPopover
-        open={dialogs.gif}
-        setOpen={(open) => setDialogs((prev) => ({ ...prev, gif: open }))}
-      />
-      <PostLocationDialog
-        open={dialogs.location}
-        setOpen={(open) => setDialogs((prev) => ({ ...prev, location: open }))}
-      />
+
       <span className="text-xs text-muted italic pl-8 cursor-help">
         *Actual post will be displayed differently on the feed
       </span>

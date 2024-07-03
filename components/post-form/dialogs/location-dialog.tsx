@@ -9,7 +9,7 @@ import {
 } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
-import { RiMapPin2Fill } from "@remixicon/react";
+import { RiMapPin2Fill, RiMapPin2Line } from "@remixicon/react";
 import { useToast } from "../../ui/use-toast";
 import useDebounce from "@/hooks/use-debounce";
 import {
@@ -20,12 +20,7 @@ import {
 } from "../../ui/tooltip";
 import axios from "axios";
 
-interface PostLocationDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-function PostLocationDialog({ open, setOpen }: PostLocationDialogProps) {
+function PostLocationDialog() {
   const [search, setSearch] = React.useState("");
   const [locations, setLocations] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -68,7 +63,12 @@ function PostLocationDialog({ open, setOpen }: PostLocationDialogProps) {
   console.log("Locations", locations);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <RiMapPin2Line className="w-4 h-4 text-muted-foreground" />
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Choose Location</DialogTitle>
