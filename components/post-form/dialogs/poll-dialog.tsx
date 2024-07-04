@@ -37,6 +37,7 @@ import { RiBarChartHorizontalLine, RiCloseLine } from "@remixicon/react";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { RadioItem } from "@radix-ui/react-dropdown-menu";
 
 interface PollDialogProps {
   poll?: z.infer<typeof pollSchema> | undefined;
@@ -48,7 +49,7 @@ export const pollSchema = z.object({
   options: z
     .array(
       z.object({
-        title: z.string().max(8),
+        title: z.string().max(30),
         isCorrect: z.boolean().optional(),
       })
     )
@@ -101,7 +102,7 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={() => !form.formState.isValid}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
@@ -158,15 +159,22 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
                   )}
                 />
               </div>
-
               <div>
                 <h5 className="mb-5 font-semibold">Options</h5>
                 <div className="space-y-2">
-                  <RadioGroup value="isCorrect">
+                  <RadioGroup
+                    onValueChange={(e) =>
+                      console.log(e, form.getValues("options"))
+                    }
+                  >
                     {fieldArray.fields.map((item, index) => (
                       <div key={item.id} className="flex items-center gap-x-4">
                         {form.getValues("quizMode") && (
-                          <RadioGroupItem value={`r${index}`} />
+                          <div className="w-4 h-4 grid place-items-center">
+                            <RadioGroupItem
+                              value={`option.${index}.isCorrect`}
+                            />
+                          </div>
                         )}
                         <FormField
                           control={form.control}
@@ -210,12 +218,6 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
                   >
                     Add Option
                   </Button>
-                  {/* <div className="flex gap-x-2">
-                    <Input placeholder="Option One" />
-                    <Button variant="link" size="icon">
-                      <RiCloseLine className="w-4 h-4" />
-                    </Button>
-                  </div> */}
                   <p className="text-xs text-muted-foreground">
                     You can add&nbsp;
                     <span className="text-primary">
@@ -249,7 +251,7 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
                               <SelectValue placeholder="Select a duration" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent align="end">
                             <SelectItem value="15m">15 Minutes</SelectItem>
                             <SelectItem value="30m">30 Minutes</SelectItem>
                             <SelectItem value="1h">1 Hour</SelectItem>

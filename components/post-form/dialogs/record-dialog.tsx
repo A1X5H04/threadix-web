@@ -13,8 +13,8 @@ import { Button } from "../../ui/button";
 import {
   RiDownloadLine,
   RiMic2Fill,
+  RiMic2Line,
   RiPauseFill,
-  RiPauseLine,
   RiPlayFill,
   RiRecordCircleFill,
   RiStopFill,
@@ -25,18 +25,14 @@ import { VoiceVisualizer, useVoiceVisualizer } from "react-voice-visualizer";
 import { Separator } from "../../ui/separator";
 import { Input } from "../../ui/input";
 
-interface RecordDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-function RecordDialog({ open, setOpen }: RecordDialogProps) {
+function RecordDialog() {
   const recorder = useVoiceVisualizer();
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
-          <RiMic2Fill className="w-4 h-4 text-muted-foreground" />
+          <RiMic2Line className="w-4 h-4 text-muted-foreground" />
         </Button>
       </DialogTrigger>
       <DialogContent>

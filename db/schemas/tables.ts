@@ -12,7 +12,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
-import { integer } from "drizzle-orm/sqlite-core";
 
 const createId = init({
   random: Math.random,
@@ -258,18 +257,21 @@ export const userFollowers = pgTable(
   })
 );
 
-// export const userActivity = pgTable(
-//   "user_activity",
-//   {
-//     id: serial("id").primaryKey().notNull(),
-//     userId: text("user_id")
-//       .notNull()
-//       .references(() => users.id, { onDelete: "cascade" }),
-//     activity: text("activity").notNull(),
-//     activityType: varchar("")
-//     createdAt: timestamp("created_at").$default(() => new Date()),
-//   },
-//   (table) => ({
-//     userActivityIdx: index("user_activity_idx").on(table.userId),
-//   })
-// );
+export const userActivity = pgTable(
+  "user_activity",
+  {
+    id: serial("id").primaryKey().notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    activity: text("activity").notNull(),
+    activityType: varchar(""),
+    isUnread: boolean("is_unread")
+      .notNull()
+      .$default(() => true),
+    createdAt: timestamp("created_at").$default(() => new Date()),
+  },
+  (table) => ({
+    userActivityIdx: index("user_activity_idx").on(table.userId),
+  })
+);

@@ -19,23 +19,21 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel";
-import { pollSchema } from "./dialogs/poll-dialog";
 import { cn } from "@/lib/utils";
-import { Control, useFormState } from "react-hook-form";
+import { Control, useFormState, useWatch } from "react-hook-form";
 import { postSchema } from ".";
 
 function PostFormOptions({
-  poll,
   formControl,
 }: {
-  poll?: z.infer<typeof pollSchema>;
   formControl?: Control<z.infer<typeof postSchema>>;
 }) {
-  const { dirtyFields } = useFormState({
+  const pollField = useWatch({
     control: formControl,
+    name: "poll",
   });
 
-  console.log("Dirty Fields", dirtyFields, "Poll", poll);
+  console.log("pollField", pollField);
 
   return (
     <div className="w-full p-3 space-y-4">
@@ -48,7 +46,7 @@ function PostFormOptions({
           ))}
         </CarouselContent>
       </Carousel> */}
-      {poll && (
+      {pollField && (
         <div className="cursor-pointer hover:opacity-75 transition-opacity px-2 py-4 border-t">
           <div className="flex gap-x-2 items-center justify-between mb-3">
             <p className="inline-flex items-center gap-x-2">
@@ -58,21 +56,21 @@ function PostFormOptions({
               </span>
             </p>
             <span className="text-xs text-muted-foreground">
-              Ends in {poll.duration}
+              Ends in {pollField.duration}
             </span>
           </div>
           <div className="inline-flex flex-col pl-4">
             <p
               className={
-                poll.question
+                pollField.question
                   ? "font-semibold text-lg"
                   : "italic text-muted font-normal"
               }
             >
-              {poll.question || "Post content will be rendered here"}
+              {pollField.question || "Post content will be rendered here"}
             </p>
             <div className="inline-flex flex-wrap gap-2 mt-3 mb-6">
-              {poll.options.map((option, idx) => (
+              {pollField.options.map((option, idx) => (
                 <Badge key={idx} variant={"outline"} className="text-sm">
                   {option.isCorrect && "✓"} {option.title}
                 </Badge>
@@ -82,7 +80,7 @@ function PostFormOptions({
               <span
                 className={cn(
                   "inline-flex items-center gap-x-1",
-                  poll.multipleAnswers && "text-muted-foreground"
+                  pollField.multipleAnswers && "text-muted-foreground"
                 )}
               >
                 <RiListCheck className="w-4 h-4" />
@@ -92,7 +90,7 @@ function PostFormOptions({
               <span
                 className={cn(
                   "inline-flex items-center gap-x-1",
-                  poll.anonymousVoting && "text-muted-foreground"
+                  pollField.anonymousVoting && "text-muted-foreground"
                 )}
               >
                 <RiSpyFill className="w-4 h-4" />
@@ -102,7 +100,7 @@ function PostFormOptions({
               <span
                 className={cn(
                   "inline-flex items-center gap-x-1",
-                  poll.quizMode && "text-muted-foreground"
+                  pollField.quizMode && "text-muted-foreground"
                 )}
               >
                 <RiQuestionFill className="w-4 h-4" />

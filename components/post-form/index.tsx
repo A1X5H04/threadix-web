@@ -19,17 +19,18 @@ import {
   FormMessage,
 } from "../ui/form";
 import { User } from "@/db/schemas/auth";
-import PostLocationDialog from "./dialogs/location-dialog";
-import GifPickerPopover from "./dialogs/gif-picker";
-import RecordDialog from "./dialogs/record-dialog";
-import PollDialog, { pollSchema } from "./dialogs/poll-dialog";
-import MediaDialog from "./dialogs/media-dialog";
 import useSWRMutation from "swr/mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postMediaSchema } from "@/types/schemas";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { FormOptions } from "./form-options";
+
+import MediaDialog from "./dialogs/media-dialog";
+import PollDialog, { pollSchema } from "./dialogs/poll-dialog";
+import RecordDialog from "./dialogs/record-dialog";
+import GifPickerPopover from "./dialogs/gif-picker";
+import PostLocationDialog from "./dialogs/location-dialog";
 
 import RichTextArea from "../rich-textarea";
 import PostFormOptions from "./post-form-options";
@@ -150,7 +151,13 @@ function PostForm({ user }: { user: User | null }) {
 
         <PostFormOptions formControl={form.control} />
         <div className="inline-flex items-center justify-between w-full pt-4">
-          <FormOptions />
+          <div>
+            <MediaDialog />
+            <RecordDialog />
+            <GifPickerPopover />
+            <PostLocationDialog />
+            <PollDialog setPoll={(poll) => form.setValue("poll", poll)} />
+          </div>
           <Button form="post-form" type="submit" className="font-semibold">
             Post
           </Button>

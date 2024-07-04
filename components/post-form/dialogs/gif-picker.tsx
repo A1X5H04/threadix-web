@@ -8,12 +8,7 @@ import { useIsClient } from "@/hooks/use-isclient";
 import { Button } from "@/components/ui/button";
 import { RiFileGifLine } from "@remixicon/react";
 
-interface GifPickerProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-function GifPickerPopover({ open, setOpen }: GifPickerProps) {
+function GifPickerPopover() {
   const isClient = useIsClient();
 
   if (!isClient) return null;

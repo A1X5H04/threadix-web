@@ -7,7 +7,7 @@ function RTInfoPopover({ children }: { children: React.ReactNode }) {
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent align="end">
-        <h3 className="font-semibold text-center">Textarea Features</h3>
+        <h3 className="font-semibold text-center">Text Editor Features</h3>
         <Separator className="mt-2" />
         <div className="relative max-h-60 overflow-y-scroll no-scrollbar pt-4 box-border">
           <ul className="list-disc px-4 text-sm space-y-2 ">
