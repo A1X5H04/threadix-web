@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogDescription,
@@ -19,22 +19,28 @@ import {
   RiRecordCircleFill,
   RiStopFill,
 } from "@remixicon/react";
+import * as z from "zod";
+import { postMediaSchema } from "@/types/schemas";
 
 import { VoiceVisualizer, useVoiceVisualizer } from "react-voice-visualizer";
 
 import { Separator } from "../../ui/separator";
 import { Input } from "../../ui/input";
+import { useEdgeStore } from "@/lib/edgestore";
 
-function RecordDialog() {
+type Media = z.infer<typeof postMediaSchema>;
+
+function RecordDialog({ setMedia }: { setMedia: (media: Media) => void }) {
+  const [open, setIsOpen] = useState(false);
   const recorder = useVoiceVisualizer();
+  const { edgeStore } = useEdgeStore();
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <RiMic2Line className="w-4 h-4 text-muted-foreground" />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setIsOpen}>
+      <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
+        <RiMic2Line className="w-4 h-4 text-muted-foreground" />
+      </Button>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="inline-flex items-center gap-x-2">
@@ -64,8 +70,6 @@ function RecordDialog() {
                 {recorder.formattedRecordingTime}
               </p>
             )}
-
-            <Separator />
 
             <div className="inline-flex items-center gap-x-3">
               {recorder.isAvailableRecordedAudio ? (

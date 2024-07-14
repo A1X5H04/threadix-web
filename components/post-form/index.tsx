@@ -34,6 +34,7 @@ import PostLocationDialog from "./dialogs/location-dialog";
 
 import RichTextArea from "../rich-textarea";
 import PostFormOptions from "./post-form-options";
+import PostQuoted from "../post-quote";
 // import PostTextArea from "./post-textarea";
 
 // .min(50, "Post content should be at least 50 characters")
@@ -96,77 +97,120 @@ function PostForm({ user }: { user: User | null }) {
     console.log("Post Values", values);
   };
 
+  const setPostMedia = (
+    media: z.infer<typeof postMediaSchema> | z.infer<typeof postMediaSchema>[]
+  ) => {
+    if (form.getValues("media")) {
+      form.setValue("media", [media, ...form.getValues("media")]);
+    } else {
+      form.setValue("media", Array.isArray(media) ? media : [media]);
+    }
+  };
+
   console.log("Rerendered Form");
 
   return (
-    <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow">
-      <div className="flex justify-between items-center gap-x-2">
-        <div className="inline-flex items-center gap-x-2">
-          <Avatar className="w-9 h-9">
-            <AvatarImage src={user.avatar ?? ""} />
-            <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <p className="inline-flex flex-col">
-            <span className="text-sm font-semibold">{user.name}</span>
-            {/* <span className="text-xs text-muted-foreground">
-              Rich text supported
-            </span> */}
-          </p>
-        </div>
-        <Button
-          size="sm"
-          variant="outline"
-          type="submit"
-          className="font-semibold"
-        >
-          Anyone
-        </Button>
-      </div>
-      <div className="w-full space-y-2 pl-8">
-        <Form {...form}>
-          <form id="post-form" onSubmit={form.handleSubmit(onFormSubmit)}>
-            <div className="flex gap-x-2 relative">
-              <div className="flex-1">
-                <FormField
-                  name="content"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <RichTextArea
-                          {...field}
-                          placeholder="What's on your mind?"
-                          className="w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                          rows={2}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          </form>
-        </Form>
-
-        <PostFormOptions formControl={form.control} />
-        <div className="inline-flex items-center justify-between w-full pt-4">
-          <div>
-            <MediaDialog />
-            <RecordDialog />
-            <GifPickerPopover />
-            <PostLocationDialog />
-            <PollDialog setPoll={(poll) => form.setValue("poll", poll)} />
+    <div>
+      <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow animate-in z-20">
+        <div className="flex justify-between items-center gap-x-2">
+          <div className="inline-flex items-center gap-x-2">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={user.avatar ?? ""} />
+              <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <p className="inline-flex flex-col">
+              <span className="text-sm font-semibold">{user.name}</span>
+            </p>
           </div>
-          <Button form="post-form" type="submit" className="font-semibold">
-            Post
+          <Button
+            size="sm"
+            variant="outline"
+            type="submit"
+            className="font-semibold"
+          >
+            Anyone
           </Button>
         </div>
-      </div>
+        <div className="w-full space-y-2 pl-8">
+          <Form {...form}>
+            <form id="post-form" onSubmit={form.handleSubmit(onFormSubmit)}>
+              <div className="flex gap-x-2 relative">
+                <div className="flex-1">
+                  <FormField
+                    name="content"
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RichTextArea
+                            {...field}
+                            placeholder="What's on your mind?"
+                            className="w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                            rows={2}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </form>
+          </Form>
+          <PostFormOptions formControl={form.control} />
 
-      <span className="text-xs text-muted italic pl-8 cursor-help">
+          {/* <PostQuoted
+          data={{
+            id: "1",
+            content: "Enternalzz just posted a new banger!",
+            parentId: "1",
+            poll: {
+              question: "Slayashi! What's your favorite color?",
+              options: [
+                { title: "Red" },
+                { title: "Blue" },
+                { title: "Green" },
+                { title: "Yellow" },
+                ],
+                duration: "1h",
+              anonymousVoting: false,
+              multipleAnswers: false,
+              quizMode: true,
+              },
+              user: {
+              id: "1",
+              name: "John Doe",
+              username: "johndoe",
+              email: "asdf",
+            },
+            createdAt: "2021-10-05T00:00:00Z",
+            updatedAt: "2021-10-05T00:00:00Z",
+          }}
+        /> */}
+
+          <div className="inline-flex items-center justify-between w-full pt-4">
+            <div>
+              <MediaDialog setMedia={setPostMedia} />
+              <RecordDialog setMedia={setPostMedia} />
+              <GifPickerPopover />
+              <PostLocationDialog />
+              <PollDialog setPoll={(poll) => form.setValue("poll", poll)} />
+            </div>
+            {/* <button className="text-sm text-muted font-semibold">
+            Reply to this post
+            </button> */}
+
+            <Button form="post-form" type="submit" className="font-semibold">
+              Post
+            </Button>
+          </div>
+        </div>
+
+        {/* <span className="text-xs text-muted italic pl-8 cursor-help">
         *Actual post will be displayed differently on the feed
-      </span>
+      </span> */}
+      </div>
+      {/* <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[2]" /> */}
     </div>
   );
 }

@@ -14,6 +14,14 @@ import EmojiList, { useEmojiList } from "./emoji-list";
 import { RiTextSnippet } from "@remixicon/react";
 import RTInfoPopover from "./info-popover";
 
+const Tag = ({ children }: { children: string }) => {
+  return (
+    <span className="text-xs text-blue-900 hover:underline cursor-default">
+      {children}
+    </span>
+  );
+};
+
 function RichTextArea(props: TextareaProps & RichTextareaProps) {
   const { value } = props;
   const textAreaRef = useRef<RichTextareaHandle>(null);
@@ -41,6 +49,11 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
           <RiTextSnippet className="w-4 h-4 text-muted-foreground" />
         </button>
       </RTInfoPopover>
+      {/* <div className="flex items-center gap-x-2 gap-y-1 flex-wrap ml-2 mt-2 ">
+        {[...Array(15)].map((_, i) => (
+          <Tag key={i}>#tag{i}</Tag>
+        ))}
+      </div> */}
       <RichTextarea
         ref={textAreaRef}
         style={{
@@ -61,6 +74,7 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
       >
         {mentionRenderer}
       </RichTextarea>
+
       {mentionListProps.left &&
         mentionListProps.top &&
         createPortal(

@@ -145,7 +145,31 @@ const MultiMediaDropDown = React.forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div>
-        <div className="w-full grid grid-cols-[repeat(1,1fr)] gap-2 sm:grid-cols-[repeat(2,1fr)] lg:grid-cols-[repeat(3,1fr)] xl:grid-cols-[repeat(4,1fr)]">
+        <div>
+          {/* Dropzone */}
+          {(!value || value.length < (dropzoneOptions?.maxFiles ?? 0)) && (
+            <div
+              {...getRootProps({
+                className: dropZoneClassName,
+              })}
+            >
+              {/* Main File Input */}
+              <input ref={ref} {...getInputProps()} />
+              <div className="flex flex-col items-center justify-center text-sm w-full">
+                <RiUploadCloudLine className="mb-2 h-10 w-10" />
+                <p>drag & drop to upload</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 mt-3"
+                >
+                  click to browse
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="w-full grid grid-cols-[repeat(1,1fr)] gap-2 sm:grid-cols-[repeat(2,1fr)] lg:grid-cols-[repeat(3,1fr)] xl:grid-cols-[repeat(4,1fr)] mt-4">
           {/* Images */}
           {value?.map(({ file, progress }, index) => (
             <div
@@ -180,30 +204,7 @@ const MultiMediaDropDown = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
           ))}
         </div>
-        <div>
-          {/* Dropzone */}
-          {(!value || value.length < (dropzoneOptions?.maxFiles ?? 0)) && (
-            <div
-              {...getRootProps({
-                className: dropZoneClassName,
-              })}
-            >
-              {/* Main File Input */}
-              <input ref={ref} {...getInputProps()} />
-              <div className="flex flex-col items-center justify-center text-sm w-full">
-                <RiUploadCloudLine className="mb-2 h-10 w-10" />
-                <p>drag & drop to upload</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 mt-3"
-                >
-                  click to browse
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+
         {/* Error Text */}
         <div className="mt-1 text-xs text-red-500">
           {customError ?? errorMessage}

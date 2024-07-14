@@ -49,12 +49,14 @@ export const pollSchema = z.object({
   options: z
     .array(
       z.object({
-        title: z.string().max(30),
+        title: z.string().max(30).min(1),
         isCorrect: z.boolean().optional(),
       })
     )
     .nonempty()
+    .min(2)
     .max(8),
+
   duration: z.string(),
   anonymousVoting: z.boolean(),
   multipleAnswers: z.boolean(),
@@ -62,6 +64,7 @@ export const pollSchema = z.object({
 });
 
 function PollDialog({ poll, setPoll }: PollDialogProps) {
+  const [open, setOpen] = React.useState(false);
   const form = useForm<z.infer<typeof pollSchema>>({
     resolver: zodResolver(pollSchema),
     defaultValues: poll || {
@@ -97,17 +100,16 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
   });
 
   const onFormSubmit = (values: z.infer<typeof pollSchema>) => {
-    console.log(values);
     setPoll(values);
+    setOpen(false);
   };
 
   return (
-    <Dialog onOpenChange={() => !form.formState.isValid}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+        <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+      </Button>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{poll ? "Edit this Poll" : "Create a poll"}</DialogTitle>
@@ -329,10 +331,11 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
               </div>
             </div>
             <DialogFooter className="my-4">
-              <Button variant="outline">Discard</Button>
-              <DialogClose asChild>
-                <Button type="submit">{poll ? "Edit" : "Create"} Poll</Button>
-              </DialogClose>
+              <Button onClick={() => setOpen(false)} variant="outline">
+                Discard
+              </Button>
+
+              <Button type="submit">{poll ? "Edit" : "Create"} Poll</Button>
             </DialogFooter>
           </form>
         </Form>

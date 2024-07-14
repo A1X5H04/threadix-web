@@ -28,15 +28,27 @@ function PostFormOptions({
 }: {
   formControl?: Control<z.infer<typeof postSchema>>;
 }) {
-  const pollField = useWatch({
+  const watchPoll = useWatch({
     control: formControl,
     name: "poll",
   });
 
-  console.log("pollField", pollField);
+  const watchMedia = useWatch({
+    control: formControl,
+    name: "media",
+  });
+
+  console.log("pollField", watchPoll);
 
   return (
-    <div className="w-full p-3 space-y-4">
+    <React.Fragment>
+      {watchMedia && (
+        <div>
+          {watchMedia.map((media, idx) => (
+            <div>{JSON.stringify(media)}</div>
+          ))}
+        </div>
+      )}
       {/* <Carousel>
         <CarouselContent>
           {Array.from({ length: 5 }).map((_, idx) => (
@@ -46,8 +58,8 @@ function PostFormOptions({
           ))}
         </CarouselContent>
       </Carousel> */}
-      {pollField && (
-        <div className="cursor-pointer hover:opacity-75 transition-opacity px-2 py-4 border-t">
+      {watchPoll && (
+        <div className="px-2 py-4 border-t">
           <div className="flex gap-x-2 items-center justify-between mb-3">
             <p className="inline-flex items-center gap-x-2">
               <RiBarChartHorizontalLine className="w-3 h-3 text-muted-foreground" />
@@ -56,21 +68,21 @@ function PostFormOptions({
               </span>
             </p>
             <span className="text-xs text-muted-foreground">
-              Ends in {pollField.duration}
+              Ends in {watchPoll.duration}
             </span>
           </div>
           <div className="inline-flex flex-col pl-4">
             <p
               className={
-                pollField.question
+                watchPoll.question
                   ? "font-semibold text-lg"
                   : "italic text-muted font-normal"
               }
             >
-              {pollField.question || "Post content will be rendered here"}
+              {watchPoll.question || "Post content will be rendered here"}
             </p>
             <div className="inline-flex flex-wrap gap-2 mt-3 mb-6">
-              {pollField.options.map((option, idx) => (
+              {watchPoll.options.map((option, idx) => (
                 <Badge key={idx} variant={"outline"} className="text-sm">
                   {option.isCorrect && "✓"} {option.title}
                 </Badge>
@@ -80,7 +92,7 @@ function PostFormOptions({
               <span
                 className={cn(
                   "inline-flex items-center gap-x-1",
-                  pollField.multipleAnswers && "text-muted-foreground"
+                  watchPoll.multipleAnswers && "text-muted-foreground"
                 )}
               >
                 <RiListCheck className="w-4 h-4" />
@@ -90,7 +102,7 @@ function PostFormOptions({
               <span
                 className={cn(
                   "inline-flex items-center gap-x-1",
-                  pollField.anonymousVoting && "text-muted-foreground"
+                  watchPoll.anonymousVoting && "text-muted-foreground"
                 )}
               >
                 <RiSpyFill className="w-4 h-4" />
@@ -100,7 +112,7 @@ function PostFormOptions({
               <span
                 className={cn(
                   "inline-flex items-center gap-x-1",
-                  pollField.quizMode && "text-muted-foreground"
+                  watchPoll.quizMode && "text-muted-foreground"
                 )}
               >
                 <RiQuestionFill className="w-4 h-4" />
@@ -110,7 +122,7 @@ function PostFormOptions({
           </div>
         </div>
       )}
-    </div>
+    </React.Fragment>
   );
 }
 

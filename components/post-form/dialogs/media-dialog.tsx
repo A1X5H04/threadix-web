@@ -12,11 +12,28 @@ import {
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { MultiMediaDropDown, type FileState } from "../../media-uploader";
-import { useEdgeStore } from "@/lib/edgestore";
 import { RiFilmLine } from "@remixicon/react";
+import { useEdgeStore } from "@/lib/edgestore";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 
-function MediaDialog() {
+interface MediaDialogProps {
+  setMedia: (medias: any[]) => void;
+}
+
+function MediaDialog({ setMedia }: MediaDialogProps) {
+  const [open, setIsOpen] = useState(false);
   const [fileStates, setFileStates] = useState<FileState[]>([]);
+  const { edgeStore } = useEdgeStore();
 
   function updateFileProgress(key: string, progress: FileState["progress"]) {
     setFileStates((fileStates) => {
@@ -32,40 +49,54 @@ function MediaDialog() {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+    <Dialog open={open} onOpenChange={setIsOpen}>
+      <AlertDialog>
+        <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
           <RiFilmLine className="w-4 h-4 text-muted-foreground" />
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Upload Media</DialogTitle>
-          <DialogDescription>
-            Make your post stand out with media
-          </DialogDescription>
-          <div className="pt-2 pb-6">
-            <MultiMediaDropDown
-              value={fileStates}
-              dropzoneOptions={{
-                maxFiles: 6,
-              }}
-              onChange={(files) => {
-                setFileStates(files);
-              }}
-              onFilesAdded={(addedFiles) => {
-                console.log("Added Files", addedFiles);
-                console.log("Files State", fileStates);
-              }}
-            />
-          </div>
-          <DialogFooter>
-            <Button onClick={() => {}} className="w-full">
-              Upload
-            </Button>
-          </DialogFooter>
-        </DialogHeader>
-      </DialogContent>
+
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Media</DialogTitle>
+            <DialogDescription>
+              Make your post stand out with media
+            </DialogDescription>
+            <div className="pt-2 pb-6">
+              <MultiMediaDropDown
+                value={fileStates}
+                dropzoneOptions={{
+                  maxFiles: 6,
+                }}
+                onChange={(files) => {
+                  setFileStates(files);
+                }}
+                onFilesAdded={(addedFiles) => {
+                  console.log("Added Files", addedFiles);
+                  console.log("Files State", fileStates);
+                }}
+              />
+            </div>
+            <DialogFooter>
+              <AlertDialogTrigger asChild>
+                <Button className="w-full">Upload</Button>
+              </AlertDialogTrigger>
+            </DialogFooter>
+          </DialogHeader>
+        </DialogContent>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Upload Media(s)</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to upload these media files? Once uploaded,
+              you CANNOT delete them from the post or edit them!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogAction>Yes, Upload Media</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
