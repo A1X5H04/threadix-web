@@ -24,14 +24,6 @@ export const postVisibilityStatus = pgEnum("post_visibility_status", [
   "private",
 ]);
 
-export const mediaType = pgEnum("media_type", [
-  "image",
-  "audio",
-  "video",
-  "voice",
-  "gif",
-]);
-
 // export const activityType = pgEnum("activity_type", [
 //   "post",
 //   "like",
@@ -73,22 +65,49 @@ export const posts = pgTable(
   })
 );
 
+// This table is made because post can have either a gif or a media
+export const postGif = pgTable("post_gif", {
+  postId: varchar("post_id", { length: 32 })
+    .notNull()
+    .references(() => posts.id, { onDelete: "cascade" }),
+  tenorUrl: text("tenor_url").notNull(),
+  url: text("url").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .$default(() => new Date()),
+});
+
+export const postAudio = pgTable("post_audio", {
+  postId: varchar("post_id", { length: 32 })
+    .notNull()
+    .references(() => posts.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  duration: bigint("duration", {
+    mode: "number",
+  }),
+  isVoiceNote: boolean("is_voice_note").notNull(),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .$default(() => new Date()),
+});
+
 export const postMedia = pgTable(
   "post_media",
   {
     postId: varchar("post_id", { length: 32 })
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
-    name: text("name").notNull(),
+    name: text("name"),
     url: text("url").notNull(),
     width: bigint("width", {
       mode: "number",
-    }),
+    }).notNull(),
     height: bigint("height", {
       mode: "number",
-    }),
-    type: mediaType("type").notNull(),
-
+    }).notNull(),
+    isVideo: boolean("is_video").notNull(),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
@@ -257,21 +276,21 @@ export const userFollowers = pgTable(
   })
 );
 
-export const userActivity = pgTable(
-  "user_activity",
-  {
-    id: serial("id").primaryKey().notNull(),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    activity: text("activity").notNull(),
-    activityType: varchar(""),
-    isUnread: boolean("is_unread")
-      .notNull()
-      .$default(() => true),
-    createdAt: timestamp("created_at").$default(() => new Date()),
-  },
-  (table) => ({
-    userActivityIdx: index("user_activity_idx").on(table.userId),
-  })
-);
+// export const userActivity = pgTable(
+//   "user_activity",
+//   {
+//     id: serial("id").primaryKey().notNull(),
+//     userId: text("user_id")
+//       .notNull()
+//       .references(() => users.id, { onDelete: "cascade" }),
+//     activity: text("activity").notNull(),
+//     activityType: varchar(""),
+//     isUnread: boolean("is_unread")
+//       .notNull()
+//       .$default(() => true),
+//     createdAt: timestamp("created_at").$default(() => new Date()),
+//   },
+//   (table) => ({
+//     userActivityIdx: index("user_activity_idx").on(table.userId),
+//   })
+// );

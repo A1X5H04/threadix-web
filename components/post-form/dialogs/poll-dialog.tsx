@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Dialog,
   DialogClose,
@@ -50,10 +50,9 @@ export const pollSchema = z.object({
     .array(
       z.object({
         title: z.string().max(30).min(1),
-        isCorrect: z.boolean().optional(),
+        isCorrect: z.boolean(),
       })
     )
-    .nonempty()
     .min(2)
     .max(8),
 
@@ -76,6 +75,20 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
       quizMode: true,
     },
   });
+
+  const setIsCorrect = useCallback((index: number) => {
+    const options = form.getValues("options");
+
+    const updateOptions = [
+      ...options.map((item, i) => ({
+        ...item,
+        isCorrect: i === index,
+      })),
+    ];
+
+    form.setValue("options", updateOptions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fieldArray = useFieldArray({
     control: form.control,
@@ -164,18 +177,12 @@ function PollDialog({ poll, setPoll }: PollDialogProps) {
               <div>
                 <h5 className="mb-5 font-semibold">Options</h5>
                 <div className="space-y-2">
-                  <RadioGroup
-                    onValueChange={(e) =>
-                      console.log(e, form.getValues("options"))
-                    }
-                  >
+                  <RadioGroup onValueChange={(e) => setIsCorrect(parseInt(e))}>
                     {fieldArray.fields.map((item, index) => (
                       <div key={item.id} className="flex items-center gap-x-4">
                         {form.getValues("quizMode") && (
                           <div className="w-4 h-4 grid place-items-center">
-                            <RadioGroupItem
-                              value={`option.${index}.isCorrect`}
-                            />
+                            <RadioGroupItem value={`${index}`} />
                           </div>
                         )}
                         <FormField

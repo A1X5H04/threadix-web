@@ -29,7 +29,7 @@ function AudioPlayer() {
   if (!isClient) return null;
 
   return (
-    <div className="w-4/5 p-4 rounded-lg space-y-2 shadow-lg bg-card">
+    <div className="w-full p-4 space-y-6 shadow-lg bg-card border-t">
       <div className="w-full flex justify-between items-center text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-x-2">
           {isVoiceRecorded ? (
@@ -44,11 +44,11 @@ function AudioPlayer() {
         </span>
         <p>1m 20s</p>
       </div>
-      <div className="flex items-center px-3 py-1.5 w-full gap-x-4">
+      <div className="flex items-center p-4 w-full gap-x-4 border rounded-md bg-card">
         <Button
           onClick={visualizerControls.togglePauseResume}
           disabled={!isClient}
-          className="w-12 h-12"
+          className="w-14 h-14"
         >
           {visualizerControls.isPausedRecordedAudio ? (
             <RiPlayFill className="w-5 h-5" />

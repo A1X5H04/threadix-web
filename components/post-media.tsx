@@ -32,11 +32,6 @@ function PostMedia() {
 
       <Carousel orientation="horizontal" className="max-w-xl">
         <CarouselContent>
-          <CarouselItem>
-            <div className="grid place-items-center h-full w-full bg-secondary rounded-lg">
-              <PostRecording />
-            </div>
-          </CarouselItem>
           {Array.from({ length: 5 }).map((_, index) => (
             <CarouselItem key={index}>
               <div className="w-full aspect-video h-full my-2 bg-muted rounded-lg overflow-hidden">

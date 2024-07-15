@@ -7,7 +7,10 @@ function PostContent({ content }: { content: string }) {
   return (
     <div>
       <p className="pb-5">{content}</p>
-      <PostMedia />
+      <div className="grid place-items-center w-full h-52 rounded-lg">
+        <PostRecording />
+      </div>
+      {/* <PostMedia /> */}
     </div>
   );
 }

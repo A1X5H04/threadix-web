@@ -7,8 +7,14 @@ import "@/app/globals.css";
 import { useIsClient } from "@/hooks/use-isclient";
 import { Button } from "@/components/ui/button";
 import { RiFileGifLine } from "@remixicon/react";
+import { postMediaSchema } from "@/types/schemas";
+import * as z from "zod";
 
-function GifPickerPopover() {
+function GifPickerPopover({
+  setMedia,
+}: {
+  setMedia: (medias: z.infer<typeof postMediaSchema>) => void;
+}) {
   const isClient = useIsClient();
 
   if (!isClient) return null;
@@ -22,7 +28,7 @@ function GifPickerPopover() {
       <PopoverContent className="p-0 w-fit">
         <GifPicker
           onGifClick={(gif) => {
-            console.log(gif);
+            console.log("Gif", gif);
           }}
           tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
         />

@@ -33,7 +33,6 @@ interface MediaDialogProps {
 function MediaDialog({ setMedia }: MediaDialogProps) {
   const [open, setIsOpen] = useState(false);
   const [fileStates, setFileStates] = useState<FileState[]>([]);
-  const { edgeStore } = useEdgeStore();
 
   function updateFileProgress(key: string, progress: FileState["progress"]) {
     setFileStates((fileStates) => {

@@ -37,7 +37,18 @@ export const loginSchema = z.object({
 export const postMediaSchema = z.object({
   name: z.string(),
   url: z.string().url(),
-  type: z.enum(["image", "video", "gif", "voice", "audio"]),
   width: z.number().optional(),
   height: z.number().optional(),
+});
+
+export const gifSchema = z.object({
+  tenorUrl: z.string().url(),
+  url: z.string().url(),
+  description: z.string().optional(),
+});
+
+export const voiceNoteSchema = z.object({
+  name: z.string(),
+  url: z.string().url(),
+  duration: z.number(),
 });

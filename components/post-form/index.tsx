@@ -21,20 +21,20 @@ import {
 import { User } from "@/db/schemas/auth";
 import useSWRMutation from "swr/mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { postMediaSchema } from "@/types/schemas";
+import { gifSchema, postMediaSchema, voiceNoteSchema } from "@/types/schemas";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { FormOptions } from "./form-options";
 
 import MediaDialog from "./dialogs/media-dialog";
 import PollDialog, { pollSchema } from "./dialogs/poll-dialog";
-import RecordDialog from "./dialogs/record-dialog";
+import RecordDialog from "./dialogs/audio-dialog";
 import GifPickerPopover from "./dialogs/gif-picker";
 import PostLocationDialog from "./dialogs/location-dialog";
 
 import RichTextArea from "../rich-textarea";
 import PostFormOptions from "./post-form-options";
-import PostQuoted from "../post-quote";
+
 // import PostTextArea from "./post-textarea";
 
 // .min(50, "Post content should be at least 50 characters")
@@ -42,6 +42,8 @@ export const postSchema = z.object({
   content: z.string(),
   location: z.string().optional(),
   media: z.array(postMediaSchema).optional(),
+  gif: gifSchema.optional(),
+  audio: voiceNoteSchema.optional(),
   tags: z.array(z.string()).optional(),
   poll: pollSchema.optional(),
 });
@@ -62,6 +64,8 @@ function PostForm({ user }: { user: User | null }) {
       content: "",
       location: "",
       media: [],
+      gif: undefined,
+      audio: undefined,
       tags: [],
       poll: undefined,
     },
@@ -109,6 +113,33 @@ function PostForm({ user }: { user: User | null }) {
 
   console.log("Rerendered Form");
 
+  // <PostQuoted
+  //   data={{
+  //     id: "1",
+  //     content: "Enternalzz just posted a new banger!",
+  //     parentId: "1",
+  //     poll: {
+  //       question: "Slayashi! What's your favorite color?",
+  //       options: [
+  //         { title: "Red" },
+  //         { title: "Blue" },
+  //         { title: "Green" },
+  //         { title: "Yellow" },
+  //       ],
+  //       duration: "1h",
+  //       anonymousVoting: false,
+  //       multipleAnswers: false,
+  //       quizMode: true,
+  //     },
+  //     user: {
+  //       id: "1",
+  //       name: "John Doe",
+  //       username: "johndoe",
+  //       email: "asdf",
+  //     },
+  //     createdAt: "2021-10-05T00:00:00Z",
+  //     updatedAt: "2021-10-05T00:00:00Z",
+  //   }} />;
   return (
     <div>
       <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow animate-in z-20">
@@ -159,40 +190,17 @@ function PostForm({ user }: { user: User | null }) {
           </Form>
           <PostFormOptions formControl={form.control} />
 
-          {/* <PostQuoted
-          data={{
-            id: "1",
-            content: "Enternalzz just posted a new banger!",
-            parentId: "1",
-            poll: {
-              question: "Slayashi! What's your favorite color?",
-              options: [
-                { title: "Red" },
-                { title: "Blue" },
-                { title: "Green" },
-                { title: "Yellow" },
-                ],
-                duration: "1h",
-              anonymousVoting: false,
-              multipleAnswers: false,
-              quizMode: true,
-              },
-              user: {
-              id: "1",
-              name: "John Doe",
-              username: "johndoe",
-              email: "asdf",
-            },
-            createdAt: "2021-10-05T00:00:00Z",
-            updatedAt: "2021-10-05T00:00:00Z",
-          }}
-        /> */}
-
           <div className="inline-flex items-center justify-between w-full pt-4">
             <div>
               <MediaDialog setMedia={setPostMedia} />
-              <RecordDialog setMedia={setPostMedia} />
-              <GifPickerPopover />
+              {!Boolean(form.getValues("audio")) && (
+                <RecordDialog
+                  setAudio={(audio: z.infer<typeof voiceNoteSchema>) =>
+                    form.setValue("audio", audio)
+                  }
+                />
+              )}
+              <GifPickerPopover setMedia={setPostMedia} />
               <PostLocationDialog />
               <PollDialog setPoll={(poll) => form.setValue("poll", poll)} />
             </div>

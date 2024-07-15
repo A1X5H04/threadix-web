@@ -19,15 +19,25 @@ function FormMedia() {
 
   const random = Math.floor(Math.random() * 3);
 
-  if (random === 0) {
+  if (random == 1) {
     return (
-      <div className="relative w-60 h-44">
+      <div
+        className="block relative w-24 h-20"
+        style={{
+          width: "120px",
+          height: "120px",
+        }}
+      >
         <Image
-          src="https://images.unsplash.com/photo-1719386217659-6bde4641915c?q=80&w=1588&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          width={150}
-          height={150}
+          src={
+            random == 0
+              ? "https://images.unsplash.com/photo-1633596683562-4a47eb4983c5?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              : "https://images.unsplash.com/photo-1719386217659-6bde4641915c?q=80&w=1588&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          }
+          fill
+          sizes=""
           alt="Post Image"
-          className="rounded-md object-cover"
+          className=" rounded-md object-cover"
         />
       </div>
     );
@@ -37,13 +47,17 @@ function FormMedia() {
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full h-full bg-secondary rounded-md grid place-items-center"
+      className="block relative w-24 h-20"
+      style={{
+        width: "120px",
+        height: "120px",
+      }}
     >
       <video
         ref={videoRef}
         src="https://videos.pexels.com/video-files/856382/856382-hd_1920_1080_30fps.mp4"
         alt="Post Image"
-        className="rounded-md object-cover"
+        className="rounded-md object-cover w-full h-full absolute inset-0"
         muted
       />
     </div>
