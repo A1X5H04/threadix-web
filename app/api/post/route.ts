@@ -50,7 +50,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const { user } = await validateRequest();
-    const { content, parentId, media, poll, location } = await req.json();
+    const { content, parentId, media, poll } = await req.json();
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -86,7 +86,6 @@ export async function POST(req: Request) {
             .insert(polls)
             .values({
               postId: postObj.id,
-              anonymousVoting: poll.anonymousVoting,
               duration: poll.duration,
               multipleVotes: poll.multipleVotes,
               quizMode: poll.quizMode,

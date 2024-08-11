@@ -12,8 +12,6 @@ const MAX_LIST_LENGTH = 8;
 const MENTION_REG = /\B@([\-+\w]*)$/;
 // /\B(@[a-z])([\-+\w]*)$/;
 
-//
-
 const MentionList = ({
   chars,
   index,

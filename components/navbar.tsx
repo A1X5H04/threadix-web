@@ -11,7 +11,6 @@ import {
   RiUserFill,
   RiUserLine,
 } from "@remixicon/react";
-import { signOut } from "@/actions/sign-out";
 
 import Link from "next/link";
 import React from "react";
@@ -58,11 +57,13 @@ function Navbar() {
           {routes.map((route) => (
             <li
               key={route.path}
-              className="p-4 rounded-xl bg-transparent hover:text-white text-muted-foreground transition-colors cursor-pointer"
+              className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer"
             >
               <Link href={route.path} className="w-full h-full">
                 {route.isActive ? (
-                  <route.activeIcon className="w-6 h-6 text-white" />
+                  <div>
+                  <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
+                  </div>
                 ) : (
                   <route.icon className="w-6 h-6" />
                 )}

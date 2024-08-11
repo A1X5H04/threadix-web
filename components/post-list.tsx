@@ -48,40 +48,41 @@ function PostList({ user }: { user: any }) {
   // }
 
   return (
+    <h1>asdf</h1>
     // <div className="space-y-5 my-3">
     //   {data?.map((post: Post) => (
     //     <PostItem key={post.id} data={post} user={user} />
     //   ))}
     // </div>
-    <PostItem
-      data={{
-        id: "1",
-        content: "Enternalzz just posted a new banger!",
-        parentId: "1",
-        poll: {
-          question: "Slayashi! What's your favorite color?",
-          options: [
-            { title: "Red" },
-            { title: "Blue" },
-            { title: "Green" },
-            { title: "Yellow" },
-          ],
-          duration: "1h",
-          anonymousVoting: false,
-          multipleAnswers: false,
-          quizMode: true,
-        },
-        user: {
-          id: "1",
-          name: "John Doe",
-          username: "johndoe",
-          email: "asdf",
-        },
-        createdAt: "2021-10-05T00:00:00Z",
-        updatedAt: "2021-10-05T00:00:00Z",
-      }}
-      user={user}
-    />
+    // <PostItem
+    //   data={{
+    //     id: "1",
+    //     content: "Enternalzz just posted a new banger!",
+    //     parentId: "1",
+    //     poll: {
+    //       question: "Slayashi! What's your favorite color?",
+    //       options: [
+    //         { title: "Red" },
+    //         { title: "Blue" },
+    //         { title: "Green" },
+    //         { title: "Yellow" },
+    //       ],
+    //       duration: "1h",
+    //       anonymousVoting: false,
+    //       multipleAnswers: false,
+    //       quizMode: true,
+    //     },
+    //     user: {
+    //       id: "1",
+    //       name: "John Doe",
+    //       username: "johndoe",
+    //       email: "asdf",
+    //     },
+    //     createdAt: "2021-10-05T00:00:00Z",
+    //     updatedAt: "2021-10-05T00:00:00Z",
+    //   }}
+    //   user={user}
+    // />
   );
 }
 

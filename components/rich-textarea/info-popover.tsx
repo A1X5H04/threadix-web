@@ -35,14 +35,15 @@ function RTInfoPopover({ children }: { children: React.ReactNode }) {
                 select a username by using arrow buttons of your keyboard.
               </p>
             </div>
-            <div>
+            {/* This feature is move to post option */}
+            {/* <div>
               <li>Tagging 🏷️</li>
               <p className="text-xs text-muted-foreground font-normal">
                 You can add tags to your post by typing <code>#</code>&nbsp;
                 following the name of the tag. (Tags are usually located at the
                 top of the post content).
               </p>
-            </div>
+            </div> */}
           </ul>
         </div>
       </PopoverContent>
