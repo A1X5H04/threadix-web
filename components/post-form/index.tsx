@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -27,13 +27,15 @@ import { Badge } from "../ui/badge";
 import { FormOptions } from "./form-options";
 
 import MediaDialog from "./dialogs/media-dialog";
-import PollDialog, { pollSchema } from "./dialogs/poll-dialog";
+import { pollSchema } from "@/types/schemas";
 import RecordDialog from "./dialogs/audio-dialog";
 import GifPickerPopover from "./dialogs/gif-picker";
 import PostLocationDialog from "./dialogs/location-dialog";
 
 import RichTextArea from "../rich-textarea";
 import PostFormOptions from "./post-form-options";
+import PollForm from "./poll-form";
+import { RiBarChartHorizontalLine, RiFilmLine, RiHashtag } from "@remixicon/react";
 
 // import PostTextArea from "./post-textarea";
 
@@ -42,8 +44,7 @@ export const postSchema = z.object({
   content: z.string(),
   location: z.string().optional(),
   media: z.array(postMediaSchema).optional(),
-  gif: gifSchema.optional(),
-  audio: voiceNoteSchema.optional(),
+  mentions: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   poll: pollSchema.optional(),
 });
@@ -57,15 +58,14 @@ async function sayHello(
 
 function PostForm({ user }: { user: User | null }) {
   const { trigger } = useSWRMutation("/api/post", sayHello);
-  const { toast } = useToast();
+  const [pollForm, setPollForm] = useState(false);
 
   const form = useForm<z.infer<typeof postSchema>>({
     defaultValues: {
       content: "",
       location: "",
       media: [],
-      gif: undefined,
-      audio: undefined,
+      mentions: [],
       tags: [],
       poll: undefined,
     },
@@ -145,12 +145,15 @@ function PostForm({ user }: { user: User | null }) {
       <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow animate-in z-20">
         <div className="flex justify-between items-center gap-x-2">
           <div className="inline-flex items-center gap-x-2">
-            <Avatar className="w-8 h-8">
+            <Avatar className="w-9 h-9">
               <AvatarImage src={user.avatar ?? ""} />
               <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
             </Avatar>
             <p className="inline-flex flex-col">
               <span className="text-sm font-semibold">{user.name}</span>
+              <span className="text-xs text-muted cursor-pointer hover:text-muted-foreground transition-colors">
+                Add location
+              </span>
             </p>
           </div>
           <Button
@@ -163,9 +166,9 @@ function PostForm({ user }: { user: User | null }) {
           </Button>
         </div>
         <div className="w-full space-y-2 pl-8">
-          <Form {...form}>
-            <form id="post-form" onSubmit={form.handleSubmit(onFormSubmit)}>
-              <div className="flex gap-x-2 relative">
+          <div className="flex flex-col gap-y-2 relative">
+            <Form {...form}>
+              <form id="post-form" onSubmit={form.handleSubmit(onFormSubmit)}>
                 <div className="flex-1">
                   <FormField
                     name="content"
@@ -177,7 +180,7 @@ function PostForm({ user }: { user: User | null }) {
                             {...field}
                             placeholder="What's on your mind?"
                             className="w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                            rows={2}
+                            rows={1}
                           />
                         </FormControl>
                         <FormMessage />
@@ -185,14 +188,13 @@ function PostForm({ user }: { user: User | null }) {
                     )}
                   />
                 </div>
-              </div>
-            </form>
-          </Form>
-          <PostFormOptions formControl={form.control} />
-
-          <div className="inline-flex items-center justify-between w-full pt-4">
+              </form>
+            </Form>
+            {pollForm && <PollForm poll={form.s} setPollForm={setPollForm} />}
             <div>
-              <MediaDialog setMedia={setPostMedia} />
+            <Button variant="ghost" size="icon">
+          <RiFilmLine className="w-4 h-4 text-muted-foreground" />
+        </Button>
               {!Boolean(form.getValues("audio")) && (
                 <RecordDialog
                   setAudio={(audio: z.infer<typeof voiceNoteSchema>) =>
@@ -200,13 +202,29 @@ function PostForm({ user }: { user: User | null }) {
                   }
                 />
               )}
-              <GifPickerPopover setMedia={setPostMedia} />
-              <PostLocationDialog />
-              <PollDialog setPoll={(poll) => form.setValue("poll", poll)} />
+              <Button
+                  variant="ghost"
+                  size="icon"
+                >
+                  <RiHashtag className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              {!pollForm && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setPollForm(true)}
+                >
+                  <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              )}
             </div>
-            {/* <button className="text-sm text-muted font-semibold">
+          </div>
+          <PostFormOptions formControl={form.control} />
+
+          <div className="inline-flex items-center justify-between w-full pt-4">
+            <button className="text-sm text-muted font-semibold">
             Reply to this post
-            </button> */}
+            </button>
 
             <Button form="post-form" type="submit" className="font-semibold">
               Post
