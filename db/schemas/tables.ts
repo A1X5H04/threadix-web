@@ -24,6 +24,8 @@ export const postVisibilityStatus = pgEnum("post_visibility_status", [
   "private",
 ]);
 
+export const postMediaType = pgEnum("post_media_type", ["gif", "audio", "image", "video"]);
+
 // export const activityType = pgEnum("activity_type", [
 //   "post",
 //   "like",
@@ -65,34 +67,6 @@ export const posts = pgTable(
   })
 );
 
-// This table is made because post can have either a gif or a media
-export const postGif = pgTable("post_gif", {
-  postId: varchar("post_id", { length: 32 })
-    .notNull()
-    .references(() => posts.id, { onDelete: "cascade" }),
-  tenorUrl: text("tenor_url").notNull(),
-  url: text("url").notNull(),
-  description: text("description"),
-  createdAt: timestamp("created_at")
-    .notNull()
-    .$default(() => new Date()),
-});
-
-export const postAudio = pgTable("post_audio", {
-  postId: varchar("post_id", { length: 32 })
-    .notNull()
-    .references(() => posts.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  url: text("url").notNull(),
-  duration: bigint("duration", {
-    mode: "number",
-  }),
-  isVoiceNote: boolean("is_voice_note").notNull(),
-  createdAt: timestamp("created_at")
-    .notNull()
-    .$default(() => new Date()),
-});
-
 export const postMedia = pgTable(
   "post_media",
   {
@@ -100,14 +74,20 @@ export const postMedia = pgTable(
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
     name: text("name"),
+    tenorUrl: text("tenor_url"),
     url: text("url").notNull(),
     width: bigint("width", {
       mode: "number",
-    }).notNull(),
+    }),
     height: bigint("height", {
       mode: "number",
-    }).notNull(),
-    isVideo: boolean("is_video").notNull(),
+    }),
+    duration: bigint("duration", {
+      mode: "number",
+    }), // in seconds
+    description: text("description"),
+    type: postMediaType("media_type").notNull(),
+    isVoiceNote: boolean("is_voice_note").$default(() => false),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
@@ -183,10 +163,8 @@ export const polls = pgTable(
       .notNull()
       .unique()
       .references(() => posts.id, { onDelete: "cascade" }),
-    question: text("question"),
     duration: timestamp("duration").notNull(),
     multipleVotes: boolean("multiple_votes").notNull(),
-    anonymousVoting: boolean("anonymous_voting").notNull(),
     quizMode: boolean("quiz_mode").notNull(),
     createdAt: timestamp("created_at")
       .notNull()
