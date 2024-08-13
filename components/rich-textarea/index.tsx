@@ -4,6 +4,7 @@ import {
   RichTextarea,
   RichTextareaHandle,
   RichTextareaProps,
+  createRegexRenderer,
 } from "rich-textarea";
 import { TextareaProps } from "../ui/textarea";
 import MentionList, { useMentionList } from "./mention-list";
@@ -26,12 +27,13 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
   const { value } = props;
   const textAreaRef = useRef<RichTextareaHandle>(null);
   const {
+    mentionRegex,
     mentionKeyDownFn,
     mentionSelectionChangeFn,
-    mentionRenderer,
     mentionListProps,
   } = useMentionList(textAreaRef, String(value), CHARACTERS);
   const {
+    richTextRegex,
     toolbarSelectionFn,
     optionSelectionFn,
     isToolbarMenuVisible,
@@ -41,6 +43,55 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
     textAreaRef,
     String(value)
   );
+
+  const richTextRenderer = createRegexRenderer([
+    [
+      mentionRegex,
+      {
+        background: "hsl(var(--muted))",
+        color: "hsl(var(--muted-foreground))",
+        borderRadius: "2.5px",
+      },
+    ],
+    [
+      richTextRegex.boldReg,
+      {
+        fontWeight: "bold",
+      },
+    ],
+    [
+      richTextRegex.italicReg,
+      {
+        fontStyle: "italic",
+      },
+    ],
+    [
+      richTextRegex.strikeReg,
+      {
+        textDecoration: "line-through",
+      },
+    ],
+    [
+      richTextRegex.monoReg,
+      {
+        fontFamily: "monospace",
+      },
+    ],
+    [
+      richTextRegex.underlineReg,
+      {
+        textDecoration: "underline",
+      },
+    ],
+    [
+      richTextRegex.spoilerReg,
+      {
+        background: "hsl(var(--muted))",
+        color: "hsl(var(--spoiler-foreground))",
+        borderRadius: "2.5px",
+      },
+    ],
+  ]);
 
   return (
     <div className="relative">
@@ -72,7 +123,7 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
           toolbarSelectionFn(e);
         }}
       >
-        {mentionRenderer}
+        {richTextRenderer}
       </RichTextarea>
 
       {mentionListProps.left &&

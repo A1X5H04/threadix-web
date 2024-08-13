@@ -59,7 +59,7 @@ const MentionList = ({
 };
 
 interface RenderMentionProps {
-  mentionRenderer: Renderer;
+  mentionRegex: RegExp;
   mentionKeyDownFn: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   mentionSelectionChangeFn: (caretPos: CaretPosition) => void;
   mentionListProps: {
@@ -83,21 +83,10 @@ function useMentionList(
   } | null>(null);
   const [index, setIndex] = useState<number>(0);
 
-  const MENTION_HIGHLIGHT_REG = new RegExp(
+  const mentionRegex = new RegExp(
     `(${usernames.map((c) => `@${c}`).join("|")})`,
     "g"
   );
-
-  const mentionRenderer = createRegexRenderer([
-    [
-      MENTION_HIGHLIGHT_REG,
-      {
-        background: "hsl(var(--muted))",
-        color: "hsl(var(--muted-foreground))",
-        borderRadius: "2.5px",
-      },
-    ],
-  ]);
 
   const targetText = pos ? value?.slice(0, pos.caret) : value;
   const match = pos && targetText?.match(MENTION_REG);
@@ -167,7 +156,7 @@ function useMentionList(
   };
 
   return {
-    mentionRenderer,
+    mentionRegex,
     mentionKeyDownFn,
     mentionSelectionChangeFn,
     mentionListProps: {

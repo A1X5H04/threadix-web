@@ -37,11 +37,11 @@ export const loginSchema = z.object({
 export const postMediaSchema = z.object({
   name: z.string(),
   url: z.string().url(),
-  tenorUrl: z.string().url(),
+  tenorUrl: z.string().url().optional(),
   description: z.string().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
-  duration: z.number(),
+  duration: z.number().optional(),
 });
 
 export const pollSchema = z.object({

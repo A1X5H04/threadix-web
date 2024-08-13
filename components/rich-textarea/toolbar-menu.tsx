@@ -18,10 +18,12 @@ import {
 
 const style = { width: "400px", height: "300px" };
 
-// const boldReg = /\*\*([^\*]+)\*\*/g;
-// const italicReg = /\*([^\*]+)\*/g;
-// const strikeReg = /~~([^~]+)~~/g;
-// const monoReg = /`([^`]+)`/g;
+const boldReg = /\*\*([^\*]+)\*\*/g;
+const italicReg = /\*([^\*]+)\*/g;
+const strikeReg = /~~([^~]+)~~/g;
+const monoReg = /`([^`]+)`/g;
+const underlineReg = /_([^_]+)_/g;
+const spoilerReg = />!([^!]+)!</g;
 
 // const richTextRenderer = createRegexRenderer([
 //   [boldReg, { fontWeight: "bold" }],
@@ -102,6 +104,14 @@ interface UseToolbarMenuProps {
   optionSelectionFn: (option: FormatOptions) => void;
   toolbarMenuProps: { top: number | undefined; left: number | undefined };
   isToolbarMenuVisible: boolean;
+  richTextRegex: {
+    boldReg: RegExp;
+    italicReg: RegExp;
+    strikeReg: RegExp;
+    monoReg: RegExp;
+    underlineReg: RegExp;
+    spoilerReg: RegExp;
+  };
 }
 
 function useToolbarMenu(
@@ -156,7 +166,7 @@ function useToolbarMenu(
         break;
       case FormatOptions.SPOILER:
         ref.current.setRangeText(
-          `>!${value?.slice(selectionStart, selectionEnd)}!<`,
+          `||${value?.slice(selectionStart, selectionEnd)}||`,
           selectionStart,
           selectionEnd
         );
@@ -170,8 +180,8 @@ function useToolbarMenu(
       pos.selectionEnd,
       pos.focused
         ? {
-            top: pos.top - pos.height * 2 /* FIXME */,
-            left: pos.left,
+            top: pos.top - pos.height * 2.5 /* FIXME */,
+            left: pos.left /* FIXME */,
           }
         : undefined,
     ]);
@@ -186,6 +196,14 @@ function useToolbarMenu(
     toolbarMenuProps: {
       top: pos?.top,
       left: pos?.left,
+    },
+    richTextRegex: {
+      boldReg,
+      italicReg,
+      strikeReg,
+      monoReg,
+      underlineReg,
+      spoilerReg,
     },
   };
 }

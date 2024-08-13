@@ -21,7 +21,7 @@ import {
 import { User } from "@/db/schemas/auth";
 import useSWRMutation from "swr/mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { gifSchema, postMediaSchema, voiceNoteSchema } from "@/types/schemas";
+import { postMediaSchema } from "@/types/schemas";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { FormOptions } from "./form-options";
@@ -35,7 +35,11 @@ import PostLocationDialog from "./dialogs/location-dialog";
 import RichTextArea from "../rich-textarea";
 import PostFormOptions from "./post-form-options";
 import PollForm from "./poll-form";
-import { RiBarChartHorizontalLine, RiFilmLine, RiHashtag } from "@remixicon/react";
+import {
+  RiBarChartHorizontalLine,
+  RiFilmLine,
+  RiHashtag,
+} from "@remixicon/react";
 
 // import PostTextArea from "./post-textarea";
 
@@ -59,6 +63,7 @@ async function sayHello(
 function PostForm({ user }: { user: User | null }) {
   const { trigger } = useSWRMutation("/api/post", sayHello);
   const [pollForm, setPollForm] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof postSchema>>({
     defaultValues: {
@@ -99,16 +104,6 @@ function PostForm({ user }: { user: User | null }) {
     //   })
     //   .catch((err) => console.error(err));
     console.log("Post Values", values);
-  };
-
-  const setPostMedia = (
-    media: z.infer<typeof postMediaSchema> | z.infer<typeof postMediaSchema>[]
-  ) => {
-    if (form.getValues("media")) {
-      form.setValue("media", [media, ...form.getValues("media")]);
-    } else {
-      form.setValue("media", Array.isArray(media) ? media : [media]);
-    }
   };
 
   console.log("Rerendered Form");
@@ -190,24 +185,58 @@ function PostForm({ user }: { user: User | null }) {
                 </div>
               </form>
             </Form>
-            {pollForm && <PollForm poll={form.s} setPollForm={setPollForm} />}
-            <div>
-            <Button variant="ghost" size="icon">
-          <RiFilmLine className="w-4 h-4 text-muted-foreground" />
-        </Button>
-              {!Boolean(form.getValues("audio")) && (
-                <RecordDialog
-                  setAudio={(audio: z.infer<typeof voiceNoteSchema>) =>
-                    form.setValue("audio", audio)
-                  }
-                />
-              )}
-              <Button
-                  variant="ghost"
-                  size="icon"
+            <div className="flex max-h-52 w-full overflow-x-auto gap-x-4 border-muted">
+              {form.getValues("media")?.map((media, index) => (
+                <div
+                  key={media.url}
+                  className="relative rounded-md overflow-hidden"
                 >
-                  <RiHashtag className="w-4 h-4 text-muted-foreground" />
-                </Button>
+                  <img
+                    src={media.url}
+                    alt={media.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+            {pollForm && (
+              <PollForm
+                poll={form.getValues("poll")}
+                setPoll={(value) => form.setValue("poll", value)}
+                setPollForm={setPollForm}
+              />
+            )}
+            <div>
+              <input
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                ref={fileInputRef}
+                max={10}
+                hidden
+                onChange={(e) => {
+                  if (e.target.files) {
+                    const files = Array.from(e.target.files);
+                    const media = files.map((file) => ({
+                      name: file.name,
+                      type: file.type,
+                      url: URL.createObjectURL(file),
+                    }));
+                    console.log("Media", media);
+                    form.setValue("media", media);
+                  }
+                }}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <RiFilmLine className="w-4 h-4 text-muted-foreground" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <RiHashtag className="w-4 h-4 text-muted-foreground" />
+              </Button>
               {!pollForm && (
                 <Button
                   variant="ghost"
@@ -219,11 +248,11 @@ function PostForm({ user }: { user: User | null }) {
               )}
             </div>
           </div>
-          <PostFormOptions formControl={form.control} />
+          {/* <PostFormOptions formControl={form.control} /> */}
 
-          <div className="inline-flex items-center justify-between w-full pt-4">
+          <div className="inline-flex items-center justify-between w-full">
             <button className="text-sm text-muted font-semibold">
-            Reply to this post
+              Reply to this post
             </button>
 
             <Button form="post-form" type="submit" className="font-semibold">
