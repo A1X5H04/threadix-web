@@ -1,4 +1,4 @@
-import { PostSchema } from "@/types";
+import { PostMediaType, PostSchema } from "@/types";
 import React, { memo } from "react";
 import {
   Control,
@@ -36,18 +36,12 @@ function PostFormItem({ field, index, setShowGifPicker }: PostFormItemProps) {
     posts: PostSchema[];
   }>();
 
-  enum MEDIA_ENUM {
-    "gif",
-    "video",
-    "image",
-    "audio",
-  }
-
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
       const media = files.map((file) => ({
         name: file.name,
+        type: file.type.startsWith("image") ? PostMediaType.IMAGE : PostMediaType.VIDEO,
         url: URL.createObjectURL(file),
       }));
       console.log("Media", media);
