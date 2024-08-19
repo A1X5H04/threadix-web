@@ -33,10 +33,11 @@ body {
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --radius: 0.5rem;
-
-    /* React Gif Picker */
-    --gpr-bg-color: var(--background);
-    --gpr-text-color: var(--foreground);
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
@@ -59,21 +60,27 @@ body {
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
-
-    /* React Gif Picker */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
 .GifPickerReact {
   border: none !important;
-  --gpr-bg-color: var(--background) !important;
-  --gpr-text-color: var(--foreground) !important;
-  --gpr-border-color: var(--muted) !important;
+  --gpr-bg-color: hsl(var(--background)) !important;
+  --gpr-text-color: hsl(var(--foreground)) !important;
+  --gpr-picker-border-color: var(--muted-foreground) !important;
 
-  --gpr-search-input-bg-color: var(--muted) !important;
-  --gpr-search-input-padding: 0.25rem 2rem !important;
+  --gpr-search-input-border-radius: var(--radius) !important;
+  --gpr-search-input-bg-color: hsl(var(--muted)) !important;
+  --gpr-search-input-bg-color-active: hsl(var(--background)) !important;
+  --gpr-search-input-padding: 0.5rem 2rem !important;
   --gpr-search-input-height: auto !important;
-  --gpr-search-input-text-color: var(--muted-foreground) !important;
+  --gpr-search-input-placeholder-color: hsl(var(--muted-foreground)) !important;
+  --gpr-search-border-color-active: hsl(var(--muted-foreground)) !important;
 }
 
 .gpr-search {
