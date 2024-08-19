@@ -81,6 +81,7 @@ body {
   --gpr-search-input-height: auto !important;
   --gpr-search-input-placeholder-color: hsl(var(--muted-foreground)) !important;
   --gpr-search-border-color-active: hsl(var(--muted-foreground)) !important;
+  --gpr-category-border-color-hover: hsl(var(--foreground)) !important;
 }
 
 .gpr-search {

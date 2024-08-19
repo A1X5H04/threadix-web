@@ -95,11 +95,11 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
 
   return (
     <div className="relative">
-      <RTInfoPopover>
+      {/* <RTInfoPopover>
         <button className="absolute top-2 z-10 right-2 p-1 bg-background hover:bg-muted text-muted-foreground transition-colors rounded ">
           <RiTextSnippet className="w-4 h-4 text-muted-foreground" />
         </button>
-      </RTInfoPopover>
+      </RTInfoPopover> */}
       {/* <div className="flex items-center gap-x-2 gap-y-1 flex-wrap ml-2 mt-2 ">
         {[...Array(15)].map((_, i) => (
           <Tag key={i}>#tag{i}</Tag>

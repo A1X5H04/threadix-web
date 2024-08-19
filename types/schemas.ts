@@ -40,7 +40,7 @@ export const postMediaSchema = z.object({
   description: z.string().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
-  type: z.string(),
+  type: z.enum(["gif", "video", "audio", "image"]),
   duration: z.number().optional(),
 });
 
@@ -76,4 +76,6 @@ export const postSchema = z.object({
   mentions: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   poll: pollSchema.optional(),
+  isGifSelected: z.boolean().default(false), // Only for validation
+  isAudioSelected: z.boolean().default(false),
 });

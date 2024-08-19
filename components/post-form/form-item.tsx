@@ -36,12 +36,18 @@ function PostFormItem({ field, index, setShowGifPicker }: PostFormItemProps) {
     posts: PostSchema[];
   }>();
 
+  enum MEDIA_ENUM {
+    "gif",
+    "video",
+    "image",
+    "audio",
+  }
+
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
       const media = files.map((file) => ({
         name: file.name,
-        type: file.type,
         url: URL.createObjectURL(file),
       }));
       console.log("Media", media);
@@ -90,6 +96,7 @@ function PostFormItem({ field, index, setShowGifPicker }: PostFormItemProps) {
             hidden
             onChange={onFileChange}
           />
+
           {getValues(`posts.${index}.media`).length > 0 ? (
             <>
               <RiImageAddLine className="w-4 h-4 text-muted-foreground" />
@@ -99,6 +106,7 @@ function PostFormItem({ field, index, setShowGifPicker }: PostFormItemProps) {
             <RiImageFill className="w-4 h-4 text-muted-foreground" />
           )}
         </button>
+        
         <button
           onClick={() => setShowGifPicker(index)}
           type="button"
