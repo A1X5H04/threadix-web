@@ -1,4 +1,7 @@
 import * as z from "zod";
+import { PostMediaType } from ".";
+
+
 
 export const profileSchema = z.object({
   name: z.string(),
@@ -40,7 +43,7 @@ export const postMediaSchema = z.object({
   description: z.string().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
-  type: z.enum(["gif", "video", "audio", "image"]),
+  type: z.nativeEnum(PostMediaType),
   duration: z.number().optional(),
 });
 

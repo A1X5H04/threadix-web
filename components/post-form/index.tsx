@@ -14,6 +14,7 @@ import { RiCloseLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import GifPicker from "gif-picker-react";
+import { PostMediaType } from "@/types";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -80,7 +81,7 @@ function PostFormIndex() {
             onGifClick={(gif) => {
               form.setValue(`posts.${showGifPicker}.media.0`, {
                 name: gif.description,
-                type: "gif",
+                type: PostMediaType.GIF,
                 url: gif.url,
                 description: gif.description,
                 height: gif.width,
