@@ -1,275 +1,245 @@
 "use client";
 
-import React, { useState } from "react";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-
+import { postSchema } from "@/types/schemas";
+import React from "react";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
+import { useListTransition, useTransition } from "transition-hooks";
+import { Form } from "../ui/form";
+import PostFormItem from "./form-item";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
+import { Separator } from "@/components/ui/separator";
+import { RiCloseLine } from "@remixicon/react";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import GifPicker from "gif-picker-react";
 
-import { useToast } from "../ui/use-toast";
-
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "../ui/form";
-import { User } from "@/db/schemas/auth";
-import useSWRMutation from "swr/mutation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { postMediaSchema } from "@/types/schemas";
-import Image from "next/image";
-import { Badge } from "../ui/badge";
-import { FormOptions } from "./form-options";
-
-import MediaDialog from "./dialogs/media-dialog";
-import { pollSchema } from "@/types/schemas";
-import RecordDialog from "./dialogs/audio-dialog";
-import GifPickerPopover from "./dialogs/gif-picker";
-import PostLocationDialog from "./dialogs/location-dialog";
-
-import RichTextArea from "../rich-textarea";
-import PostFormOptions from "./post-form-options";
-import PollForm from "./poll-form";
-import {
-  RiBarChartHorizontalLine,
-  RiFilmLine,
-  RiHashtag,
-} from "@remixicon/react";
-
-// import PostTextArea from "./post-textarea";
-
-// .min(50, "Post content should be at least 50 characters")
-export const postSchema = z.object({
-  content: z.string(),
-  location: z.string().optional(),
-  media: z.array(postMediaSchema).optional(),
-  mentions: z.array(z.string()).optional(),
-  tags: z.array(z.string()).optional(),
-  poll: pollSchema.optional(),
+const threadSchema = z.object({
+  posts: z.array(postSchema).min(1),
+  reply: z.enum(["anyone", "followers", "mentions"]),
 });
 
-async function sayHello(
-  url: string,
-  { arg }: { arg: z.infer<typeof postSchema> }
-) {
-  console.log("Post Values", arg);
-}
+function PostFormIndex() {
+  const [showGifPicker, setShowGifPicker] = React.useState(-1);
 
-function PostForm({ user }: { user: User | null }) {
-  const { trigger } = useSWRMutation("/api/post", sayHello);
-  const [pollForm, setPollForm] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const form = useForm<z.infer<typeof postSchema>>({
+  const form = useForm<z.infer<typeof threadSchema>>({
     defaultValues: {
-      content: "",
-      location: "",
-      media: [],
-      mentions: [],
-      tags: [],
-      poll: undefined,
+      posts: [{ content: "", poll: undefined, media: [] }],
+      reply: "anyone",
     },
-    resolver: zodResolver(postSchema),
   });
 
-  if (!user) return null;
+  const { fields, append, remove } = useFieldArray({
+    name: "posts",
+    control: form.control,
+    rules: {
+      required: "This field is required",
+    },
+  });
 
-  const onFormSubmit = (values: z.infer<typeof postSchema>) => {
-    // trigger(values, {
-    //   onSuccess: () => {
-    //     toast({
-    //       title: "Post Created",
-    //       description: "Your post has been created successfully!",
-    //     });
-    //     form.reset();
-    //   },
-    //   onError: (err) => {
-    //     console.error(err);
-    //   },
-    // });
-    // axios
-    //   .post("/api/post", values)
-    //   .then((res: any) => {
-    //     console.log("Response Data", res.data);
-    //     toast({
-    //       title: "Post Created",
-    //       description: "Your post has been created successfully!",
-    //     });
-    //     form.reset();
-    //   })
-    //   .catch((err) => console.error(err));
-    console.log("Post Values", values);
+  const { transitionList } = useListTransition(fields, {
+    timeout: 400,
+  });
+
+  // {
+  //   transitionList((item, { key, simpleStatus }) => {
+  //     return (
+  //       <li
+  //         style={{
+  //           position: simpleStatus === "exit" ? "absolute" : "relative",
+  //           opacity: simpleStatus === "enter" ? 1 : 0,
+  //           transform:
+  //             simpleStatus === "enter" ? "translateX(0)" : "translateX(20px)",
+  //           transition: "all 300ms",
+  //           viewTransitionName:
+  //             simpleStatus === "enter" ? `transition-list-${key}` : "",
+  //         }}
+  //       >
+  //         - {item.content}
+  //       </li>
+  //     );
+  //   });
+  // }
+
+  const watchForm = form.watch("posts");
+  const inputLength = watchForm[watchForm.length - 1].content?.length ?? 0;
+
+  const onFormSubmit = (data: z.infer<typeof threadSchema>) => {
+    console.log(data);
   };
 
-  console.log("Rerendered Form");
-
-  // <PostQuoted
-  //   data={{
-  //     id: "1",
-  //     content: "Enternalzz just posted a new banger!",
-  //     parentId: "1",
-  //     poll: {
-  //       question: "Slayashi! What's your favorite color?",
-  //       options: [
-  //         { title: "Red" },
-  //         { title: "Blue" },
-  //         { title: "Green" },
-  //         { title: "Yellow" },
-  //       ],
-  //       duration: "1h",
-  //       anonymousVoting: false,
-  //       multipleAnswers: false,
-  //       quizMode: true,
-  //     },
-  //     user: {
-  //       id: "1",
-  //       name: "John Doe",
-  //       username: "johndoe",
-  //       email: "asdf",
-  //     },
-  //     createdAt: "2021-10-05T00:00:00Z",
-  //     updatedAt: "2021-10-05T00:00:00Z",
-  //   }} />;
   return (
-    <div>
-      <div className="w-full h-fit p-4 rounded-xl border text-card-foreground shadow animate-in z-20">
-        <div className="flex justify-between items-center gap-x-2">
-          <div className="inline-flex items-center gap-x-2">
-            <Avatar className="w-9 h-9">
-              <AvatarImage src={user.avatar ?? ""} />
-              <AvatarFallback>{user.name?.at(0)?.toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <p className="inline-flex flex-col">
-              <span className="text-sm font-semibold">{user.name}</span>
-              <span className="text-xs text-muted cursor-pointer hover:text-muted-foreground transition-colors">
-                Add location
-              </span>
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            type="submit"
-            className="font-semibold"
+    <div className="border p-6 rounded h-fit w-full">
+      <FormProvider {...form}>
+        <Form {...form}>
+          <form
+            id="thread-form"
+            onSubmit={form.handleSubmit(onFormSubmit)}
+            className="w-full"
           >
-            Anyone
-          </Button>
-        </div>
-        <div className="w-full space-y-2 pl-8">
-          <div className="flex flex-col gap-y-2 relative">
-            <Form {...form}>
-              <form id="post-form" onSubmit={form.handleSubmit(onFormSubmit)}>
-                <div className="flex-1">
-                  <FormField
-                    name="content"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <RichTextArea
-                            {...field}
-                            placeholder="What's on your mind?"
-                            className="w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                            rows={1}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+            <div className="flex flex-col gap-y-2">
+              {fields.map((field, index) => {
+                return (
+                  <div className="flex gap-x-3 h-full relative" key={field.id}>
+                    <Avatar className="size-9">
+                      <AvatarImage src="https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=Harley" />
+                      <AvatarFallback>A</AvatarFallback>
+                    </Avatar>
+                    <Separator
+                      className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
+                      orientation="vertical"
+                    />
+                    <div className="flex flex-col gap-y-1 w-full h-full">
+                      <h3 className="font-semibold ">johndoe</h3>
+                      <PostFormItem
+                        key={field.id}
+                        field={field}
+                        index={index}
+                        setShowGifPicker={setShowGifPicker}
+                      />
+                    </div>
+                    {index !== 0 && (
+                      <div className="p-2">
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="text-sm text-muted-foreground hover:text-foreground"
+                        >
+                          <RiCloseLine className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
-                  />
-                </div>
-              </form>
-            </Form>
-            <div className="flex max-h-52 w-full overflow-x-auto gap-x-4 border-muted">
-              {form.getValues("media")?.map((media, index) => (
-                <div
-                  key={media.url}
-                  className="relative rounded-md overflow-hidden"
-                >
-                  <img
-                    src={media.url}
-                    alt={media.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
-            {pollForm && (
-              <PollForm
-                poll={form.getValues("poll")}
-                setPoll={(value) => form.setValue("poll", value)}
-                setPollForm={setPollForm}
-              />
+          </form>
+        </Form>
+      </FormProvider>
+      <div className="flex gap-3 mt-2">
+        <div className="flex justify-center items-center h-full w-9">
+          <Avatar
+            className={cn(
+              "size-6",
+              inputLength < 1 ? "opacity-75" : "opacity-100"
             )}
-            <div>
-              <input
-                type="file"
-                accept="image/*,video/*"
-                multiple
-                ref={fileInputRef}
-                max={10}
-                hidden
-                onChange={(e) => {
-                  if (e.target.files) {
-                    const files = Array.from(e.target.files);
-                    const media = files.map((file) => ({
-                      name: file.name,
-                      type: file.type,
-                      url: URL.createObjectURL(file),
-                    }));
-                    console.log("Media", media);
-                    form.setValue("media", media);
-                  }
-                }}
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <RiFilmLine className="w-4 h-4 text-muted-foreground" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <RiHashtag className="w-4 h-4 text-muted-foreground" />
-              </Button>
-              {!pollForm && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setPollForm(true)}
-                >
-                  <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-                </Button>
-              )}
-            </div>
-          </div>
-          {/* <PostFormOptions formControl={form.control} /> */}
-
-          <div className="inline-flex items-center justify-between w-full">
-            <button className="text-sm text-muted font-semibold">
-              Reply to this post
-            </button>
-
-            <Button form="post-form" type="submit" className="font-semibold">
-              Post
-            </Button>
-          </div>
+          >
+            <AvatarImage src="https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=Harley" />
+            <AvatarFallback>A</AvatarFallback>
+          </Avatar>
         </div>
-
-        {/* <span className="text-xs text-muted italic pl-8 cursor-help">
-        *Actual post will be displayed differently on the feed
-      </span> */}
+        <button
+          disabled={inputLength < 1}
+          onClick={() => append({ content: "", poll: undefined, media: [] })}
+          className={cn(
+            "text-sm text-muted-foreground",
+            inputLength < 1 && "cursor-not-allowed text-muted"
+          )}
+        >
+          Add to thread
+        </button>
       </div>
-      {/* <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[2]" /> */}
+      <div className="mt-6 w-full flex justify-between items-center ">
+        <span className="font-semibold text-sm text-muted-foreground">
+          Anyone can reply
+        </span>
+        <Button form="thread-form">Post Thread</Button>
+      </div>
     </div>
   );
 }
 
-export default PostForm;
+export default PostFormIndex;
 
-// AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk
+// {shouldMount && (
+//   <div
+//     style={{
+//       transition: "opacity transform 300ms",
+//       opacity: simpleStatus == "from" ? 0 : 1,
+//       transform:
+//         simpleStatus === "from" ? "translateX(200)" : "translateX(0)",
+//     }}
+//   >
+//     <button>
+//       <RiCloseLine
+//         className="w-6 h-6 text-muted-foreground"
+//         onClick={() => setShowGifPicker(-1)}
+//       />
+//     </button>
+//     <GifPicker
+//       width="100%"
+//       height="500px"
+//       onGifClick={(gif) => {
+//         console.log("Gif", gif);
+//       }}
+//       tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
+//     />
+//   </div>
+// )}
+
+{
+  /* <FormProvider {...form}>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onFormSubmit)} className="w-full">
+            <div className="flex flex-col gap-y-2">
+              {fields.map((field, index) => {
+                return (
+                  <div className="flex gap-x-3 h-full relative" key={field.id}>
+                    <Avatar className="size-9">
+                      <AvatarImage src="https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=Harley" />
+                      <AvatarFallback>A</AvatarFallback>
+                    </Avatar>
+                    <Separator
+                      className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
+                      orientation="vertical"
+                    />
+                    <div className="flex flex-col gap-y-1 w-full h-full">
+                      <h3 className="font-semibold ">johndoe</h3>
+                      <PostFormItem
+                        key={field.id}
+                        field={field}
+                        index={index}
+                      />
+                    </div>
+                    {index !== 0 && (
+                      <div className="p-2">
+                        <button
+                          onClick={() => remove(index)}
+                          className="text-sm text-muted-foreground hover:text-foreground"
+                        >
+                          <RiCloseLine className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </form>
+        </Form>
+      </FormProvider>
+      <div className="flex gap-3 mt-2">
+        <div className="flex justify-center items-center h-full w-9">
+          <Avatar
+            className={cn(
+              "size-6",
+              inputLength < 1 ? "opacity-75" : "opacity-100"
+            )}
+          >
+            <AvatarImage src="https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=Harley" />
+            <AvatarFallback>A</AvatarFallback>
+          </Avatar>
+        </div>
+        <button
+          disabled={inputLength < 1}
+          onClick={() => append({ content: "" })}
+          className={cn(
+            "text-sm text-muted-foreground",
+            inputLength < 1 && "cursor-not-allowed text-muted"
+          )}
+        >
+          Add to thread
+        </button>
+      </div> */
+}
