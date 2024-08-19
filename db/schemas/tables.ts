@@ -24,7 +24,12 @@ export const postVisibilityStatus = pgEnum("post_visibility_status", [
   "private",
 ]);
 
-export const postMediaType = pgEnum("post_media_type", ["gif", "audio", "image", "video"]);
+export const postMediaType = pgEnum("post_media_type", [
+  "gif",
+  "audio",
+  "image",
+  "video",
+]);
 
 // export const activityType = pgEnum("activity_type", [
 //   "post",
@@ -74,7 +79,6 @@ export const postMedia = pgTable(
       .references(() => posts.id, { onDelete: "cascade" })
       .notNull(),
     name: text("name"),
-    tenorUrl: text("tenor_url"),
     url: text("url").notNull(),
     width: bigint("width", {
       mode: "number",
