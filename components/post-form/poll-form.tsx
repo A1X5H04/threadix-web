@@ -2,9 +2,8 @@ import React, { useCallback, useEffect } from "react";
 import { Input } from "../ui/input";
 import { PollSchema, PostSchema } from "@/types";
 import { cn } from "@/lib/utils";
-import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { useSwitchTransition } from "transition-hooks";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import {
   Tooltip,
@@ -17,21 +16,22 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { RiArrowDownSLine } from "@remixicon/react";
 
 const placeholders = ["Yeah", "Nah"];
 
-function PollForm({ itemIndex }: { itemIndex: number }) {
+function PollForm({
+  itemIndex,
+  watchedPoll,
+}: {
+  itemIndex: number;
+  watchedPoll: PollSchema;
+}) {
   const { getValues, setValue, control } = useFormContext<{
     posts: PostSchema[];
   }>();
-  const watchedOption = useWatch({
-    name: `posts.${itemIndex}.poll.options`,
-    control,
-  }) as PollSchema["options"];
 
   const { fields, append, remove } = useFieldArray<{ posts: PostSchema[] }>({
     name: `posts.${itemIndex}.poll.options`,
@@ -65,20 +65,22 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
   ];
 
   useEffect(() => {
-    const lastOption = watchedOption?.[watchedOption?.length - 1]?.title;
-    const secondLastOption = watchedOption?.[watchedOption?.length - 2]?.title;
+    const lastOption =
+      watchedPoll.options[watchedPoll.options.length - 1]?.title;
+    const secondLastOption =
+      watchedPoll.options[watchedPoll.options.length - 2]?.title;
 
     // Append a new field if the last option is not empty and the number of fields is less than 4
-    if (lastOption && watchedOption.length < 4) {
+    if (lastOption && watchedPoll.options.length < 4) {
       append({ title: "" }, { shouldFocus: false });
     }
 
     // Remove the last field if the second last field is empty
-    if (!secondLastOption && watchedOption.length > 3) {
+    if (!secondLastOption && watchedPoll.options.length > 3) {
       remove(fields.length - 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedOption, append, remove]);
+  }, [watchedPoll.options, append, remove]);
 
   const handleRadioChange = useCallback(
     (value: string) => {
@@ -88,8 +90,8 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
           index === parseInt(value)
         );
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fields, itemIndex]
   );
 
@@ -161,7 +163,7 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
               <DropdownMenuLabel className="text-xs py-1">
                 Poll Duration
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+
               {timeInterval.map((item) => (
                 <DropdownMenuItem
                   key={item.value}
@@ -179,9 +181,9 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
             <div className="inline-flex items-center gap-x-2">
               <Tooltip>
                 <TooltipTrigger>
-                  <span
-                    role="button"
-                    aria-disabled={getValues(
+                  <button
+                    type="button"
+                    disabled={getValues(
                       `posts.${itemIndex}.poll.multipleAnswers`
                     )}
                     onClick={() => {
@@ -201,7 +203,7 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
                     )}
                   >
                     Quiz
-                  </span>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent className="text-xs">
                   Let users select the correct answer.
@@ -209,11 +211,9 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger>
-                  <span
-                    role="button"
-                    aria-disabled={getValues(
-                      `posts.${itemIndex}.poll.quizMode`
-                    )}
+                  <button
+                    type="button"
+                    disabled={getValues(`posts.${itemIndex}.poll.quizMode`)}
                     onClick={() => {
                       if (getValues(`posts.${itemIndex}.poll.quizMode`)) return;
                       setValue(
@@ -230,7 +230,7 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
                     )}
                   >
                     Multiple
-                  </span>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent className="text-xs">
                   Allow users to pick multiple answers.
@@ -238,8 +238,8 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger>
-                  <span
-                    role="button"
+                  <button
+                    type="button"
                     onClick={() => {
                       setValue(
                         `posts.${itemIndex}.poll.anonymousVoting`,
@@ -253,7 +253,7 @@ function PollForm({ itemIndex }: { itemIndex: number }) {
                     )}
                   >
                     Anonymous
-                  </span>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent className="text-xs">
                   Collect responses without user identities.

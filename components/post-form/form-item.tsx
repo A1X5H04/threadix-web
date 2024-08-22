@@ -1,4 +1,4 @@
-import { PostMediaType, PostSchema } from "@/types";
+import { PostSchema } from "@/types";
 import React, { memo } from "react";
 import {
   Control,
@@ -22,32 +22,25 @@ import {
 } from "@remixicon/react";
 import PollForm from "./poll-form";
 import FormMedia from "./form-media";
+import PostOptions from "./post-options";
+import { ThreadSchema } from ".";
 
 interface PostFormItemProps {
   field: PostSchema;
   index: number;
-  setShowGifPicker: React.Dispatch<React.SetStateAction<number>>;
+  setGifPostIndex: React.Dispatch<React.SetStateAction<number>>;
+  setAudioPostIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-function PostFormItem({ field, index, setShowGifPicker }: PostFormItemProps) {
+function PostFormItem({
+  field,
+  index,
+  setGifPostIndex,
+  setAudioPostIndex,
+}: PostFormItemProps) {
   console.log("PostFormItem render", index);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const { getValues, setValue, control } = useFormContext<{
-    posts: PostSchema[];
-  }>();
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      const media = files.map((file) => ({
-        name: file.name,
-        type: file.type.startsWith("image") ? PostMediaType.IMAGE : PostMediaType.VIDEO,
-        url: URL.createObjectURL(file),
-      }));
-      console.log("Media", media);
-      setValue(`posts.${index}.media`, media);
-    }
-  };
+  const { control } = useFormContext<ThreadSchema>();
 
   return (
     <div className="">
@@ -68,67 +61,11 @@ function PostFormItem({ field, index, setShowGifPicker }: PostFormItemProps) {
           </FormItem>
         )}
       />
-      {getValues(`posts.${index}.media`).length > 0 && (
-        <FormMedia
-          itemIndex={index}
-          setMedia={(value) => setValue(`posts.${index}.media`, value)}
-        />
-      )}
-      {getValues(`posts.${index}.poll`) && <PollForm itemIndex={index} />}
-      <div className="flex items-center gap-x-2">
-        <button
-          type="button"
-          className="p-1.5 hover:bg-muted rounded inline-flex items-center gap-x-2"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            type="file"
-            accept="image/*,video/*"
-            multiple
-            ref={fileInputRef}
-            max={10}
-            hidden
-            onChange={onFileChange}
-          />
-
-          {getValues(`posts.${index}.media`).length > 0 ? (
-            <>
-              <RiImageAddLine className="w-4 h-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Add More</span>
-            </>
-          ) : (
-            <RiImageFill className="w-4 h-4 text-muted-foreground" />
-          )}
-        </button>
-        
-        <button
-          onClick={() => setShowGifPicker(index)}
-          type="button"
-          className="p-1.5 hover:bg-muted rounded"
-        >
-          <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
-        </button>
-        <button type="button" className="p-1.5 hover:bg-muted rounded">
-          <RiVoiceprintLine className="w-4 h-4 text-muted-foreground" />
-        </button>
-        {!getValues(`posts.${index}.poll`) && (
-          <button
-            type="button"
-            onClick={() =>
-              setValue(`posts.${index}.poll`, {
-                options: [{ title: "" }, { title: "" }],
-                duration: "5d",
-                anonymousVoting: false,
-                multipleAnswers: false,
-                quizMode: true,
-              })
-            }
-            className="p-1.5 hover:bg-muted rounded"
-          >
-            <RiBarChartHorizontalLine className="w-4 h-4 text-muted-foreground" />
-          </button>
-        )}
-      </div>
+      <PostOptions
+        index={index}
+        setGifPostIndex={setGifPostIndex}
+        setAudioPostIndex={setAudioPostIndex}
+      />
     </div>
   );
 }

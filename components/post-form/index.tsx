@@ -10,21 +10,30 @@ import PostFormItem from "./form-item";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { Separator } from "@/components/ui/separator";
-import { RiCloseLine } from "@remixicon/react";
-import { cn } from "@/lib/utils";
+import { RiCloseLine, RiExpandUpDownLine } from "@remixicon/react";
 import { Button } from "../ui/button";
 import GifPicker from "gif-picker-react";
-import { PostMediaType } from "@/types";
+import AddThread from "./add-thread";
+import AudioForm from "./audio-form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
   reply: z.enum(["anyone", "followers", "mentions"]),
 });
 
-function PostFormIndex() {
-  const [showGifPicker, setShowGifPicker] = React.useState(-1);
+export type ThreadSchema = z.infer<typeof threadSchema>;
 
-  const form = useForm<z.infer<typeof threadSchema>>({
+function PostFormIndex() {
+  const [gifPostIndex, setGifPostIndex] = React.useState(-1);
+  const [audioPostIndex, setAudioPostIndex] = React.useState(-1);
+
+  const form = useForm<ThreadSchema>({
     defaultValues: {
       posts: [{ content: "", poll: undefined, media: [] }],
       reply: "anyone",
@@ -63,132 +72,111 @@ function PostFormIndex() {
   //   });
   // }
 
-  const watchForm = form.watch("posts");
-  const inputLength = watchForm[watchForm.length - 1].content?.length ?? 0;
-
   const onFormSubmit = (data: z.infer<typeof threadSchema>) => {
     // TODO: Filter out the poll where the input is blank
     console.log(data);
+    form.reset();
   };
 
   return (
     <div className="border p-6 rounded h-fit w-full">
-      {showGifPicker >= 0 ? (
-        <div className="space-y-5">
-          <GifPicker
-            width="100%"
-            height="400px"
-            onGifClick={(gif) => {
-              form.setValue(`posts.${showGifPicker}.media.0`, {
-                name: gif.description,
-                type: PostMediaType.GIF,
-                url: gif.url,
-                description: gif.description,
-                height: gif.width,
-                width: gif.height,
-              });
-              form.setValue(`posts.${showGifPicker}.isGifSelected`, true);
-              setShowGifPicker(-1);
-            }}
-            tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
-          />
-          <Button
-            onClick={() => setShowGifPicker(-1)}
-            variant="ghost"
-            className="w-full"
-          >
-            Cancel
-          </Button>
-        </div>
-      ) : (
-        <>
-          <FormProvider {...form}>
-            <Form {...form}>
-              <form
-                id="thread-form"
-                onSubmit={form.handleSubmit(onFormSubmit)}
-                className="w-full"
-              >
-                <div className="flex flex-col gap-y-2">
-                  {fields.map((field, index) => {
-                    return (
-                      <div
-                        className="flex gap-x-3 h-full relative"
-                        key={field.id}
-                      >
-                        <Avatar className="size-9 border">
-                          <AvatarImage src="https://i.pinimg.com/236x/f1/97/0a/f1970a8b5bdf920a2e1977a28e2e8c77.jpg" />
-                          <AvatarFallback>A</AvatarFallback>
-                        </Avatar>
-                        <Separator
-                          className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
-                          orientation="vertical"
-                        />
-                        <div className="flex flex-col gap-y-1 w-full h-full">
-                          <h3 className="font-semibold ">johndoe</h3>
-                          <PostFormItem
-                            key={field.id}
-                            field={field}
-                            index={index}
-                            setShowGifPicker={setShowGifPicker}
-                          />
-                        </div>
-                        {index !== 0 && (
-                          <div className="p-2">
-                            <button
-                              type="button"
-                              onClick={() => remove(index)}
-                              className="text-sm text-muted-foreground hover:text-foreground"
-                            >
-                              <RiCloseLine className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </form>
-            </Form>
-          </FormProvider>
-          <div className="flex gap-3 mt-2">
-            <div className="flex justify-center items-center h-full w-9">
-              <Avatar
-                className={cn(
-                  "size-6 ",
-                  inputLength < 1 ? "opacity-75" : "opacity-100"
-                )}
-              >
-                <AvatarImage src="https://i.pinimg.com/236x/f1/97/0a/f1970a8b5bdf920a2e1977a28e2e8c77.jpg" />
-                <AvatarFallback>A</AvatarFallback>
-              </Avatar>
-            </div>
-            <button
-              disabled={inputLength < 1}
-              onClick={() =>
-                append({
-                  content: "",
-                  poll: undefined,
-                  media: [],
-                  isAudioSelected: false,
-                  isGifSelected: false,
-                })
-              }
-              className={cn(
-                "text-sm text-muted-foreground",
-                inputLength < 1 && "cursor-not-allowed text-muted"
-              )}
+      {gifPostIndex >= 0 && (
+        <GifPicker
+          width="100%"
+          height="500px"
+          onGifClick={(gif) => {
+            form.setValue(`posts.${gifPostIndex}.gif`, {
+              url: gif.url,
+              description: gif.description,
+              name: gif.tags[0],
+              height: gif.height,
+              width: gif.width,
+            });
+            setGifPostIndex(-1);
+          }}
+          tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
+        />
+      )}
+      {audioPostIndex >= 0 && (
+        <AudioForm
+          setAudio={(audio) => {
+            form.setValue(`posts.${audioPostIndex}.audio`, audio);
+            setAudioPostIndex(-1);
+          }}
+          onCancel={() => setAudioPostIndex(-1)}
+        />
+      )}
+      {gifPostIndex < 0 && audioPostIndex < 0 && (
+        <FormProvider {...form}>
+          <Form {...form}>
+            <form
+              id="thread-form"
+              onSubmit={form.handleSubmit(onFormSubmit)}
+              className="w-full"
             >
-              Add to thread
-            </button>
-          </div>
-          <div className="mt-6 w-full flex justify-between items-center ">
-            <span className="font-semibold text-sm text-muted-foreground">
-              Anyone can reply
-            </span>
-            <Button form="thread-form">Post</Button>
-          </div>
-        </>
+              <div className="flex flex-col gap-y-2">
+                {fields.map((field, index) => {
+                  return (
+                    <div
+                      className="flex gap-x-3 h-full relative"
+                      key={field.id}
+                    >
+                      <Avatar className="size-9 border">
+                        <AvatarImage src="https://i.pinimg.com/236x/f1/97/0a/f1970a8b5bdf920a2e1977a28e2e8c77.jpg" />
+                        <AvatarFallback>A</AvatarFallback>
+                      </Avatar>
+                      <Separator
+                        className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
+                        orientation="vertical"
+                      />
+                      <div className="flex flex-col gap-y-1 w-full h-full">
+                        <h3 className="font-semibold ">johndoe</h3>
+                        <PostFormItem
+                          key={field.id}
+                          field={field}
+                          index={index}
+                          setGifPostIndex={setGifPostIndex}
+                          setAudioPostIndex={setAudioPostIndex}
+                        />
+                      </div>
+                      {index !== 0 && (
+                        <div className="p-2">
+                          <button
+                            type="button"
+                            onClick={() => remove(index)}
+                            className="text-sm text-muted-foreground hover:text-foreground"
+                          >
+                            <RiCloseLine className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <AddThread append={append} />
+              <div className="mt-6 w-full flex justify-between items-center ">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="inline-flex items-center text-sm "
+                    >
+                      Anyone can reply & quote
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>Anyone</DropdownMenuItem>
+                    <DropdownMenuItem>Profiles you follow</DropdownMenuItem>
+                    <DropdownMenuItem>Mentioned only</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button form="thread-form">Post</Button>
+              </div>
+            </form>
+          </Form>
+        </FormProvider>
       )}
     </div>
   );

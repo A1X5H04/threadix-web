@@ -18,6 +18,8 @@ function FormMedia({
     name: `posts.${itemIndex}.media`,
   }) as PostMediaSchema[];
 
+  console.log("media", media);
+
   // const [aspectRatios, setAspectRatios] = React.useState<number[]>([]);
 
   // useEffect(() => {
@@ -45,9 +47,14 @@ function FormMedia({
       className="overflow-hidden mb-4"
       ref={media.length > 2 ? emblaRef : undefined}
     >
-      <div className="flex flex-nowrap gap-x-2 w-full ">
-        {media.map((mediaItem) => (
-          <div key={mediaItem.url} className={`relative w-full min-w-20`}>
+      <div className="flex flex-nowrap gap-x-2 w-full">
+        {media.map((mediaItem, index) => (
+          <div
+            key={mediaItem.url}
+            className={`relative w-full min-w-40 ${
+              index === 0 ? "aspect-video" : "aspect-aspect"
+            }`}
+          >
             <span>
               <button
                 onClick={() => {
