@@ -1,7 +1,4 @@
 import * as z from "zod";
-import { PostMediaType } from ".";
-
-
 
 export const profileSchema = z.object({
   name: z.string(),
@@ -43,8 +40,23 @@ export const postMediaSchema = z.object({
   description: z.string().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
-  type: z.nativeEnum(PostMediaType),
-  duration: z.number().optional(),
+  type: z.string(),
+});
+
+export const postGifSchema = z.object({
+  name: z.string(),
+  url: z.string().url(),
+  description: z.string().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+});
+
+export const postAudioSchema = z.object({
+  name: z.string(),
+  url: z.string().url(),
+  description: z.string().optional(),
+  duration: z.string().optional(),
+  type: z.string(),
 });
 
 export const pollSchema = z
@@ -79,6 +91,6 @@ export const postSchema = z.object({
   mentions: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   poll: pollSchema.optional(),
-  isGifSelected: z.boolean().default(false), // Only for validation
-  isAudioSelected: z.boolean().default(false),
+  gif: postGifSchema.optional(),
+  audio: postAudioSchema.optional(),
 });
