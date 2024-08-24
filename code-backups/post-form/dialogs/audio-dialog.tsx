@@ -31,7 +31,7 @@ import { Input } from "../../ui/input";
 import { useEdgeStore } from "@/lib/edgestore";
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import AudioDialogVoiceForm from "../record-form";
-import AudioDialogAudioForm from "../audio-form";
+import AudioDialogAudioForm from "../audio-tab";
 
 type Audio = z.infer<typeof voiceNoteSchema>;
 

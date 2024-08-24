@@ -1,20 +1,19 @@
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { RiPauseFill, RiPlayFill, RiUploadCloud2Line } from "@remixicon/react";
 import Dropzone from "react-dropzone";
 
 import React, { useEffect } from "react";
 import { useIsClient } from "@/hooks/use-isclient";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 import { useEdgeStore } from "@/lib/edgestore";
-import { PostAudio } from "@/types";
 
-function AudioDialogAudioForm({
+function AudioTab({
   setAudio,
   setModal,
 }: {
-  setAudio: (media: PostAudio) => void;
+  setAudio: (media: any) => void;
   setModal: (modal: boolean) => void;
 }) {
   const isClient = useIsClient();
@@ -134,4 +133,4 @@ function AudioDialogAudioForm({
   );
 }
 
-export default AudioDialogAudioForm;
+export default AudioTab;

@@ -1,6 +1,6 @@
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   RiDownloadLine,
   RiMic2Fill,
