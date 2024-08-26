@@ -1,7 +1,7 @@
 "use client";
 
 import { postSchema } from "@/types/schemas";
-import React from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useListTransition } from "transition-hooks";
@@ -14,13 +14,13 @@ import { RiCloseLine, RiExpandUpDownLine } from "@remixicon/react";
 import { Button } from "../ui/button";
 import GifPicker from "gif-picker-react";
 import AddThread from "./add-thread";
-import AudioForm from "./audio-form";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import RecordForm from "./record-form";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -30,6 +30,7 @@ const threadSchema = z.object({
 export type ThreadSchema = z.infer<typeof threadSchema>;
 
 function PostFormIndex() {
+  const formRef = React.useRef<HTMLFormElement>(null);
   const [gifPostIndex, setGifPostIndex] = React.useState(-1);
   const [audioPostIndex, setAudioPostIndex] = React.useState(-1);
 
@@ -39,6 +40,9 @@ function PostFormIndex() {
       reply: "anyone",
     },
   });
+
+
+
 
   const { fields, append, remove } = useFieldArray({
     name: "posts",
@@ -72,6 +76,25 @@ function PostFormIndex() {
   //   });
   // }
 
+  // To make form submit only if the type is "submit" on button
+  // Because the default behavior of the button does fucking form submit on every button press
+
+  useEffect(() => {
+    const formElement = formRef.current;
+
+    if(formElement) {
+      const handleClick = (event: MouseEvent) => {
+        const target = event.target as HTMLButtonElement;
+        if(target.tagName === 'BUTTON' && target.type !== 'submit')
+          event.preventDefault()
+      }
+
+      formElement.addEventListener("click", handleClick)
+
+      return () => formElement.removeEventListener('click', handleClick)
+    }
+  }, [])
+
   const onFormSubmit = (data: z.infer<typeof threadSchema>) => {
     // TODO: Filter out the poll where the input is blank
     console.log(data);
@@ -98,7 +121,7 @@ function PostFormIndex() {
         />
       )}
       {audioPostIndex >= 0 && (
-        <AudioForm
+        <RecordForm
           setAudio={(audio) => {
             form.setValue(`posts.${audioPostIndex}.audio`, audio);
             setAudioPostIndex(-1);
@@ -110,7 +133,7 @@ function PostFormIndex() {
         <FormProvider {...form}>
           <Form {...form}>
             <form
-              id="thread-form"
+              ref={formRef}
               onSubmit={form.handleSubmit(onFormSubmit)}
               className="w-full"
             >

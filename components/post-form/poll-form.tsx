@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { PollSchema, PostSchema } from "@/types";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ function PollForm({
   itemIndex: number;
   watchedPoll: PollSchema;
 }) {
+  const [addPollField, setAddPollField] = useState("");
   const { getValues, setValue, control } = useFormContext<{
     posts: PostSchema[];
   }>();
@@ -36,6 +37,8 @@ function PollForm({
   const { fields, append, remove } = useFieldArray<{ posts: PostSchema[] }>({
     name: `posts.${itemIndex}.poll.options`,
   });
+
+  console.log("Rerendering PollForm");
 
   const timeInterval = [
     {
@@ -67,16 +70,14 @@ function PollForm({
   useEffect(() => {
     const lastOption =
       watchedPoll.options[watchedPoll.options.length - 1]?.title;
-    const secondLastOption =
-      watchedPoll.options[watchedPoll.options.length - 2]?.title;
 
     // Append a new field if the last option is not empty and the number of fields is less than 4
-    if (lastOption && watchedPoll.options.length < 4) {
-      append({ title: "" }, { shouldFocus: false });
+    if (addPollField && watchedPoll.options.length < 4) {
+      append({ title: "" });
     }
 
     // Remove the last field if the second last field is empty
-    if (!secondLastOption && watchedPoll.options.length > 3) {
+    if (!lastOption && watchedPoll.options.length > 2) {
       remove(fields.length - 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,31 +114,20 @@ function PollForm({
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={
-                          idx === fields.length - 1
-                            ? "Add another option"
-                            : placeholders[idx]
-                        }
+                        placeholder={placeholders[idx]}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
                           }
                         }}
-                        className={cn(
-                          idx === fields.length - 1 &&
-                            field.value == "" &&
-                            "border-dashed"
-                        )}
                       />
                     </FormControl>
-                    {field.value !== "" &&
-                      getValues(`posts.${itemIndex}.poll`)?.quizMode ==
-                        true && (
-                        <RadioGroupItem
-                          className="absolute bottom-[11px] right-4"
-                          value={`${idx}`}
-                        />
-                      )}
+                    {getValues(`posts.${itemIndex}.poll`)?.quizMode == true && (
+                      <RadioGroupItem
+                        className="absolute bottom-[11px] right-4"
+                        value={`${idx}`}
+                      />
+                    )}
                   </FormItem>
                 )}
               />
@@ -151,13 +141,27 @@ function PollForm({
             </div>
           ))}
         </RadioGroup>
+        <Input
+          value={addPollField}
+          onChange={(e) => setAddPollField(e.target.value)}
+          className="border-dashed"
+          placeholder="Add another option"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}
+        />
         <div className="w-full flex justify-between">
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <span className="inline-flex items-center gap-x-1 text-xs text-muted-foreground hover:bg-muted py-1 px-1.5 rounded-sm">
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-x-1 text-xs text-muted-foreground hover:bg-muted py-1 px-1.5 rounded-sm"
+              >
                 Ends in {getValues(`posts.${itemIndex}.poll.duration`)}
                 <RiArrowDownSLine className="w-4 h-4" />
-              </span>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="max-w-10">
               <DropdownMenuLabel className="text-xs py-1">
@@ -180,7 +184,7 @@ function PollForm({
           <TooltipProvider>
             <div className="inline-flex items-center gap-x-2">
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <button
                     type="button"
                     disabled={getValues(
@@ -195,9 +199,7 @@ function PollForm({
                       );
                     }}
                     className={cn(
-                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5",
-                      getValues(`posts.${itemIndex}.poll.multipleAnswers`) &&
-                        "opacity-25 cursor-default",
+                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5 disabled:opacity-25 disabled:cursor-default",
                       getValues(`posts.${itemIndex}.poll.quizMode`) &&
                         "text-foreground font-semibold bg-muted "
                     )}
@@ -210,7 +212,7 @@ function PollForm({
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <button
                     type="button"
                     disabled={getValues(`posts.${itemIndex}.poll.quizMode`)}
@@ -222,9 +224,7 @@ function PollForm({
                       );
                     }}
                     className={cn(
-                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5",
-                      getValues(`posts.${itemIndex}.poll.quizMode`) &&
-                        "opacity-25 cursor-default",
+                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5 disabled:opacity-25 disabled:cursor-default",
                       getValues(`posts.${itemIndex}.poll.multipleAnswers`) &&
                         "text-foreground font-semibold bg-muted "
                     )}
@@ -237,7 +237,7 @@ function PollForm({
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <button
                     type="button"
                     onClick={() => {

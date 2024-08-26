@@ -20,11 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import GifPicker from "gif-picker-react";
-import AudioForm from "./audio-form";
-import AudioTab from "./audio-tab";
-import RecordTab from "./record-tab";
-import useMediaDimensions from "@/hooks/use-media-dimensions";
+import FormAudio from "./form-audio";
 
 interface PostOptionsProps {
   index: number;
@@ -94,10 +90,30 @@ function PostOptions({
     }
   };
 
+  const onAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Hello World");
+  };
+
   console.log("watchedAudio", watchedAudio);
 
   return (
     <>
+      <input
+        type="file"
+        accept="audio/*"
+        ref={audioInputRef}
+        hidden
+        onChange={onAudioChange}
+      />
+      <input
+        type="file"
+        accept="image/*,video/*"
+        multiple
+        ref={mediaInputRef}
+        max={10}
+        hidden
+        onChange={onMediaChange}
+      />
       {watchedGif && (
         <div key={watchedGif.name} className={`relative w-full min-w-20`}>
           <span>
@@ -115,6 +131,11 @@ function PostOptions({
           />
         </div>
       )}
+      <FormAudio
+        name="Royalty.mp3"
+        type="audio"
+        url="https://cdn.pixabay.com/download/audio/2020/11/15/audio_2485b032d8.mp3?filename=helix-1577.mp3"
+      />
       {watchedMedia.length > 0 && (
         <FormMedia
           itemIndex={index}
@@ -129,15 +150,6 @@ function PostOptions({
             className="p-1.5 hover:bg-muted rounded inline-flex items-center gap-x-2"
             onClick={() => mediaInputRef.current?.click()}
           >
-            <input
-              type="file"
-              accept="image/*,video/*"
-              multiple
-              ref={mediaInputRef}
-              max={10}
-              hidden
-              onChange={onMediaChange}
-            />
             {getValues(`posts.${index}.media`).length > 0 ? (
               <>
                 <RiImageAddLine className="w-4 h-4 text-muted-foreground" />
@@ -159,9 +171,27 @@ function PostOptions({
               <RiFileGifLine className="w-4 h-4 text-muted-foreground" />
             </button>
 
-            <button type="button" className="p-1.5 hover:bg-muted rounded">
-              <RiDiscLine className="w-4 h-4 text-muted-foreground" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="p-1.5 hover:bg-muted rounded">
+                  <RiDiscLine className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => audioInputRef.current?.click()}
+                  className="text-xs"
+                >
+                  Upload Audio
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setAudioPostIndex(index)}
+                  className="text-xs"
+                >
+                  Record an Audio
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <button
               type="button"
