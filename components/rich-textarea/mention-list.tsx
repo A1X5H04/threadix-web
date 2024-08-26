@@ -7,6 +7,7 @@ import {
   Renderer,
   RichTextareaHandle,
 } from "rich-textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const MAX_LIST_LENGTH = 8;
 const MENTION_REG = /\B@([\-+\w]*)$/;
@@ -27,12 +28,18 @@ const MentionList = ({
 }) => {
   return (
     <div
-      className="fixed z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="fixed z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md"
       style={{
         top: top + 10,
         left: left,
       }}
     >
+      
+
+      <p className="text-sm p-2 font-semibold border-b">
+         Mention a user
+      </p>
+      <ul className="p-1">
       {chars.length > 0 ? (
         chars.map((c, i) => (
           <li
@@ -46,7 +53,13 @@ const MentionList = ({
               complete(i);
             }}
           >
+            <div className="flex items-center gap-x-2">
+              <Avatar className="w-5 h-5">
+                <AvatarFallback>{c[0].toUpperCase()}</AvatarFallback>
+                <AvatarImage src="https://i.pravatar.cc/150?img=68" />
+              </Avatar>
             {c}
+            </div>
           </li>
         ))
       ) : (
@@ -54,6 +67,7 @@ const MentionList = ({
           No matching username found!
         </span>
       )}
+      </ul>
     </div>
   );
 };
