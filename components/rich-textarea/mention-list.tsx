@@ -34,39 +34,40 @@ const MentionList = ({
         left: left,
       }}
     >
-      
-
-      <p className="text-sm p-2 font-semibold border-b">
-         Mention a user
-      </p>
+      <p className="text-sm p-2 font-semibold border-b">Mention a user</p>
       <ul className="p-1">
-      {chars.length > 0 ? (
-        chars.map((c, i) => (
-          <li
-            key={c}
-            className={cn(
-              "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45",
-              index === i && "bg-accent text-accent-foreground"
-            )}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              complete(i);
-            }}
-          >
-            <div className="flex items-center gap-x-2">
-              <Avatar className="w-5 h-5">
-                <AvatarFallback>{c[0].toUpperCase()}</AvatarFallback>
-                <AvatarImage src="https://i.pravatar.cc/150?img=68" />
-              </Avatar>
-            {c}
-            </div>
-          </li>
-        ))
-      ) : (
-        <span className="text-sm p-2 text-center text-muted-foreground">
-          No matching username found!
-        </span>
-      )}
+        {chars.length > 0 ? (
+          chars.map((c, i) => (
+            <li
+              key={c}
+              className={cn(
+                "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45",
+                index === i && "bg-accent text-accent-foreground"
+              )}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                complete(i);
+              }}
+            >
+              <div className="flex items-center gap-x-2">
+                <Avatar className="w-6 h-6">
+                  <AvatarFallback>{c[0].toUpperCase()}</AvatarFallback>
+                  <AvatarImage src="" />
+                </Avatar>
+                <div className="flex-col text-xs">
+                  <p>{c}</p>
+                  <span className="text-[0.70rem] text-muted-foreground">
+                    @a1x5h04
+                  </span>
+                </div>
+              </div>
+            </li>
+          ))
+        ) : (
+          <span className="text-sm p-2 text-center text-muted-foreground">
+            No matching username found!
+          </span>
+        )}
       </ul>
     </div>
   );
@@ -121,11 +122,38 @@ function useMentionList(
       pos.caret,
       "end"
     );
+    console.log("Add Mentions", selected);
     setPos(null);
     setIndex(0);
   };
 
   const mentionKeyDownFn = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Backspace") {
+      const textarea = ref.current;
+      if (!textarea || !value) return;
+
+      const cursorPosition = textarea.selectionStart;
+      const textBeforeCursor = value.slice(0, cursorPosition);
+      const mentionMatch = textBeforeCursor.match(mentionRegex);
+
+      if (mentionMatch) {
+        const lastMention = mentionMatch[mentionMatch.length - 1];
+        const mentionStartIndex = textBeforeCursor.lastIndexOf(lastMention);
+
+        if (cursorPosition === mentionStartIndex + lastMention.length) {
+          e.preventDefault();
+
+          textarea.setRangeText(
+            "",
+            mentionStartIndex,
+            cursorPosition,
+            "select"
+          );
+          console.log("Removed mention:", lastMention.slice(1));
+        }
+      }
+    }
+
     if (!pos || !filteredUsernames.length) return;
     switch (e.code) {
       case "ArrowUp":

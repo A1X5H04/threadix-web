@@ -12,8 +12,6 @@ import { createPortal } from "react-dom";
 import ToolbarMenu, { useToolbarMenu } from "./toolbar-menu";
 
 import EmojiList, { useEmojiList } from "./emoji-list";
-import { RiTextSnippet } from "@remixicon/react";
-import RTInfoPopover from "./info-popover";
 
 const Tag = ({ children }: { children: string }) => {
   return (
@@ -33,7 +31,6 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
     mentionListProps,
   } = useMentionList(textAreaRef, String(value), CHARACTERS);
   const {
-    richTextRegex,
     toolbarSelectionFn,
     optionSelectionFn,
     isToolbarMenuVisible,
@@ -50,44 +47,6 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
       {
         background: "hsl(var(--muted))",
         color: "hsl(var(--muted-foreground))",
-        borderRadius: "2.5px",
-      },
-    ],
-    [
-      richTextRegex.boldReg,
-      {
-        fontWeight: "bold",
-      },
-    ],
-    [
-      richTextRegex.italicReg,
-      {
-        fontStyle: "italic",
-      },
-    ],
-    [
-      richTextRegex.strikeReg,
-      {
-        textDecoration: "line-through",
-      },
-    ],
-    [
-      richTextRegex.monoReg,
-      {
-        fontFamily: "monospace",
-      },
-    ],
-    [
-      richTextRegex.underlineReg,
-      {
-        textDecoration: "underline",
-      },
-    ],
-    [
-      richTextRegex.spoilerReg,
-      {
-        background: "hsl(var(--muted))",
-        color: "hsl(var(--spoiler-foreground))",
         borderRadius: "2.5px",
       },
     ],

@@ -128,41 +128,85 @@ function useToolbarMenu(
 
   const optionSelectionFn = (option: FormatOptions) => {
     if (!ref.current || hideMenu) return;
+
+    const selectedText = value?.slice(selectionStart, selectionEnd);
+    if (!selectedText) return;
+
     switch (option) {
       case FormatOptions.BOLD:
-        ref.current.setRangeText(
-          `**${value?.slice(selectionStart, selectionEnd)}**`,
-          selectionStart,
-          selectionEnd
-        );
+        if (boldReg.test(selectedText)) {
+          ref.current.setRangeText(
+            selectedText.replace(boldReg, "$1"),
+            selectionStart,
+            selectionEnd
+          );
+        } else {
+          ref.current.setRangeText(
+            `**${value?.slice(selectionStart, selectionEnd)}**`,
+            selectionStart,
+            selectionEnd
+          );
+        }
         break;
       case FormatOptions.ITALIC:
-        ref.current.setRangeText(
-          `*${value?.slice(selectionStart, selectionEnd)}*`,
-          selectionStart,
-          selectionEnd
-        );
+        if (italicReg.test(selectedText)) {
+          ref.current.setRangeText(
+            selectedText.replace(italicReg, "$1"),
+            selectionStart,
+            selectionEnd
+          );
+        } else {
+          ref.current.setRangeText(
+            `*${value?.slice(selectionStart, selectionEnd)}*`,
+            selectionStart,
+            selectionEnd
+          );
+        }
         break;
       case FormatOptions.STRIKE:
-        ref.current.setRangeText(
-          `~~${value?.slice(selectionStart, selectionEnd)}~~`,
-          selectionStart,
-          selectionEnd
-        );
+        if (strikeReg.test(selectedText)) {
+          ref.current.setRangeText(
+            selectedText.replace(strikeReg, "$1"),
+            selectionStart,
+            selectionEnd
+          );
+        } else {
+          ref.current.setRangeText(
+            `~~${value?.slice(selectionStart, selectionEnd)}~~`,
+            selectionStart,
+            selectionEnd
+          );
+        }
         break;
       case FormatOptions.MONO:
-        ref.current.setRangeText(
-          "`" + value?.slice(selectionStart, selectionEnd) + "`",
-          selectionStart,
-          selectionEnd
-        );
+        if (monoReg.test(selectedText)) {
+          ref.current.setRangeText(
+            selectedText.replace(monoReg, "$1"),
+            selectionStart,
+            selectionEnd
+          );
+        } else {
+          ref.current.setRangeText(
+            "`" + value?.slice(selectionStart, selectionEnd) + "`",
+            selectionStart,
+            selectionEnd
+          );
+        }
         break;
       case FormatOptions.UNDERLINE:
-        ref.current.setRangeText(
-          `_${value?.slice(selectionStart, selectionEnd)}_`,
-          selectionStart,
-          selectionEnd
-        );
+        if (underlineReg.test(selectedText)) {
+          ref.current.setRangeText(
+            selectedText.replace(underlineReg, "$1"),
+            selectionStart,
+            selectionEnd
+          );
+        } else {
+          ref.current.setRangeText(
+            `_${value?.slice(selectionStart, selectionEnd)}_`,
+            selectionStart,
+            selectionEnd
+          );
+        }
         break;
       case FormatOptions.SPOILER:
         ref.current.setRangeText(

@@ -8,7 +8,7 @@ import { CaretPosition, RichTextarea, RichTextareaHandle } from "rich-textarea";
 
 const style = { width: "400px", height: "300px" };
 
-const MAX_LIST_LENGTH = 8;
+const MAX_LIST_LENGTH = 10;
 const MENTION_REG = /:([\-+\w]*)$/;
 
 const EmojiList = ({
