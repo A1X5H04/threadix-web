@@ -8,6 +8,7 @@ const nextConfig = {
     remotePatterns: [
       { hostname: "api.dicebear.com", pathname: "/avatars/**" },
       { hostname: "images.unsplash.com", protocol: "https" },
+      { hostname: "files.edgestore.dev", protocol: "https" },
     ],
   },
 };
