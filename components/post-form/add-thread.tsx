@@ -1,8 +1,8 @@
 import React from "react";
-import { Control, UseFieldArrayAppend, useWatch } from "react-hook-form";
+import { UseFieldArrayAppend, useWatch } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PostSchema } from "@/types";
+
 import { ThreadSchema } from ".";
 
 function AddThread({ append }: { append: UseFieldArrayAppend<ThreadSchema> }) {

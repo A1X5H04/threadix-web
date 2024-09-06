@@ -12,8 +12,10 @@ import {
   RiStopFill,
 } from "@remixicon/react";
 
-import React from "react";
+import React, { useTransition } from "react";
 import { PostAudioSchema } from "@/types";
+import { useEdgeStore } from "@/lib/edgestore";
+import { useToast } from "../ui/use-toast";
 
 interface RecordFormProps {
   setAudio: (media: PostAudioSchema) => void;
@@ -21,13 +23,16 @@ interface RecordFormProps {
 }
 
 function RecordForm({ setAudio, onCancel }: RecordFormProps) {
+  const [pending, transition] = useTransition();
+  const { edgestore } = useEdgeStore();
+  const { toast } = useToast();
   const [initialRecordingState, setInitialRecordingState] =
     React.useState(true);
   const [title, setTitle] = React.useState("");
   const recorder = useVoiceVisualizer();
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <h1 className="font-semibold text-lg tracking-tight">
           Say something, literally
         </h1>
@@ -36,10 +41,16 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
         </Button>
       </div>
       <div className="w-full p-2 grid place-items-center gap-y-5">
-        <Input placeholder="Add a title for your recording" />
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Add a title for your recording"
+          disabled={!initialRecordingState}
+        />
+
         {initialRecordingState ? (
           <div className="bg-muted/25 w-full border h-36 rounded-lg overflow-hidden grid place-items-center ">
-            <div className="inline-flex flex-col gap-y-2 items-center animate-pulse">
+            <div className="inline-flex flex-col gap-y-2 items-center">
               <div className="inline-flex items-center gap-x-2">
                 <RiRecordCircleFill className="w-4 h-4 text-rose-600" />
                 <p className="tracking-wider font-semibold text-sm text-center">
@@ -47,12 +58,12 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
                 </p>
               </div>
               <span className="text-xs text-muted-foreground">
-                Start recording your voice by click on the mic below
+                Start recording your voice by clicking on the mic below
               </span>
             </div>
           </div>
         ) : (
-          <div className="bg-black w-full border h-24 rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-black w-full border h-24 rounded-lg overflow-hidden">
             <VoiceVisualizer
               height={100}
               controls={recorder}
@@ -73,7 +84,11 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
           {recorder.isAvailableRecordedAudio ? (
             <>
               <Button onClick={recorder.togglePauseResume} size="lg">
-                <RiPlayFill className="w-5 h-5" />
+                {recorder.isPausedRecordedAudio ? (
+                  <RiPlayFill className="w-5 h-5" />
+                ) : (
+                  <RiPauseFill className="w-5 h-5" />
+                )}
               </Button>
               <Button
                 onClick={recorder.saveAudioFile}
@@ -125,9 +140,50 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
               setInitialRecordingState(true);
             }}
           >
-            New Record
+            Record Again
           </Button>
-          <Button className="w-full">Add To Post</Button>
+          <Button
+            disabled={recorder.recordedBlob === null || pending}
+            loading={pending}
+            onClick={() => {
+              transition(async () => {
+                if (recorder.recordedBlob === null) return;
+
+                const file = new File(
+                  [recorder.recordedBlob],
+                  `${title || "Untitled Voice"}`,
+                  { type: recorder.recordedBlob.type }
+                );
+                await edgestore.publicFiles
+                  .upload({
+                    file,
+                    options: {
+                      temporary: true,
+                    },
+                  })
+                  .then((res) => {
+                    setAudio({
+                      url: res.url,
+                      name: title || "Untitled Voice",
+                      type: "voice",
+                      duration: recorder.formattedRecordedAudioCurrentTime,
+                    });
+                  })
+                  .catch((err) => {
+                    console.log("Add Recording: Upload Error", err);
+                    toast({
+                      title: "Error: Upload Failed",
+                      description:
+                        "An error occurred while uploading the recording",
+                      variant: "destructive",
+                    });
+                  });
+              });
+            }}
+            className="w-full"
+          >
+            Add To Post
+          </Button>
         </div>
       )}
     </div>

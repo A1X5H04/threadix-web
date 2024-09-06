@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useTransition } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import FormMedia from "./form-media";
 import PollForm from "./poll-form";
@@ -9,18 +9,24 @@ import {
   RiFileGifLine,
   RiImageAddLine,
   RiImageFill,
-  RiUpload2Line,
-  RiVoiceprintLine,
+  RiLoader2Fill,
 } from "@remixicon/react";
-import { PollSchema, PostGifSchema, PostMediaSchema } from "@/types";
+import {
+  PollSchema,
+  PostAudioSchema,
+  PostGifSchema,
+  PostMediaSchema,
+} from "@/types";
 import { ThreadSchema } from ".";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import FormAudio from "./form-audio";
+import { useToast } from "@/components/ui/use-toast";
+import { useEdgeStore } from "@/lib/edgestore";
 
 interface PostOptionsProps {
   index: number;
@@ -33,9 +39,14 @@ function PostOptions({
   setGifPostIndex,
   setAudioPostIndex,
 }: PostOptionsProps) {
+  const { toast } = useToast();
   const mediaInputRef = React.useRef<HTMLInputElement>(null);
+  const [mediaPending, mediaTranstion] = useTransition();
   const audioInputRef = React.useRef<HTMLInputElement>(null);
+  const [audioPending, audioTranstion] = useTransition();
   const { getValues, setValue } = useFormContext<ThreadSchema>();
+
+  const { edgestore } = useEdgeStore();
 
   const watchedPoll = useWatch({
     name: `posts.${index}.poll`,
@@ -53,67 +64,175 @@ function PostOptions({
     name: `posts.${index}.audio`,
   }) as PostMediaSchema;
 
-  const isDisableOption: boolean = Boolean(
-    watchedPoll || watchedMedia.length > 0 || watchedGif
+  const isShowOption: boolean = Boolean(
+    watchedPoll || watchedMedia.length > 0 || watchedGif || watchedAudio
   );
+
   const onMediaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
 
       if (watchedMedia.length > 0) {
-        const media = watchedMedia;
-
-        if (files.length + media.length <= 10) {
-          const newMedia: PostMediaSchema[] = files.map((file) => {
-            return {
-              name: file.name,
-              type: file.type.startsWith("image") ? "image" : "video",
-              url: URL.createObjectURL(file),
-            };
+        if (files.length + watchedMedia.length > 10) {
+          return toast({
+            title: "Maximum Media Reached",
+            description: "You can only add 10 media files",
+            variant: "destructive",
           });
-          setValue(`posts.${index}.media`, [...media, ...newMedia]);
         }
+        // Yeah, this is a bit messy function, but it works lol
+        mediaTranstion(async () => {
+          try {
+            const newMedia = await Promise.all(
+              files.map(async (file) => {
+                return new Promise<PostMediaSchema>((resolve) => {
+                  if (file.type.startsWith("video")) {
+                    const video = document.createElement("video");
+                    video.src = URL.createObjectURL(file);
+                    video.onloadedmetadata = async () => {
+                      const res = await edgestore.publicFiles.upload({
+                        file,
+                        options: { temporary: true },
+                      });
+                      resolve({
+                        name: file.name,
+                        type: "video",
+                        url: res.url,
+                        width: video.videoWidth,
+                        height: video.videoHeight,
+                      });
+                    };
+                  } else {
+                    const img = new Image();
+                    img.src = URL.createObjectURL(file);
+                    img.onload = async () => {
+                      const res = await edgestore.publicFiles.upload({
+                        file,
+                        options: { temporary: true },
+                      });
+                      resolve({
+                        name: file.name,
+                        type: "image",
+                        url: res.url,
+                        width: img.width,
+                        height: img.height,
+                      });
+                    };
+                  }
+                });
+              })
+            );
+
+            setValue(`posts.${index}.media`, [...watchedMedia, ...newMedia]);
+          } catch (error) {
+            console.log("Add Media: Upload Error", error);
+            toast({
+              title: "Error: Upload Failed",
+              description: "An error occurred while uploading the media",
+              variant: "destructive",
+            });
+          }
+        });
       } else {
         if (files.length <= 10) {
-          const media = files.map((file) => {
-            return {
-              name: file.name,
-              type: file.type.startsWith("image") ? "image" : "video",
-              url: URL.createObjectURL(file),
-            };
-          });
+          mediaTranstion(async () => {
+            try {
+              const media = await Promise.all(
+                files.map(async (file) => {
+                  return new Promise<PostMediaSchema>((resolve) => {
+                    if (file.type.startsWith("video")) {
+                      const video = document.createElement("video");
+                      video.src = URL.createObjectURL(file);
+                      video.onloadedmetadata = async () => {
+                        const res = await edgestore.publicFiles.upload({
+                          file,
+                          options: { temporary: true },
+                        });
+                        resolve({
+                          name: file.name,
+                          type: "video",
+                          url: res.url,
+                          width: video.videoWidth,
+                          height: video.videoHeight,
+                        });
+                      };
+                    } else {
+                      const img = new Image();
+                      img.src = URL.createObjectURL(file);
+                      img.onload = async () => {
+                        const res = await edgestore.publicFiles.upload({
+                          file,
+                          options: { temporary: true },
+                        });
+                        resolve({
+                          name: file.name,
+                          type: "image",
+                          url: res.url,
+                          width: img.width,
+                          height: img.height,
+                        });
+                      };
+                    }
+                  });
+                })
+              );
 
-          console.log("Media", media);
-          setValue(`posts.${index}.media`, media);
+              setValue(`posts.${index}.media`, media);
+            } catch (error) {
+              console.log("Add Media: Upload Error", error);
+              toast({
+                title: "Error: Upload Failed",
+                description: "An error occurred while uploading the media",
+                variant: "destructive",
+              });
+            }
+          });
         }
       }
     }
   };
 
-  const onAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Hello World");
-  };
+  const onAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
 
-  console.log("watchedAudio", watchedAudio);
+      if (file.type.startsWith("audio") === false) {
+        return toast({
+          title: "Invalid File Type",
+          description: "Please select an audio file",
+          variant: "destructive",
+        });
+      }
+
+      audioTranstion(
+        async () =>
+          await edgestore.publicFiles
+            .upload({
+              file,
+              options: { temporary: true },
+            })
+            .then((res) => {
+              const audio: PostAudioSchema = {
+                name: file.name.split(".")[0],
+                type: "audio",
+                url: res.url,
+              };
+              setValue(`posts.${index}.audio`, audio);
+            })
+            .catch((err) => {
+              console.log("Add Audio: Upload Error", err);
+              toast({
+                title: "Error: Upload Failed",
+                description: "An error occurred while uploading the audio",
+                variant: "destructive",
+              });
+            })
+      );
+    }
+  };
 
   return (
     <>
-      <input
-        type="file"
-        accept="audio/*"
-        ref={audioInputRef}
-        hidden
-        onChange={onAudioChange}
-      />
-      <input
-        type="file"
-        accept="image/*,video/*"
-        multiple
-        ref={mediaInputRef}
-        max={10}
-        hidden
-        onChange={onMediaChange}
-      />
       {watchedGif && (
         <div key={watchedGif.name} className={`relative w-full min-w-20`}>
           <span>
@@ -124,6 +243,7 @@ function PostOptions({
               <RiCloseLine className="w-4 h-4 text-muted-foreground" />
             </button>
           </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={watchedGif.url}
             alt={watchedGif.name}
@@ -131,26 +251,40 @@ function PostOptions({
           />
         </div>
       )}
-      <FormAudio
-        name="Royalty.mp3"
-        type="audio"
-        url="https://cdn.pixabay.com/download/audio/2020/11/15/audio_2485b032d8.mp3?filename=helix-1577.mp3"
-      />
+      {watchedAudio && watchedAudio.url && (
+        <FormAudio
+          audio={watchedAudio}
+          removeAudio={() => setValue(`posts.${index}.audio`, undefined)}
+        />
+      )}
       {watchedMedia.length > 0 && (
         <FormMedia
-          itemIndex={index}
+          media={watchedMedia}
           setMedia={(value) => setValue(`posts.${index}.media`, value)}
         />
       )}
       {watchedPoll && <PollForm watchedPoll={watchedPoll} itemIndex={index} />}
-      <div className="flex items-center gap-x-2">
-        {(watchedMedia.length < 10 || !isDisableOption) && (
+      <div className="flex items-center gap-x-2 pt-4">
+        <input
+          type="file"
+          accept="image/*,video/*"
+          max={10}
+          multiple
+          ref={mediaInputRef}
+          hidden
+          onChange={onMediaChange}
+        />
+        {(!isShowOption ||
+          (watchedMedia.length < 10 && watchedMedia.length != 0)) && (
           <button
             type="button"
-            className="p-1.5 hover:bg-muted rounded inline-flex items-center gap-x-2"
+            disabled={mediaPending}
+            className="p-1.5 hover:bg-muted rounded inline-flex items-center gap-x-2 disabled:opacity-50"
             onClick={() => mediaInputRef.current?.click()}
           >
-            {getValues(`posts.${index}.media`).length > 0 ? (
+            {mediaPending ? (
+              <RiLoader2Fill className="w-4 h-4 text-muted-foreground animate-spin" />
+            ) : getValues(`posts.${index}.media`).length > 0 ? (
               <>
                 <RiImageAddLine className="w-4 h-4 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground">Add More</span>
@@ -161,7 +295,7 @@ function PostOptions({
           </button>
         )}
 
-        {!isDisableOption && (
+        {!isShowOption && (
           <>
             <button
               onClick={() => setGifPostIndex(index)}
@@ -172,9 +306,27 @@ function PostOptions({
             </button>
 
             <DropdownMenu>
+              <input
+                type="file"
+                accept="audio/*"
+                ref={audioInputRef}
+                hidden
+                onChange={(e) => {
+                  console.log("On Audio Change");
+                  onAudioChange(e);
+                }}
+              />
               <DropdownMenuTrigger asChild>
-                <button type="button" className="p-1.5 hover:bg-muted rounded">
-                  <RiDiscLine className="w-4 h-4 text-muted-foreground" />
+                <button
+                  type="button"
+                  disabled={audioPending}
+                  className="p-1.5 hover:bg-muted rounded disabled:opacity-50"
+                >
+                  {audioPending ? (
+                    <RiLoader2Fill className="w-4 h-4 text-muted-foreground animate-spin" />
+                  ) : (
+                    <RiDiscLine className="w-4 h-4 text-muted-foreground" />
+                  )}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -197,11 +349,11 @@ function PostOptions({
               type="button"
               onClick={() =>
                 setValue(`posts.${index}.poll`, {
-                  options: [{ title: "" }, { title: "" }],
+                  options: [{ title: "Yes" }, { title: "No" }],
                   duration: "5d",
                   anonymousVoting: false,
-                  multipleAnswers: false,
-                  quizMode: true,
+                  multipleAnswers: true,
+                  quizMode: false,
                 })
               }
               className="p-1.5 hover:bg-muted rounded"

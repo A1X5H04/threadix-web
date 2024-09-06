@@ -4,13 +4,13 @@ import { postSchema } from "@/types/schemas";
 import React, { useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useListTransition } from "transition-hooks";
+import { Transition, useListTransition, useTransition } from "transition-hooks";
 import { Form } from "../ui/form";
 import PostFormItem from "./form-item";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { Separator } from "@/components/ui/separator";
-import { RiCloseLine, RiExpandUpDownLine } from "@remixicon/react";
+import { RiCloseFill, RiCloseLine, RiExpandUpDownLine } from "@remixicon/react";
 import { Button } from "../ui/button";
 import GifPicker from "gif-picker-react";
 import AddThread from "./add-thread";
@@ -21,28 +21,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import RecordForm from "./record-form";
+import PostPermission from "./post-permission";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "../ui/use-toast";
+import { useEdgeStore } from "@/lib/edgestore";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
-  reply: z.enum(["anyone", "followers", "mentions"]),
+  reply: z.string().optional(),
 });
 
 export type ThreadSchema = z.infer<typeof threadSchema>;
 
 function PostFormIndex() {
+  const { edgestore } = useEdgeStore();
+  const { toast } = useToast();
   const formRef = React.useRef<HTMLFormElement>(null);
   const [gifPostIndex, setGifPostIndex] = React.useState(-1);
   const [audioPostIndex, setAudioPostIndex] = React.useState(-1);
 
   const form = useForm<ThreadSchema>({
+    resolver: zodResolver(threadSchema),
     defaultValues: {
       posts: [{ content: "", poll: undefined, media: [] }],
-      reply: "anyone",
+      reply: "",
     },
   });
-
-
-
 
   const { fields, append, remove } = useFieldArray({
     name: "posts",
@@ -78,48 +82,89 @@ function PostFormIndex() {
 
   // To make form submit only if the type is "submit" on button
   // Because the default behavior of the button does fucking form submit on every button press
+  // useEffect(() => {
+  //   const formElement = formRef.current;
 
-  useEffect(() => {
-    const formElement = formRef.current;
+  //   if (formElement) {
+  //     const handleClick = (event: MouseEvent) => {
+  //       const target = event.target as HTMLButtonElement;
+  //       if (target.tagName === "BUTTON" && target.type !== "submit")
+  //         event.preventDefault();
+  //     };
 
-    if(formElement) {
-      const handleClick = (event: MouseEvent) => {
-        const target = event.target as HTMLButtonElement;
-        if(target.tagName === 'BUTTON' && target.type !== 'submit')
-          event.preventDefault()
-      }
+  //     formElement.addEventListener("click", handleClick);
 
-      formElement.addEventListener("click", handleClick)
-
-      return () => formElement.removeEventListener('click', handleClick)
-    }
-  }, [])
+  //     return () => formElement.removeEventListener("click", handleClick);
+  //   }
+  // }, []);
 
   const onFormSubmit = (data: z.infer<typeof threadSchema>) => {
-    // TODO: Filter out the poll where the input is blank
-    console.log(data);
+    /**
+     * TODO: Before submitting for this this should be done
+     * - Filter out the poll where the value is <empty string>
+     * - Confirm Upload the media and audio files if any
+     * - Parse the content and add mentions and tags if there are any
+     * -
+     */
+
     form.reset();
   };
 
   return (
-    <div className="border p-6 rounded h-fit w-full">
-      {gifPostIndex >= 0 && (
-        <GifPicker
-          width="100%"
-          height="500px"
-          onGifClick={(gif) => {
-            form.setValue(`posts.${gifPostIndex}.gif`, {
-              url: gif.url,
-              description: gif.description,
-              name: gif.tags[0],
-              height: gif.height,
-              width: gif.width,
-            });
-            setGifPostIndex(-1);
-          }}
-          tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
-        />
-      )}
+    <div className="border p-6 rounded h-fit w-full overflow-hidden">
+      <Transition state={Boolean(gifPostIndex >= 0)}>
+        {({ shouldMount, simpleStatus }) =>
+          shouldMount && (
+            <div
+              className="space-y-2"
+              style={{
+                transition: "all 0.5s ease-in-out",
+                transform:
+                  simpleStatus === "enter"
+                    ? "translateY(0px)"
+                    : simpleStatus === "exit"
+                    ? "translateY(-50px)"
+                    : "translateY(50px)",
+                opacity:
+                  simpleStatus === "enter"
+                    ? 1
+                    : simpleStatus === "exit"
+                    ? 0
+                    : 0,
+              }}
+            >
+              <div className="flex items-center justify-between px-2">
+                <h1 className="font-semibold text-lg tracking-tight">
+                  Pick up your favourite meme
+                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setGifPostIndex(-1)}
+                >
+                  <RiCloseFill className="w-5 h-5" />
+                </Button>
+              </div>
+              <GifPicker
+                width="100%"
+                height="calc(100vh - 350px)"
+                onGifClick={(gif) => {
+                  form.setValue(`posts.${gifPostIndex}.gif`, {
+                    url: gif.url,
+                    description: gif.description,
+                    name: gif.tags[0],
+                    height: gif.height,
+                    width: gif.width,
+                  });
+                  setGifPostIndex(-1);
+                }}
+                tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
+              />
+            </div>
+          )
+        }
+      </Transition>
+
       {audioPostIndex >= 0 && (
         <RecordForm
           setAudio={(audio) => {
@@ -129,7 +174,7 @@ function PostFormIndex() {
           onCancel={() => setAudioPostIndex(-1)}
         />
       )}
-      {gifPostIndex < 0 && audioPostIndex < 0 && (
+      {gifPostIndex === -1 && audioPostIndex === -1 && (
         <FormProvider {...form}>
           <Form {...form}>
             <form
@@ -179,23 +224,8 @@ function PostFormIndex() {
               </div>
               <AddThread append={append} />
               <div className="mt-6 w-full flex justify-between items-center ">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="inline-flex items-center text-sm "
-                    >
-                      Anyone can reply & quote
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Anyone</DropdownMenuItem>
-                    <DropdownMenuItem>Profiles you follow</DropdownMenuItem>
-                    <DropdownMenuItem>Mentioned only</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Button form="thread-form">Post</Button>
+                <PostPermission />
+                <Button type="submit">Post</Button>
               </div>
             </form>
           </Form>

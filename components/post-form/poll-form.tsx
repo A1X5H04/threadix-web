@@ -4,7 +4,12 @@ import { PollSchema, PostSchema } from "@/types";
 import { cn } from "@/lib/utils";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Tooltip,
   TooltipProvider,
@@ -20,7 +25,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RiArrowDownSLine } from "@remixicon/react";
 
-const placeholders = ["Yeah", "Nah"];
+const timeInterval = [
+  {
+    label: "15 minutes",
+    value: "15m",
+  },
+  {
+    label: "30 minutes",
+    value: "30m",
+  },
+  {
+    label: "1 hour",
+    value: "1h",
+  },
+  {
+    label: "6 hours",
+    value: "6h",
+  },
+  {
+    label: "12 hours",
+    value: "12h",
+  },
+  {
+    label: "1 day",
+    value: "1d",
+  },
+];
 
 function PollForm({
   itemIndex,
@@ -29,63 +59,26 @@ function PollForm({
   itemIndex: number;
   watchedPoll: PollSchema;
 }) {
-  const [addPollField, setAddPollField] = useState("");
-  const { getValues, setValue, control } = useFormContext<{
+  const { getValues, setValue, control, formState } = useFormContext<{
     posts: PostSchema[];
   }>();
 
   const { fields, append, remove } = useFieldArray<{ posts: PostSchema[] }>({
     name: `posts.${itemIndex}.poll.options`,
+    rules: {
+      required: "This field is required",
+      minLength: {
+        value: 2,
+        message: "You need at least two options",
+      },
+    },
   });
-
-  console.log("Rerendering PollForm");
-
-  const timeInterval = [
-    {
-      label: "15 minutes",
-      value: "15m",
-    },
-    {
-      label: "30 minutes",
-      value: "30m",
-    },
-    {
-      label: "1 hour",
-      value: "1h",
-    },
-    {
-      label: "6 hours",
-      value: "6h",
-    },
-    {
-      label: "12 hours",
-      value: "12h",
-    },
-    {
-      label: "1 day",
-      value: "1d",
-    },
-  ];
-
-  useEffect(() => {
-    const lastOption =
-      watchedPoll.options[watchedPoll.options.length - 1]?.title;
-
-    // Append a new field if the last option is not empty and the number of fields is less than 4
-    if (addPollField && watchedPoll.options.length < 4) {
-      append({ title: "" });
-    }
-
-    // Remove the last field if the second last field is empty
-    if (!lastOption && watchedPoll.options.length > 2) {
-      remove(fields.length - 1);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedPoll.options, append, remove]);
 
   const handleRadioChange = useCallback(
     (value: string) => {
+      console.log("value", value);
       fields.forEach((_, index) => {
+        console.log("index", index, index === parseInt(value));
         setValue(
           `posts.${itemIndex}.poll.options.${index}.isCorrect`,
           index === parseInt(value)
@@ -96,13 +89,35 @@ function PollForm({
     [fields, itemIndex]
   );
 
+  useEffect(() => {
+    const lastOption =
+      watchedPoll.options?.[watchedPoll.options?.length - 1]?.title;
+    const secondLastOption =
+      watchedPoll.options?.[watchedPoll.options?.length - 2]?.title;
+
+    if (lastOption && watchedPoll.options.length < 4) {
+      append({ title: "" }, { shouldFocus: false });
+    }
+
+    // Remove the last field if the second last field is empty
+    if (!secondLastOption && watchedPoll.options.length > 1) {
+      remove(fields.length - 1);
+    }
+
+    if (!lastOption && watchedPoll.options.length === 1) {
+      setValue(`posts.${itemIndex}.poll`, undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedPoll.options, append, remove]);
+
+  console.log("PollForm Rendered");
+
   return (
     <div className="overflow-hidden p-1">
       <div className="space-y-2 mb-4">
         <RadioGroup
-          onValueChange={handleRadioChange}
-          defaultValue={"0"}
-          className="flex flex-col space-y-1"
+          onValueChange={(value) => console.log("onValueChange", value)}
+          defaultValue="0"
         >
           {fields.map((field, idx) => (
             <div key={field.id} className="relative space-y-2">
@@ -114,44 +129,47 @@ function PollForm({
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={placeholders[idx]}
+                        placeholder={
+                          idx === fields.length - 1
+                            ? "Add another option"
+                            : "Option"
+                        }
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
                           }
                         }}
+                        className={cn(
+                          idx === fields.length - 1 &&
+                            field.value == "" &&
+                            "border-dashed focus:border-solid"
+                        )}
                       />
                     </FormControl>
+                    <FormMessage />
+
                     {getValues(`posts.${itemIndex}.poll`)?.quizMode == true && (
-                      <RadioGroupItem
-                        className="absolute bottom-[11px] right-4"
-                        value={`${idx}`}
-                      />
+                      <div className="absolute bottom-[5.5px] right-4">
+                        {field.value && (
+                          <RadioGroupItem
+                            className="bg-white dark:bg-black"
+                            value={`${idx}`}
+                            id="radio"
+                          />
+                        )}
+                      </div>
                     )}
                   </FormItem>
                 )}
               />
-              {/* {getValues(`posts.${itemIndex}.poll.options.${idx}.title`) &&
-                getValues(`posts.${itemIndex}.poll`)?.quizMode == true && (
-                  <RadioGroupItem
-                    className="absolute bottom-[11px] right-4"
-                    value={`${idx}`}
-                  />
-                )} */}
             </div>
           ))}
         </RadioGroup>
-        <Input
-          value={addPollField}
-          onChange={(e) => setAddPollField(e.target.value)}
-          className="border-dashed"
-          placeholder="Add another option"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-            }
-          }}
-        />
+        {formState.errors?.posts?.[itemIndex]?.poll?.options?.root && (
+          <span>
+            {formState.errors?.posts?.[itemIndex]?.poll?.options?.root?.message}
+          </span>
+        )}
         <div className="w-full flex justify-between">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -208,7 +226,7 @@ function PollForm({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className="text-xs">
-                  Let users select the correct answer.
+                  Create a quiz with one correct answer.
                 </TooltipContent>
               </Tooltip>
               <Tooltip>

@@ -8,27 +8,29 @@ import {
   RiMusic2Line,
   RiVoiceRecognitionLine,
 } from "@remixicon/react";
+import { useFormContext } from "react-hook-form";
+import { PostAudioSchema } from "@/types";
 
 interface FormAudioProps {
-  name: string;
-  type: "audio" | "voice";
-  url: string;
+  audio: PostAudioSchema;
+  removeAudio: () => void;
 }
 
-function FormAudio({ name, url, type }: FormAudioProps) {
+function FormAudio({ audio, removeAudio }: FormAudioProps) {
+  const form = useFormContext();
   const [blob, setBlob] = React.useState<Blob | null>(null);
   const isClient = useIsClient();
   const visualizerControls = useVoiceVisualizer();
 
   useEffect(() => {
-    fetch(url)
+    fetch(audio.url)
       .then((response) => response.blob())
       .then((blob) => {
         visualizerControls.setPreloadedAudioBlob(blob);
         setBlob(blob);
       });
-    console.log("Blob", blob);
-  }, [url]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audio.url]);
 
   if (!isClient) return null;
 
@@ -64,20 +66,28 @@ function FormAudio({ name, url, type }: FormAudioProps) {
       </div>
       <div className="flex items-center justify-between px-2 py-1">
         <div className="flex items-center gap-x-1">
-          {type === "audio" ? (
-            <RiMusic2Line className="w-3.5 h-3.5" />
+          {audio.type === "audio" ? (
+            <span title="Audio File">
+              <RiMusic2Line className="w-3.5 h-3.5" />
+            </span>
           ) : (
-            <RiVoiceRecognitionLine className="w-3.5 h-3.5" />
+            <span title="Voice Recording">
+              <RiVoiceRecognitionLine className="w-3.5 h-3.5" />
+            </span>
           )}
-          <p className="text-xs font-medium">{name}</p>
+          <p className="text-xs font-medium max-w-36 truncate">{audio.name}</p>
           &middot;
           <p className="text-xs text-muted-foreground">
             {visualizerControls.formattedDuration}
           </p>
         </div>
-        <span className="text-xs text-muted-foreground hover:font-semibold cursor-pointer">
+        <button
+          type="button"
+          onClick={removeAudio}
+          className="text-xs text-muted-foreground font-semibold cursor-pointer hover:text-foreground"
+        >
           Remove Audio
-        </span>
+        </button>
       </div>
     </div>
   );
