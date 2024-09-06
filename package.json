@@ -53,6 +53,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.2",
+    "react-string-replace": "^1.1.1",
     "react-voice-visualizer": "^2.0.2",
     "rich-textarea": "^0.26.2",
     "swr": "^2.2.5",
