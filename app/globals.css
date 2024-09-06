@@ -68,6 +68,56 @@ body {
   }
 }
 
+.embla {
+  overflow: hidden;
+  width: 100%;
+}
+
+.embla__container {
+  display: flex;
+  align-items: center;
+}
+
+.embla__slide {
+  position: relative;
+  flex: 0 0 100%;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.embla__slide img,
+.embla__slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.embla__slide.square {
+  grid-row: span 1;
+  grid-column: span 1;
+}
+
+.embla__slide.portrait {
+  grid-row: span 2;
+}
+
+.embla__slide.landscape {
+  grid-column: span 2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .embla__slide {
+    flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .embla__slide {
+    flex: 0 0 100%;
+  }
+}
+
 .GifPickerReact {
   border: none !important;
   --gpr-bg-color: hsl(var(--background)) !important;

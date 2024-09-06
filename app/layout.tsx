@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Source_Sans_3, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Work_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Cascade - A Threads Clone",
@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
+      <body className={font.className}>
         <EdgeStoreProvider>{children}</EdgeStoreProvider>
         <Toaster />
       </body>

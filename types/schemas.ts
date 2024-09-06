@@ -38,8 +38,8 @@ export const postMediaSchema = z.object({
   name: z.string(),
   url: z.string().url(),
   description: z.string().optional(),
-  width: z.number().optional(),
-  height: z.number().optional(),
+  width: z.number(),
+  height: z.number(),
   type: z.string(),
 });
 
@@ -54,7 +54,6 @@ export const postGifSchema = z.object({
 export const postAudioSchema = z.object({
   name: z.string(),
   url: z.string().url(),
-  description: z.string().optional(),
   duration: z.string().optional(),
   type: z.string(),
 });
@@ -85,7 +84,9 @@ export const pollSchema = z
   });
 
 export const postSchema = z.object({
-  content: z.string(),
+  content: z.string().min(10, {
+    message: "A thread content must have at least 10 characters",
+  }),
   location: z.string().optional(),
   media: z.array(postMediaSchema),
   mentions: z.array(z.string()).optional(),
