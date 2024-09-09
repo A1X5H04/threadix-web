@@ -9,6 +9,8 @@ const nextConfig = {
       { hostname: "api.dicebear.com", pathname: "/avatars/**" },
       { hostname: "images.unsplash.com", protocol: "https" },
       { hostname: "files.edgestore.dev", protocol: "https" },
+      { hostname: "media.tenor.com", protocol: "https" },
+      { hostname: "media1.tenor.com", protocol: "https" },
     ],
   },
 };
