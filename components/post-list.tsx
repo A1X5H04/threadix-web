@@ -16,7 +16,7 @@ type Post = {
 };
 
 function PostList({ user }: { user: any }) {
-  // const { data, error, isLoading } = useSWR(
+  // const { data, error, isisLoading } = useSWR(
   //   "/api/post",
   //   (args) => console.log("OnFetchSWR", args),
   //   {
@@ -24,7 +24,7 @@ function PostList({ user }: { user: any }) {
   //   }
   // );
 
-  // if (isLoading)
+  // if (isisLoading)
   //   return (
   //     <div className="w-full h-72 grid place-items-center">
   //       <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />

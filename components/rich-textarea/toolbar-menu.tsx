@@ -18,8 +18,8 @@ import {
 
 const style = { width: "400px", height: "300px" };
 
-const boldReg = /\*\*([^\*]+)\*\*/g;
-const italicReg = /\*([^\*]+)\*/g;
+const boldReg = /\*\*([^*]+)\*\*/g;
+const italicReg = /(?<!\*)\*([^*]+)\*(?!\*)/g;
 const strikeReg = /~~([^~]+)~~/g;
 const monoReg = /`([^`]+)`/g;
 const underlineReg = /_([^_]+)_/g;

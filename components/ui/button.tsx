@@ -39,7 +39,7 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
-  loading?: boolean;
+  isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -51,7 +51,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {props.loading ? (
+        {props.isLoading ? (
           <RiLoader2Line className="animate-spin fade-out-100" size={20} />
         ) : (
           <React.Fragment>{props.children}</React.Fragment>

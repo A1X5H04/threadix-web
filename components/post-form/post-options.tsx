@@ -27,6 +27,7 @@ import {
 import FormAudio from "./form-audio";
 import { useToast } from "@/components/ui/use-toast";
 import { useEdgeStore } from "@/lib/edgestore";
+import Image from "next/image";
 
 interface PostOptionsProps {
   index: number;
@@ -102,8 +103,9 @@ function PostOptions({
                         height: video.videoHeight,
                       });
                     };
+                    URL.revokeObjectURL(video.src);
                   } else {
-                    const img = new Image();
+                    const img = document.createElement("img");
                     img.src = URL.createObjectURL(file);
                     img.onload = async () => {
                       const res = await edgestore.publicFiles.upload({
@@ -118,6 +120,7 @@ function PostOptions({
                         height: img.height,
                       });
                     };
+                    URL.revokeObjectURL(img.src);
                   }
                 });
               })
@@ -128,7 +131,7 @@ function PostOptions({
             console.log("Add Media: Upload Error", error);
             toast({
               title: "Error: Upload Failed",
-              description: "An error occurred while uploading the media",
+              description: "An error occurred while upploading the media",
               variant: "destructive",
             });
           }
@@ -157,7 +160,7 @@ function PostOptions({
                         });
                       };
                     } else {
-                      const img = new Image();
+                      const img = document.createElement("img");
                       img.src = URL.createObjectURL(file);
                       img.onload = async () => {
                         const res = await edgestore.publicFiles.upload({
@@ -223,7 +226,7 @@ function PostOptions({
               console.log("Add Audio: Upload Error", err);
               toast({
                 title: "Error: Upload Failed",
-                description: "An error occurred while uploading the audio",
+                description: "An error occurred while upisLoading the audio",
                 variant: "destructive",
               });
             })
@@ -244,7 +247,9 @@ function PostOptions({
             </button>
           </span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
+            width={watchedGif.width}
+            height={watchedGif.height}
             src={watchedGif.url}
             alt={watchedGif.name}
             className="w-full h-full object-cover rounded-md"

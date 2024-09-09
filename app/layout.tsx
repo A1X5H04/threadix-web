@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Source_Sans_3, Work_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 
-const font = Work_Sans({ subsets: ["latin"] });
+const font = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Cascade - A Threads Clone",
