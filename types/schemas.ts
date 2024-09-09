@@ -63,12 +63,12 @@ export const pollSchema = z
     options: z
       .array(
         z.object({
-          title: z.string().max(30).min(1),
+          title: z.string().max(30),
           isCorrect: z.boolean().optional(),
         })
       )
-      .min(2)
-      .max(8),
+      .min(3, { message: "A poll must have at least 2 options" }) // min(3) because we need at least 2 options + 1 is a blank placeholder
+      .max(4),
 
     duration: z.string(),
     anonymousVoting: z.boolean(),

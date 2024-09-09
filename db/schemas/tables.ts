@@ -19,9 +19,9 @@ const createId = init({
 });
 
 export const postVisibilityStatus = pgEnum("post_visibility_status", [
-  "public",
+  "anyone",
   "followers",
-  "private",
+  "mentions",
 ]);
 
 export const postMediaType = pgEnum("post_media_type", [
@@ -29,6 +29,7 @@ export const postMediaType = pgEnum("post_media_type", [
   "audio",
   "image",
   "video",
+  "voice",
 ]);
 
 // export const activityType = pgEnum("activity_type", [
@@ -60,9 +61,7 @@ export const posts = pgTable(
 
     content: text("content").notNull(),
 
-    visibilityStatus: postVisibilityStatus("visibility_status")
-      .notNull()
-      .$default(() => "public"),
+    mentions: text("mentions").array().notNull(),
 
     createdAt: timestamp("created_at").$default(() => new Date()),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
@@ -86,12 +85,9 @@ export const postMedia = pgTable(
     height: bigint("height", {
       mode: "number",
     }),
-    duration: bigint("duration", {
-      mode: "number",
-    }), // in seconds
+    duration: varchar("duration", { length: 6 }),
     description: text("description"),
     type: postMediaType("media_type").notNull(),
-    isVoiceNote: boolean("is_voice_note").$default(() => false),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
