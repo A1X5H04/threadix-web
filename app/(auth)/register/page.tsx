@@ -167,7 +167,7 @@ function RegisterPage() {
               <Button
                 type="submit"
                 className="w-full"
-                loading={isPending}
+                isLoading={isPending}
                 disabled={isPending}
               >
                 Create an account

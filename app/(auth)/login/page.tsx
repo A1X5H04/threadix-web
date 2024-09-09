@@ -128,7 +128,7 @@ function LoginPage() {
               <Button
                 type="submit"
                 className="w-full"
-                loading={isPending}
+                isLoading={isPending}
                 disabled={isPending}
               >
                 Login
