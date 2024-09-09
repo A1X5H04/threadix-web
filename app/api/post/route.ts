@@ -1,3 +1,4 @@
+import { ThreadSchema } from "@/components/post-form";
 import {
   likes,
   pollOptions,
@@ -8,6 +9,7 @@ import {
 import { validateRequest } from "@/lib/auth";
 import db from "@/lib/db";
 import { desc } from "drizzle-orm";
+
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -50,72 +52,107 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const { user } = await validateRequest();
-    const { content, parentId, media, poll } = await req.json();
+    const request: ThreadSchema = await req.json();
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    if (!content) {
-      return new NextResponse("Content is a required field!", { status: 400 });
+    if (!request.posts) {
+      return new NextResponse(
+        "Atleast one post is required to create a thread!",
+        { status: 400 }
+      );
     }
 
-    if (media || poll) {
-      await db.transaction(async (tx) => {
-        const [postObj] = await tx
+    // Credit: https://github.com/noelrohi/thr - Noel Rohi
+
+    await db.transaction(async (txn) => {
+      const parentIds: Array<string> = [];
+      for (const post of request.posts) {
+        const [{ id }] = await txn
           .insert(posts)
           .values({
+            content: post.content,
             userId: user.id,
-            content,
-            parentId,
+            createdAt: new Date(),
+            parentId:
+              parentIds.length > 0 ? parentIds[parentIds.length - 1] : null, // Last parent id
           })
-          .returning({ id: posts.id });
+          .returning();
 
-        if (media) {
-          await tx.insert(postMedia).values(
-            media.map((media: any) => ({
-              postId: postObj.id,
-              mediaPath: media.path,
-              mimeType: media.mimeType,
+        if (post.media.length > 0) {
+          // insert media
+          await txn.insert(postMedia).values(
+            post.media.map((m) => ({
+              postId: id,
+              type: m.type === "image" ? "image" : ("video" as any), // TODO: give a proper type
+              url: m.url,
+              height: m.height,
+              width: m.width,
+              name: m.name,
             }))
           );
         }
 
-        if (poll) {
-          const [pollObj] = await tx
+        if (post.gif) {
+          // insert gif
+          await txn.insert(postMedia).values({
+            postId: id,
+            type: "gif",
+            url: post.gif.url,
+            name: post.gif.name,
+            height: post.gif.height,
+            width: post.gif.width,
+          });
+        }
+
+        if (post.audio) {
+          // insert audio
+          await txn.insert(postMedia).values({
+            postId: id,
+            type: "audio",
+            name: post.audio.name,
+            url: post.audio.url,
+            duration: post.audio.duration,
+          });
+        }
+
+        if (post.poll) {
+          // insert poll
+
+          const [{ id: pollId }] = await txn
             .insert(polls)
             .values({
-              postId: postObj.id,
-              duration: poll.duration,
-              multipleVotes: poll.multipleVotes,
-              quizMode: poll.quizMode,
-              question: poll.question,
+              postId: id,
+              duration: new Date(post.poll.duration),
+              multipleVotes: post.poll.multipleAnswers,
+              quizMode: post.poll.quizMode,
+              anonymousVoting: post.poll.anonymousVoting,
             })
-            .returning({ id: polls.id });
+            .returning();
 
-          await tx.insert(pollOptions).values(
-            poll.options.map((option: any) => ({
-              pollId: pollObj.id,
+          // insert poll options
+          await txn.insert(pollOptions).values(
+            post.poll.options.map((option) => ({
+              pollId: pollId,
               title: option.title,
-              isCorrect: option.isCorrect,
+              isCorrect: option.isCorrect || null,
             }))
           );
         }
-      });
 
-      return NextResponse.json({ id: posts.id });
-    }
+        if (post.mentions && post.mentions.length > 0) {
+          // TODO: insert mentions
+        }
 
-    const [post] = await db
-      .insert(posts)
-      .values({
-        userId: user.id,
-        content,
-        parentId,
-      })
-      .returning({ id: posts.id });
+        if (post.tags && post.tags.length > 0) {
+          // TODO: insert tags
+        }
 
-    return NextResponse.json(post);
+        parentIds.push(id);
+      }
+    });
   } catch (error) {
     console.log("POST_CREATE_ERROR", error);
     return new NextResponse("An error occurred", { status: 500 });
