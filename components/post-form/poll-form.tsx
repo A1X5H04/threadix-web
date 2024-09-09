@@ -66,7 +66,6 @@ function PollForm({
   const { fields, append, remove } = useFieldArray<{ posts: PostSchema[] }>({
     name: `posts.${itemIndex}.poll.options`,
     rules: {
-      required: "This field is required",
       minLength: {
         value: 2,
         message: "You need at least two options",
@@ -166,8 +165,8 @@ function PollForm({
           ))}
         </RadioGroup>
         {formState.errors?.posts?.[itemIndex]?.poll?.options?.root && (
-          <span>
-            {formState.errors?.posts?.[itemIndex]?.poll?.options?.root?.message}
+          <span className="text-xs text-destructive">
+            {formState.errors.posts[itemIndex].poll.options.root.message}
           </span>
         )}
         <div className="w-full flex justify-between">

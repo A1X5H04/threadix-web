@@ -45,7 +45,8 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Add a title for your recording"
-          disabled={!initialRecordingState}
+          maxLength={50}
+          disabled={recorder.isRecordingInProgress}
         />
 
         {initialRecordingState ? (
@@ -144,7 +145,7 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
           </Button>
           <Button
             disabled={recorder.recordedBlob === null || pending}
-            loading={pending}
+            isLoading={pending}
             onClick={() => {
               transition(async () => {
                 if (recorder.recordedBlob === null) return;
@@ -174,7 +175,7 @@ function RecordForm({ setAudio, onCancel }: RecordFormProps) {
                     toast({
                       title: "Error: Upload Failed",
                       description:
-                        "An error occurred while uploading the recording",
+                        "An error occurred while upisLoading the recording",
                       variant: "destructive",
                     });
                   });

@@ -75,7 +75,12 @@ function FormAudio({ audio, removeAudio }: FormAudioProps) {
               <RiVoiceRecognitionLine className="w-3.5 h-3.5" />
             </span>
           )}
-          <p className="text-xs font-medium max-w-36 truncate">{audio.name}</p>
+          <p
+            className="text-xs font-medium max-w-36 truncate"
+            title={audio.name}
+          >
+            {audio.name}
+          </p>
           &middot;
           <p className="text-xs text-muted-foreground">
             {visualizerControls.formattedDuration}

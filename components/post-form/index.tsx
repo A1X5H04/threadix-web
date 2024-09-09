@@ -1,30 +1,24 @@
 "use client";
 
 import { postSchema } from "@/types/schemas";
-import React, { useEffect } from "react";
+import { useRef, useState, useTransition } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Transition, useListTransition, useTransition } from "transition-hooks";
 import { Form } from "../ui/form";
 import PostFormItem from "./form-item";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { Separator } from "@/components/ui/separator";
-import { RiCloseFill, RiCloseLine, RiExpandUpDownLine } from "@remixicon/react";
+import { RiCloseFill, RiCloseLine } from "@remixicon/react";
 import { Button } from "../ui/button";
 import GifPicker from "gif-picker-react";
 import AddThread from "./add-thread";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import RecordForm from "./record-form";
 import PostPermission from "./post-permission";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "../ui/use-toast";
 import { useEdgeStore } from "@/lib/edgestore";
+import { useListTransition, Transition } from "transition-hooks";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -34,11 +28,12 @@ const threadSchema = z.object({
 export type ThreadSchema = z.infer<typeof threadSchema>;
 
 function PostFormIndex() {
+  const [pending, transtion] = useTransition();
   const { edgestore } = useEdgeStore();
   const { toast } = useToast();
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const [gifPostIndex, setGifPostIndex] = React.useState(-1);
-  const [audioPostIndex, setAudioPostIndex] = React.useState(-1);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [gifPostIndex, setGifPostIndex] = useState(-1);
+  const [audioPostIndex, setAudioPostIndex] = useState(-1);
 
   const form = useForm<ThreadSchema>({
     resolver: zodResolver(threadSchema),
@@ -107,63 +102,75 @@ function PostFormIndex() {
      * -
      */
 
-    form.reset();
+    transtion(async () => {
+      await Promise.all(
+        data.posts.map(async (item, idx) => {
+          if (item.media.length > 0) {
+            await Promise.all(
+              item.media.map(async ({ url }) => {
+                await edgestore.publicFiles.confirmUpload({ url });
+              })
+            );
+          }
+
+          if (item.poll) {
+            const optionsWithoutEmptyTitle = item.poll.options.filter(
+              (item) => item.title !== ""
+            );
+            console.log("Options", optionsWithoutEmptyTitle);
+            form.setValue(
+              `posts.${idx}.poll.options`,
+              optionsWithoutEmptyTitle
+            );
+          }
+
+          if (item.audio) {
+            await edgestore.publicFiles.confirmUpload({ url: item.audio.url });
+          }
+        })
+      );
+
+      console.log("Data", form.getValues());
+
+      form.reset();
+    });
   };
 
   return (
     <div className="border p-6 rounded h-fit w-full overflow-hidden">
-      <Transition state={Boolean(gifPostIndex >= 0)}>
-        {({ shouldMount, simpleStatus }) =>
-          shouldMount && (
-            <div
-              className="space-y-2"
-              style={{
-                transition: "all 0.5s ease-in-out",
-                transform:
-                  simpleStatus === "enter"
-                    ? "translateY(0px)"
-                    : simpleStatus === "exit"
-                    ? "translateY(-50px)"
-                    : "translateY(50px)",
-                opacity:
-                  simpleStatus === "enter"
-                    ? 1
-                    : simpleStatus === "exit"
-                    ? 0
-                    : 0,
-              }}
+      {/* {JSON.stringify(form.formState.errors)} */}
+
+      {Boolean(gifPostIndex >= 0) && (
+        <>
+          <div className="flex items-center justify-between px-2">
+            <h1 className="font-semibold text-lg tracking-tight">
+              Pick up your favourite meme
+            </h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setGifPostIndex(-1)}
             >
-              <div className="flex items-center justify-between px-2">
-                <h1 className="font-semibold text-lg tracking-tight">
-                  Pick up your favourite meme
-                </h1>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setGifPostIndex(-1)}
-                >
-                  <RiCloseFill className="w-5 h-5" />
-                </Button>
-              </div>
-              <GifPicker
-                width="100%"
-                height="calc(100vh - 350px)"
-                onGifClick={(gif) => {
-                  form.setValue(`posts.${gifPostIndex}.gif`, {
-                    url: gif.url,
-                    description: gif.description,
-                    name: gif.tags[0],
-                    height: gif.height,
-                    width: gif.width,
-                  });
-                  setGifPostIndex(-1);
-                }}
-                tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
-              />
-            </div>
-          )
-        }
-      </Transition>
+              <RiCloseFill className="w-5 h-5" />
+            </Button>
+          </div>
+          <GifPicker
+            width="100%"
+            height="calc(100vh - 350px)"
+            onGifClick={(gif) => {
+              form.setValue(`posts.${gifPostIndex}.gif`, {
+                url: gif.url,
+                description: gif.description,
+                name: gif.tags[0],
+                height: gif.height,
+                width: gif.width,
+              });
+              setGifPostIndex(-1);
+            }}
+            tenorApiKey="AIzaSyDFPshK0fSveptnAxuqSHrKROQBPSO5nFk"
+          />
+        </>
+      )}
 
       {audioPostIndex >= 0 && (
         <RecordForm
@@ -225,7 +232,9 @@ function PostFormIndex() {
               <AddThread append={append} />
               <div className="mt-6 w-full flex justify-between items-center ">
                 <PostPermission />
-                <Button type="submit">Post</Button>
+                <Button isLoading={pending} type="submit">
+                  Post
+                </Button>
               </div>
             </form>
           </Form>
