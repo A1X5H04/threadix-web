@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "react-hot-toast";
 import { EdgeStoreProvider } from "@/lib/edgestore";
+import {
+  RiCheckboxCircleFill,
+  RiCheckFill,
+  RiErrorWarningFill,
+  RiLoader2Line,
+} from "@remixicon/react";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -18,10 +24,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="light">
       <body className={font.className}>
         <EdgeStoreProvider>{children}</EdgeStoreProvider>
-        <Toaster />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              background: "hsl(var(--background))",
+              color: "hsl(var(--foreground))",
+              borderRadius: "var(--radius)",
+              border: "1px solid hsl(var(--muted))",
+            },
+            className: "text-sm shadow-lg",
+
+            success: {
+              icon: <RiCheckboxCircleFill className="w-5 h-5" />,
+            },
+            error: {
+              icon: <RiErrorWarningFill className="w-5 h-5" />,
+            },
+            loading: {
+              icon: <RiLoader2Line className="w-4 h-4 animate-spin" />,
+            },
+          }}
+        />
       </body>
     </html>
   );
