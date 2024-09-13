@@ -54,7 +54,6 @@ const ToolbarMenu = ({
     <div
       className="flex gap-x-1 p-1 fixed z-50 bg-background border rounded-lg shadow-md"
       style={{
-        position: "fixed",
         top: top,
         left: left,
       }}
