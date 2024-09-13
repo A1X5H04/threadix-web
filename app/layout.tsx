@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import {
   RiCheckboxCircleFill,
-  RiCheckFill,
   RiErrorWarningFill,
   RiLoader2Line,
 } from "@remixicon/react";
 
-const font = Inter({ subsets: ["latin"] });
+const font = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Cascade - A Threads Clone",
@@ -24,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className="dark">
       <body className={font.className}>
         <EdgeStoreProvider>{children}</EdgeStoreProvider>
         <Toaster

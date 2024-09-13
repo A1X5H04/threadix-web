@@ -13,7 +13,7 @@ async function MainLayout({ children }: Props) {
   if (!session) return redirect("/login");
 
   return (
-    <main className="max-w-2xl mx-auto px-5 w-full h-full">
+    <main className="relative max-w-2xl mx-auto px-5 w-full h-full">
       <Navbar />
       {children}
     </main>

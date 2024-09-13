@@ -1,3 +1,4 @@
+import FloatingAddPost from "@/components/floating-add-post";
 import PostForm from "@/components/post-form";
 import PostList from "@/components/post-list";
 import { validateRequest } from "@/lib/auth";
@@ -10,9 +11,9 @@ export default async function Home({}) {
   const { user } = await validateRequest();
 
   return (
-    <>
-      <PostForm user={user} />
-      {/* <PostList user={user} /> */}
-    </>
+    <div className="pt-20 w-full h-full">
+      <PostList user={user} />
+      <FloatingAddPost />
+    </div>
   );
 }
