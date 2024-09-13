@@ -18,7 +18,7 @@ interface FormAudioProps {
 
 function FormAudio({ audio, removeAudio }: FormAudioProps) {
   const form = useFormContext();
-  const [blob, setBlob] = React.useState<Blob | null>(null);
+
   const isClient = useIsClient();
   const visualizerControls = useVoiceVisualizer();
 
@@ -27,7 +27,6 @@ function FormAudio({ audio, removeAudio }: FormAudioProps) {
       .then((response) => response.blob())
       .then((blob) => {
         visualizerControls.setPreloadedAudioBlob(blob);
-        setBlob(blob);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audio.url]);

@@ -19,6 +19,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "../ui/use-toast";
 import { useEdgeStore } from "@/lib/edgestore";
 import { useListTransition, Transition } from "transition-hooks";
+import useSWRMutation from "swr/mutation";
+import { POST } from "@/lib/fetcher";
+import hotToast from "react-hot-toast";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -27,10 +30,11 @@ const threadSchema = z.object({
 
 export type ThreadSchema = z.infer<typeof threadSchema>;
 
-function PostFormIndex() {
-  const [pending, transtion] = useTransition();
-  const { edgestore } = useEdgeStore();
-  const { toast } = useToast();
+function PostFormIndex({ parentId }: { parentId?: string }) {
+  const { trigger, isMutating, error } = useSWRMutation(
+    "/api/post",
+    POST<ThreadSchema>
+  );
   const formRef = useRef<HTMLFormElement>(null);
   const [gifPostIndex, setGifPostIndex] = useState(-1);
   const [audioPostIndex, setAudioPostIndex] = useState(-1);
@@ -55,89 +59,38 @@ function PostFormIndex() {
     timeout: 400,
   });
 
-  // {
-  //   transitionList((item, { key, simpleStatus }) => {
-  //     return (
-  //       <li
-  //         style={{
-  //           position: simpleStatus === "exit" ? "absolute" : "relative",
-  //           opacity: simpleStatus === "enter" ? 1 : 0,
-  //           transform:
-  //             simpleStatus === "enter" ? "translateX(0)" : "translateX(20px)",
-  //           transition: "all 300ms",
-  //           viewTransitionName:
-  //             simpleStatus === "enter" ? `transition-list-${key}` : "",
-  //         }}
-  //       >
-  //         - {item.content}
-  //       </li>
-  //     );
-  //   });
-  // }
-
-  // To make form submit only if the type is "submit" on button
-  // Because the default behavior of the button does fucking form submit on every button press
-  // useEffect(() => {
-  //   const formElement = formRef.current;
-
-  //   if (formElement) {
-  //     const handleClick = (event: MouseEvent) => {
-  //       const target = event.target as HTMLButtonElement;
-  //       if (target.tagName === "BUTTON" && target.type !== "submit")
-  //         event.preventDefault();
-  //     };
-
-  //     formElement.addEventListener("click", handleClick);
-
-  //     return () => formElement.removeEventListener("click", handleClick);
-  //   }
-  // }, []);
-
   const onFormSubmit = (data: z.infer<typeof threadSchema>) => {
-    /**
-     * TODO: Before submitting for this this should be done
-     * - Filter out the poll where the value is <empty string>
-     * - Confirm Upload the media and audio files if any
-     * - Parse the content and add mentions and tags if there are any
-     * -
-     */
-
-    transtion(async () => {
-      await Promise.all(
-        data.posts.map(async (item, idx) => {
-          if (item.media.length > 0) {
-            await Promise.all(
-              item.media.map(async ({ url }) => {
-                await edgestore.publicFiles.confirmUpload({ url });
-              })
-            );
-          }
-
-          if (item.poll) {
-            const optionsWithoutEmptyTitle = item.poll.options.filter(
-              (item) => item.title !== ""
-            );
-            console.log("Options", optionsWithoutEmptyTitle);
-            form.setValue(
-              `posts.${idx}.poll.options`,
-              optionsWithoutEmptyTitle
-            );
-          }
-
-          if (item.audio) {
-            await edgestore.publicFiles.confirmUpload({ url: item.audio.url });
-          }
-        })
-      );
-
-      console.log("Data", form.getValues());
-
-      form.reset();
+    // Filtering out empty values from the poll field
+    data.posts.map((item, idx) => {
+      if (item.poll) {
+        const optionsWithoutEmptyTitle = item.poll.options.filter(
+          (item) => item.title !== ""
+        );
+        console.log("Options", optionsWithoutEmptyTitle);
+        form.setValue(`posts.${idx}.poll.options`, optionsWithoutEmptyTitle);
+      }
     });
+
+    hotToast
+      .promise(trigger(form.getValues()), {
+        loading: (
+          <div className="inline-flex flex-col gap-y-1">
+            <h4 className="text-semibold text-sm">Posting your Thread</h4>
+            <p className="text-xs text-muted-foreground">
+              Mutliple post in a threads takes time, Please wait...
+            </p>
+          </div>
+        ),
+        success: "Thread posted successfully",
+        error: "Failed to post thread",
+      })
+      .then(() => {
+        form.reset();
+      });
   };
 
   return (
-    <div className="border p-6 rounded h-fit w-full overflow-hidden">
+    <div className="h-fit w-full overflow-hidden">
       {/* {JSON.stringify(form.formState.errors)} */}
 
       {Boolean(gifPostIndex >= 0) && (
@@ -232,8 +185,9 @@ function PostFormIndex() {
               <AddThread append={append} />
               <div className="mt-6 w-full flex justify-between items-center ">
                 <PostPermission />
-                <Button isLoading={pending} type="submit">
-                  Post
+
+                <Button disabled={isMutating} type="submit">
+                  {isMutating ? "Posting..." : "Post"}
                 </Button>
               </div>
             </form>

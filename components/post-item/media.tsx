@@ -1,15 +1,20 @@
-import { PostMediaSchema } from "@/types";
-import useEmblaCarousel from "embla-carousel-react";
-import { RiCloseLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
+import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
+import React from "react";
 
-function FormMedia({
+function PostMedia({
   media,
-  setMedia,
 }: {
-  media: PostMediaSchema[];
-  setMedia: (media: PostMediaSchema[]) => void;
+  media: {
+    postId: string;
+    name: string;
+    url: string;
+    width: number;
+    height: number;
+    type: string;
+    createdAt: string;
+  }[];
 }) {
   const [emblaRef] = useEmblaCarousel({
     loop: false,
@@ -31,19 +36,6 @@ function FormMedia({
                 : "basis-40"
             )}
           >
-            <span>
-              <button
-                onClick={() => {
-                  const newMedia = media.filter(
-                    (item) => item.url !== mediaItem.url
-                  );
-                  setMedia(newMedia);
-                }}
-                className="absolute top-2 right-2 p-1 bg-muted hover:bg-muted text-muted-foreground transition-colors rounded-lg z-30"
-              >
-                <RiCloseLine className="w-4 h-4 text-muted-foreground" />
-              </button>
-            </span>
             {mediaItem.type === "video" ? (
               <video
                 src={mediaItem.url}
@@ -68,4 +60,4 @@ function FormMedia({
   );
 }
 
-export default FormMedia;
+export default PostMedia;

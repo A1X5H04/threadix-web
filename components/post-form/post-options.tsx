@@ -356,7 +356,7 @@ function PostOptions({
                 setValue(`posts.${index}.poll`, {
                   options: [{ title: "Yes" }, { title: "No" }],
                   duration: "5d",
-                  anonymousVoting: false,
+                  anonymousVoting: true,
                   multipleAnswers: true,
                   quizMode: false,
                 })
