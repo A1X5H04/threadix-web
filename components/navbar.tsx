@@ -52,8 +52,8 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full py-5 px-2.5">
-        <ul className="w-full inline-flex items-center justify-center gap-x-10">
+      <nav className="w-full h-20 border-b fixed max-w-2xl mx-auto">
+        <ul className="w-full h-full inline-flex items-center justify-center gap-x-10">
           {routes.map((route) => (
             <li
               key={route.path}
@@ -62,7 +62,7 @@ function Navbar() {
               <Link href={route.path} className="w-full h-full">
                 {route.isActive ? (
                   <div>
-                  <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
+                    <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
                   </div>
                 ) : (
                   <route.icon className="w-6 h-6" />

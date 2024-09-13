@@ -24,12 +24,17 @@ function PostActions({ postId }: { postId: string }) {
 
   return (
     <div className="flex items-center gap-x-2 mt-2">
-      <Button variant="ghost" size="icon">
+      <Button
+        className="text-base gap-x-2 text-muted-foreground font-light"
+        variant="ghost"
+        size="sm"
+      >
         {isLike ? (
           <RiHeart3Fill className="w-5 h-5 text-rose-500" />
         ) : (
           <RiHeart3Line className="w-5 h-5 text-muted-foreground" />
         )}
+        0
       </Button>
       <Button variant="ghost" size="icon">
         <RiChat1Line className="w-5 h-5 text-muted-foreground" />

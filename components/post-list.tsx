@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
-import axios from "axios";
 import useSWR from "swr";
 
-import PostItem from "./post-item";
-import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
+import PostItem from "./post-item/index";
+import { RiLoader2Line } from "@remixicon/react";
+import { GET } from "@/lib/fetcher";
+import { postData } from "@/data";
 
 type Post = {
   id: string;
@@ -16,15 +17,11 @@ type Post = {
 };
 
 function PostList({ user }: { user: any }) {
-  // const { data, error, isisLoading } = useSWR(
-  //   "/api/post",
-  //   (args) => console.log("OnFetchSWR", args),
-  //   {
-  //     revalidateOnFocus: false,
-  //   }
-  // );
+  // const { data, error, isLoading } = useSWR("/api/post", GET, {
+  //   revalidateOnFocus: false,
+  // });
 
-  // if (isisLoading)
+  // if (isLoading)
   //   return (
   //     <div className="w-full h-72 grid place-items-center">
   //       <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
@@ -48,7 +45,8 @@ function PostList({ user }: { user: any }) {
   // }
 
   return (
-    <h1>asdf</h1>
+    <PostItem data={postData[0]} />
+    // <h1>{JSON.stringify(data)}</h1>
     // <div className="space-y-5 my-3">
     //   {data?.map((post: Post) => (
     //     <PostItem key={post.id} data={post} user={user} />
