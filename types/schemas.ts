@@ -54,7 +54,6 @@ export const postGifSchema = z.object({
 export const postAudioSchema = z.object({
   name: z.string(),
   url: z.string().url(),
-  duration: z.string().optional(),
   type: z.string(),
 });
 
