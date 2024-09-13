@@ -410,12 +410,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "question": {
-          "name": "question",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "duration": {
           "name": "duration",
           "type": "timestamp",
@@ -424,12 +418,6 @@
         },
         "multiple_votes": {
           "name": "multiple_votes",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "anonymous_voting": {
-          "name": "anonymous_voting",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true
@@ -500,17 +488,47 @@
           "primaryKey": false,
           "notNull": true
         },
-        "media_path": {
-          "name": "media_path",
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "media_type": {
-          "name": "media_type",
-          "type": "media_type",
+        "width": {
+          "name": "width",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
+        },
+        "height": {
+          "name": "height",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "varchar(6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "media_type": {
+          "name": "media_type",
+          "type": "post_media_type",
+          "primaryKey": false,
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -552,11 +570,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "post_media_post_id_media_path_pk": {
-          "name": "post_media_post_id_media_path_pk",
+        "post_media_post_id_url_pk": {
+          "name": "post_media_post_id_url_pk",
           "columns": [
             "post_id",
-            "media_path"
+            "url"
           ]
         }
       },
@@ -602,9 +620,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "visibility_status": {
-          "name": "visibility_status",
-          "type": "post_visibility_status",
+        "mentions": {
+          "name": "mentions",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reply_permissions": {
+          "name": "reply_permissions",
+          "type": "post_reply_permissions",
           "primaryKey": false,
           "notNull": true
         },
@@ -1052,23 +1076,24 @@
     }
   },
   "enums": {
-    "public.media_type": {
-      "name": "media_type",
+    "public.post_media_type": {
+      "name": "post_media_type",
       "schema": "public",
       "values": [
-        "image",
+        "gif",
         "audio",
+        "image",
         "video",
         "voice"
       ]
     },
-    "public.post_visibility_status": {
-      "name": "post_visibility_status",
+    "public.post_reply_permissions": {
+      "name": "post_reply_permissions",
       "schema": "public",
       "values": [
-        "public",
+        "anyone",
         "followers",
-        "private"
+        "mentions"
       ]
     }
   },
@@ -1078,7 +1103,7 @@
     "tables": {},
     "columns": {}
   },
-  "id": "23b9c82b-f315-4b26-8b4a-3172c9e47825",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "7f95ccb4-ce90-47d1-8d18-d8865f680b02",
+  "prevId": "13449a42-ba77-4e6c-8606-fc0a0bbc6c0c",
   "sequences": {}
 }

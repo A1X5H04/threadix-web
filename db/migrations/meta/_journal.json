@@ -29,6 +29,48 @@
       "when": 1725854077709,
       "tag": "0003_sudden_felicia_hardy",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1725884192253,
+      "tag": "0004_cheerful_tigra",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1725889079294,
+      "tag": "0005_slim_scarecrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1725889489586,
+      "tag": "0006_third_nebula",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1726047501768,
+      "tag": "0007_confused_bloodstorm",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1726140295982,
+      "tag": "0008_normal_tyger_tiger",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1726140454228,
+      "tag": "0009_bent_longshot",
+      "breakpoints": true
     }
   ]
 }
