@@ -1,3 +1,5 @@
+// Man Drizzle is awesome!! But Prisma has it's own beauty... I'm confused now...
+
 import { relations } from "drizzle-orm";
 import { users } from "./auth";
 import {
@@ -7,12 +9,15 @@ import {
   userFollowers,
   postsTags,
   postMedia,
+  polls,
+  pollOptions,
+  votes,
 } from "./tables";
 
-export const userRelation = relations(users, ({ many }) => ({
-  posts: many(posts),
-  tags: many(tags),
-}));
+// export const userRelation = relations(users, ({ many }) => ({
+//   posts: many(posts),
+//   tags: many(tags),
+// }));
 
 export const postRelation = relations(posts, ({ one, many }) => ({
   user: one(users, {
@@ -20,16 +25,23 @@ export const postRelation = relations(posts, ({ one, many }) => ({
     references: [users.id],
   }),
 
-  likes: many(likes),
-  tags: many(tags),
-
-  media: many(postMedia),
-
-  parent: one(posts, {
+  parentPost: one(posts, {
     fields: [posts.parentId],
     references: [posts.id],
-    relationName: "parentPost",
+    relationName: "replies",
   }),
+
+  replies: many(posts, { relationName: "replies" }),
+
+  poll: one(polls, {
+    fields: [posts.id],
+    references: [polls.postId],
+  }),
+
+  tags: many(tags),
+  likes: many(likes),
+
+  media: many(postMedia),
 }));
 
 export const likesRelation = relations(likes, ({ one }) => ({
@@ -54,28 +66,39 @@ export const followerRelation = relations(userFollowers, ({ one }) => ({
   }),
 }));
 
-export const tagRelation = relations(tags, ({ many, one }) => ({
-  user: one(users, {
-    fields: [tags.userId],
-    references: [users.id],
-  }),
-  posts: many(posts),
-}));
-
-export const postToTagRelation = relations(postsTags, ({ one }) => ({
-  post: one(posts, {
-    fields: [postsTags.postId],
-    references: [posts.id],
-  }),
-  tag: one(tags, {
-    fields: [postsTags.tagId],
-    references: [tags.id],
-  }),
-}));
-
 export const postMediaRelation = relations(postMedia, ({ one }) => ({
   post: one(posts, {
     fields: [postMedia.postId],
     references: [posts.id],
   }),
 }));
+
+export const postPollRelations = relations(polls, ({ many }) => ({
+  poll_options: many(pollOptions),
+}));
+
+export const pollOptionRelation = relations(pollOptions, ({ one }) => ({
+  poll: one(polls, {
+    fields: [pollOptions.pollId],
+    references: [polls.id],
+  }),
+}));
+
+// export const tagRelation = relations(tags, ({ many, one }) => ({
+//   user: one(users, {
+//     fields: [tags.userId],
+//     references: [users.id],
+//   }),
+//   posts: many(posts),
+// }));
+
+// export const postToTagRelation = relations(postsTags, ({ one }) => ({
+//   post: one(posts, {
+//     fields: [postsTags.postId],
+//     references: [posts.id],
+//   }),
+//   tag: one(tags, {
+//     fields: [postsTags.tagId],
+//     references: [tags.id],
+//   }),
+// }));

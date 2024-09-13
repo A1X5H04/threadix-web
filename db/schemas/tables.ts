@@ -18,7 +18,7 @@ const createId = init({
   length: 32,
 });
 
-export const postVisibilityStatus = pgEnum("post_visibility_status", [
+export const replyPermissions = pgEnum("post_reply_permissions", [
   "anyone",
   "followers",
   "mentions",
@@ -61,7 +61,22 @@ export const posts = pgTable(
 
     content: text("content").notNull(),
 
-    mentions: text("mentions").array().notNull(),
+    mentions: text("mentions").array(),
+
+    tags: text("tags").array(),
+
+    likesCount: bigint("likes_count", { mode: "number" })
+      .notNull()
+      .$default(() => 0),
+    repliesCount: bigint("replies_count", { mode: "number" })
+      .notNull()
+      .$default(() => 0),
+    repostCount: bigint("repost_count", { mode: "number" })
+      .notNull()
+      .$default(() => 0),
+    replyPermissions: replyPermissions("reply_permissions")
+      .notNull()
+      .$default(() => "anyone"),
 
     createdAt: timestamp("created_at").$default(() => new Date()),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
@@ -85,8 +100,6 @@ export const postMedia = pgTable(
     height: bigint("height", {
       mode: "number",
     }),
-    duration: varchar("duration", { length: 6 }),
-    description: text("description"),
     type: postMediaType("media_type").notNull(),
     createdAt: timestamp("created_at")
       .notNull()
@@ -155,7 +168,7 @@ export const tags = pgTable(
 export const polls = pgTable(
   "poll",
   {
-    id: varchar("id", { length: 12 })
+    id: varchar("id", { length: 32 })
       .primaryKey()
       .notNull()
       .$defaultFn(() => createId()),
@@ -164,6 +177,7 @@ export const polls = pgTable(
       .unique()
       .references(() => posts.id, { onDelete: "cascade" }),
     duration: timestamp("duration").notNull(),
+    anonymousVotes: boolean("anonymous_votes").notNull(),
     multipleVotes: boolean("multiple_votes").notNull(),
     quizMode: boolean("quiz_mode").notNull(),
     createdAt: timestamp("created_at")
@@ -179,9 +193,12 @@ export const pollOptions = pgTable(
   "poll_option",
   {
     id: serial("id").primaryKey().notNull(),
-    pollId: varchar("poll_id", { length: 12 })
+    pollId: varchar("poll_id", { length: 32 })
       .notNull()
       .references(() => polls.id, { onDelete: "cascade" }),
+    voteCount: bigint("vote_count", {
+      mode: "number",
+    }).notNull(),
     title: text("title").notNull(),
     isCorrect: boolean("is_correct"),
     createdAt: timestamp("created_at")
@@ -193,6 +210,7 @@ export const pollOptions = pgTable(
   })
 );
 
+// Only create votes when the anonymousVotes is false in the poll (for performance reasons)
 export const votes = pgTable(
   "vote",
   {
