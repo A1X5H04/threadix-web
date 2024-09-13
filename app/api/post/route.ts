@@ -1,5 +1,5 @@
 import { Pool, neonConfig } from "@neondatabase/serverless";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import ws from "ws";
@@ -102,7 +102,6 @@ export async function POST(req: Request) {
             type: "audio",
             name: post.audio.name,
             url: post.audio.url,
-            duration: post.audio.duration,
           });
 
           await backendClient.publicFiles.confirmUpload({
@@ -118,6 +117,7 @@ export async function POST(req: Request) {
             .values({
               postId: id,
               duration: convertRelativeDataToDate(post.poll.duration),
+              anonymousVotes: post.poll.anonymousVoting,
               multipleVotes: post.poll.multipleAnswers,
               quizMode: post.poll.quizMode,
             })
@@ -129,6 +129,7 @@ export async function POST(req: Request) {
             post.poll.options.map((option) => ({
               pollId: pollId,
               title: option.title,
+              voteCount: 0,
               isCorrect: option.isCorrect || null,
             }))
           );
@@ -168,29 +169,36 @@ export async function GET(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const [allPosts] = await db.query.posts.findMany({
+    const allPosts = await db.query.posts.findMany({
+      where: (post, { isNull }) => isNull(post.parentId),
       with: {
         user: {
           columns: {
+            id: true,
             name: true,
+            username: true,
             avatar: true,
             isVerified: true,
-          },
-        },
-        likes: {
-          columns: {
-            userId: true,
             createdAt: true,
           },
-          orderBy: [desc(likes.createdAt)],
         },
-        parent: true,
+        replies: {
+          columns: {
+            userId: true,
+          },
+          orderBy: (reply, { asc }) => asc(reply.createdAt),
+          limit: 1,
+        },
         media: true,
+        poll: {
+          with: {
+            poll_options: true,
+          },
+        },
       },
-      orderBy: [desc(posts.createdAt)],
     });
 
-    return NextResponse.json(allPosts);
+    return NextResponse.json({ posts: allPosts });
   } catch (err) {
     console.log("POST_GET_ERROR", err);
     return new NextResponse("An error occurred", { status: 500 });
