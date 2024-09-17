@@ -1,29 +1,14 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
 
 import { ThreadSchema } from "@/components/post-form";
 import { validateRequest } from "@/lib/auth";
-import {
-  likes,
-  pollOptions,
-  polls,
-  postMedia,
-  posts,
-} from "@/db/schemas/tables";
-import * as tables from "@/db/schemas/tables";
+import { pollOptions, polls, postMedia, posts } from "@/db/schemas/tables";
+
 import { convertRelativeDataToDate } from "@/lib/utils";
-import db from "@/lib/db";
+import { db, pool, poolDb } from "@/lib/db";
 import { backendClient } from "@/lib/edgestore-server";
 
-neonConfig.webSocketConstructor = ws;
-
 export async function POST(req: Request) {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
-  const poolDb = drizzle(pool, { schema: { ...tables } });
-
   try {
     const { user } = await validateRequest();
     const request: ThreadSchema = await req.json();
@@ -182,9 +167,22 @@ export async function GET(req: Request) {
             createdAt: true,
           },
         },
+        // This are only to show the user if the replies has a poll or media
         replies: {
           columns: {
             userId: true,
+          },
+          with: {
+            poll: {
+              columns: {
+                id: true,
+              },
+            },
+            media: {
+              columns: {
+                postId: true,
+              },
+            },
           },
           orderBy: (reply, { asc }) => asc(reply.createdAt),
           limit: 1,
