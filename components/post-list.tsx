@@ -3,7 +3,7 @@ import React from "react";
 import useSWR from "swr";
 
 import PostItem from "./post-item/index";
-import { RiLoader2Line } from "@remixicon/react";
+import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 import { GET } from "@/lib/fetcher";
 import { postData } from "@/data";
 
@@ -17,35 +17,39 @@ type Post = {
 };
 
 function PostList({ user }: { user: any }) {
-  // const { data, error, isLoading } = useSWR("/api/post", GET, {
-  //   revalidateOnFocus: false,
-  // });
+  const { data, error, isLoading } = useSWR("/api/post", GET, {
+    revalidateOnFocus: false,
+  });
 
-  // if (isLoading)
-  //   return (
-  //     <div className="w-full h-72 grid place-items-center">
-  //       <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
-  //     </div>
-  //   );
+  if (isLoading)
+    return (
+      <div className="w-full h-72 grid place-items-center">
+        <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
+      </div>
+    );
 
-  // if (error) {
-  //   return (
-  //     <div className="w-full h-72 grid place-items-center">
-  //       <div className="inline-flex flex-col gap-y-6 items-center justify-center">
-  //         <RiSignalWifiErrorFill className="w-12 h-12 text-gray-500" />
-  //         <span className="text-center">
-  //           <h3 className="text-2xl font-bold">Failed to fetch posts</h3>
-  //           <p className="text-sm mt-2 text-muted-foreground">
-  //             Refreshing the page might help
-  //           </p>
-  //         </span>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (error) {
+    return (
+      <div className="w-full h-72 grid place-items-center">
+        <div className="inline-flex flex-col gap-y-6 items-center justify-center">
+          <RiSignalWifiErrorFill className="w-12 h-12 text-gray-500" />
+          <span className="text-center">
+            <h3 className="text-2xl font-bold">Failed to fetch posts</h3>
+            <p className="text-sm mt-2 text-muted-foreground">
+              Refreshing the page might help
+            </p>
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <PostItem data={postData[0]} />
+    <div>
+      {data?.posts?.map((post) => (
+        <PostItem key={post.id} data={post} />
+      ))}
+    </div>
     // <h1>{JSON.stringify(data)}</h1>
     // <div className="space-y-5 my-3">
     //   {data?.map((post: Post) => (
