@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import * as z from "zod";
 
-import db from "@/lib/db";
+import { db } from "@/lib/db";
 import { users } from "@/db/schemas/auth";
 import { loginSchema } from "@/types/schemas";
 import { Argon2id } from "oslo/password";
@@ -26,7 +26,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
     where: eq(users.email, email),
   });
 
-  if (!existingUser) {
+  if (!existingUser || !existingUser.password) {
     return {
       status: false,
       title: "User Does not Exist!",

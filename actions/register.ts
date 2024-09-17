@@ -1,7 +1,7 @@
 "use server";
 
 import { users } from "@/db/schemas/auth";
-import db from "@/lib/db";
+import { db } from "@/lib/db";
 import { registerSchema } from "@/types/schemas";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
