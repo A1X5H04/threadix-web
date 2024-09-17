@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  RiAddLine,
   RiArrowLeftLine,
   RiHeartFill,
   RiHeartLine,
@@ -34,6 +35,7 @@ function Navbar() {
       activeIcon: RiSearchFill,
       isActive: pathname === "/search",
     },
+
     {
       name: "Activity",
       path: "/activity",
@@ -52,9 +54,32 @@ function Navbar() {
 
   return (
     <>
-      <nav className="w-full h-20 border-b fixed max-w-2xl mx-auto">
+      <nav className="w-full h-20 border-b fixed max-w-2xl mx-auto z-50 backdrop-blur-md bg-background/80">
         <ul className="w-full h-full inline-flex items-center justify-center gap-x-10">
-          {routes.map((route) => (
+          {routes.splice(0, 2).map((route) => (
+            <li
+              key={route.path}
+              className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer"
+            >
+              <Link href={route.path} className="w-full h-full">
+                {route.isActive ? (
+                  <div>
+                    <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
+                  </div>
+                ) : (
+                  <route.icon className="w-6 h-6" />
+                )}
+                <span className="sr-only">{route.name}</span>
+              </Link>
+            </li>
+          ))}
+          <li className="py-2 px-3 rounded-md bg-foreground text-background transition-colors cursor-pointer">
+            <Link href="/create" className="w-full h-full">
+              <RiAddLine className="w-6 h-6" />
+              <span className="sr-only">Create</span>
+            </Link>
+          </li>
+          {routes.splice(0, 2).map((route) => (
             <li
               key={route.path}
               className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer"
