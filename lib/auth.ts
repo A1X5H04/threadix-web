@@ -1,11 +1,13 @@
 import { Lucia } from "lucia";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { users, sessions } from "../db/schemas/auth";
-import db from "./db";
+import { db } from "./db";
 import { cache } from "react";
 import { cookies } from "next/headers";
+import { GitHub, Google } from "arctic";
 
 interface DatabaseUserAttributes {
+  id: string;
   avatar: string;
   name: string;
   username: string;
@@ -22,6 +24,17 @@ declare module "lucia" {
 }
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+
+export const github = new GitHub(
+  process.env.GITHUB_CLIENT_ID!,
+  process.env.GITHUB_CLIENT_SECRET!
+);
+
+export const google = new Google(
+  process.env.GOOGLE_CLIENT_ID!,
+  process.env.GOOGLE_CLIENT_SECRET!,
+  "http://localhost:3000/api/auth/google/callback"
+);
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
