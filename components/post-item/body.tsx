@@ -5,18 +5,28 @@ import { formatDate } from "@/lib/format";
 import { RiMore2Fill } from "@remixicon/react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { postData } from "@/data";
+import PostPoll from "./poll";
 
-function PostItemBody({ data }: { data: any }) {
+function PostItemBody({
+  data,
+  isReplied,
+}: {
+  data: typeof postData;
+  isReplied: boolean;
+}) {
   return (
     <div className="flex gap-x-3 relative h-fit">
       <Avatar className="size-9 border">
         <AvatarImage src={data.user.avatar} />
         <AvatarFallback>A</AvatarFallback>
       </Avatar>
-      <Separator
-        className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
-        orientation="vertical"
-      />
+      {isReplied && (
+        <Separator
+          className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
+          orientation="vertical"
+        />
+      )}
       <div className="flex flex-col gap-y-1 w-full h-full">
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-x-2">
@@ -28,7 +38,8 @@ function PostItemBody({ data }: { data: any }) {
           </div>
         </div>
         <PostContent content={data.content} />
-        <PostMedia media={data.media} />
+        {data.media.length > 0 && <PostMedia media={data.media} />}
+        {data.poll && <PostPoll poll={data.poll} />}
       </div>
     </div>
   );
