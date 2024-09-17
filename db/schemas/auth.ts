@@ -19,7 +19,7 @@ export const users = pgTable(
       .$defaultFn(() => createId()),
     email: text("email").unique().notNull(),
     username: varchar("username", { length: 16 }).unique().notNull(),
-    password: text("password").notNull(),
+    password: text("password"),
     name: varchar("name", { length: 64 }),
     avatar: text("avatar"),
     bio: text("bio"),
@@ -36,24 +36,22 @@ export const users = pgTable(
   })
 );
 
-export const account = pgTable(
+export const accounts = pgTable(
   "account",
   {
     userId: text("user_id")
       .notNull()
       .references(() => users.id),
     type: text("type").notNull(),
-    providerId: text("provider_id").notNull(),
+    provider: text("provider_id").notNull(),
     providerUserId: text("provider_user_id").notNull(),
-    expiresAt: integer("expires_at"),
     accessToken: text("access_token"),
-    refreshToken: text("refresh_token"),
-    tokenType: text("token_type"),
+    // refreshToken: text("refresh_token"),
     scope: text("scope"),
   },
   (table) => ({
     compoundKey: primaryKey({
-      columns: [table.providerId, table.providerUserId],
+      columns: [table.provider, table.providerUserId],
     }),
   })
 );
@@ -72,5 +70,5 @@ export const sessions = pgTable("session", {
 // Schemas Types
 
 export type User = typeof users.$inferSelect;
-export type Account = typeof account.$inferSelect;
+export type Account = typeof accounts.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
