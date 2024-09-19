@@ -39,6 +39,7 @@ export async function POST(req: Request) {
             content: post.content,
             userId: user.id,
             createdAt: new Date(),
+            repliesCount: request.posts.length - 1,
             parentId:
               parentIds.length > 0 ? parentIds[parentIds.length - 1] : null, // Last parent id
           })
@@ -194,6 +195,7 @@ export async function GET(req: Request) {
           },
         },
       },
+      orderBy: (post, { desc }) => desc(post.createdAt),
     });
 
     return NextResponse.json({ posts: allPosts });
