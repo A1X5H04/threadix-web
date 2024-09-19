@@ -13,44 +13,32 @@ import {
   RiHeart3Fill,
   RiHeart3Line,
   RiRepeatLine,
-  RiShareForwardBoxLine,
-  RiShareForwardFill,
   RiShareForwardLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { postData } from "@/data";
 import ReplyDialog from "../dialogs/reply";
+import { dislikePost, likePost } from "@/actions/post/like";
+import LikeButton from "./like-button";
 
 type Props = {
-  data: (typeof postData)[number];
+  data: typeof postData;
   postId: string;
   counts: {
     likes: number;
     replies: number;
     reposts: number;
   };
+  isLiked: boolean;
 };
 
-function PostActions({ data, postId, counts }: Props) {
-  const isLike = true;
-
+function PostActions({ data, postId, counts, isLiked }: Props) {
   return (
     <div className="flex items-center gap-x-2">
-      <Button
-        className="text-base gap-x-2 text-muted-foreground font-light"
-        variant="ghost"
-        size="sm"
-      >
-        {isLike ? (
-          <RiHeart3Fill className="w-5 h-5 text-rose-500" />
-        ) : (
-          <RiHeart3Line className="w-5 h-5 text-muted-foreground" />
-        )}
-        {counts.likes}
-      </Button>
+      <LikeButton postId={postId} likes={counts.likes} isLiked={isLiked} />
       <ReplyDialog data={data}>
         <Button
-          className="text-base gap-x-2 text-muted-foreground font-light px-2"
+          className="text-sm gap-x-2 text-muted-foreground font-light px-2"
           variant="ghost"
           size={counts.replies > 0 ? "sm" : "icon"}
         >

@@ -9,6 +9,7 @@ import {
   primaryKey,
   boolean,
   bigint,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
@@ -135,16 +136,18 @@ export const likes = pgTable(
   {
     userId: text("user_id")
       .notNull()
-      .unique()
       .references(() => users.id, { onDelete: "cascade" }),
-    postId: varchar("post_id", { length: 32 }).notNull().unique(),
+    postId: varchar("post_id", { length: 32 }).notNull(),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
   },
   (table) => ({
     postIdx: index("postId").on(table.postId),
-    userPostCompositeKey: primaryKey({ columns: [table.userId, table.postId] }),
+    userPostCompositeKey: uniqueIndex("user_post_unique_idx").on(
+      table.userId,
+      table.postId
+    ),
   })
 );
 

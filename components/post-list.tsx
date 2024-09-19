@@ -5,7 +5,6 @@ import useSWR from "swr";
 import PostItem from "./post-item/index";
 import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 import { GET } from "@/lib/fetcher";
-import { postData } from "@/data";
 
 type Post = {
   id: string;
@@ -16,7 +15,7 @@ type Post = {
   updatedAt: string;
 };
 
-function PostList({ user }: { user: any }) {
+function PostList({ user, likedPosts }: { user: any; likedPosts: any }) {
   const { data, error, isLoading } = useSWR("/api/post", GET, {
     revalidateOnFocus: false,
   });
@@ -47,7 +46,11 @@ function PostList({ user }: { user: any }) {
   return (
     <div>
       {data?.posts?.map((post) => (
-        <PostItem key={post.id} data={post} />
+        <PostItem
+          key={post.id}
+          data={post}
+          isLiked={likedPosts.includes(post.id)}
+        />
       ))}
     </div>
     // <h1>{JSON.stringify(data)}</h1>

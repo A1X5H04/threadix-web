@@ -12,6 +12,7 @@ import PostContent from "./post-content";
 import PostActions from "./post-actions";
 import PostPoll from "./post-poll";
 import { TooltipProvider } from "./ui/tooltip";
+import Link from "next/link";
 
 function PostItem({ data, user }: any) {
   return (

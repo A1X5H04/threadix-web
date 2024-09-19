@@ -25,7 +25,7 @@ function PostActions({ postId }: { postId: string }) {
   return (
     <div className="flex items-center gap-x-2 mt-2">
       <Button
-        className="text-base gap-x-2 text-muted-foreground font-light"
+        className="text-sm gap-x-2 text-muted-foreground font-light"
         variant="ghost"
         size="sm"
       >
