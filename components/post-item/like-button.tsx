@@ -13,7 +13,7 @@ type Props = {
 
 function LikeButton({ postId, likes, isLiked }: Props) {
   const [pending, transition] = useTransition();
-  // Using local state because I can't mutate a section of cached data :(
+  // Using local state because mutating a section of cached data is too inefficient :(
   const [isLike, setIsLike] = React.useState(isLiked);
   const [likesCounts, setLikesCounts] = React.useState(likes);
 

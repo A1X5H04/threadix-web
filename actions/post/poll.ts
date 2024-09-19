@@ -17,28 +17,21 @@ export async function registerVote(
     return { status: false, error: "Unauthorized" };
   }
 
-  try {
-    await poolDb.transaction(async (txn) => {
-      await txn
-        .update(pollOptions)
-        .set({
-          voteCount: increment(pollOptions.voteCount),
-        })
-        .where(eq(pollOptions.id, optionId));
+  await poolDb.transaction(async (txn) => {
+    await txn
+      .update(pollOptions)
+      .set({
+        voteCount: increment(pollOptions.voteCount),
+      })
+      .where(eq(pollOptions.id, optionId));
 
-      if (!anonymousVotes) {
-        await txn.insert(votes).values({
-          optionId,
-          userId: user.id,
-        });
-      }
+    if (!anonymousVotes) {
+      await txn.insert(votes).values({
+        optionId,
+        userId: user.id,
+      });
+    }
 
-      return { status: true, message: "Voted" };
-    });
-  } catch (err) {
-    console.log("VOTE_ERROR", err);
-    return { status: false, error: "Unable to vote" };
-  } finally {
-    pool.end();
-  }
+    return { status: true, message: "Voted" };
+  });
 }
