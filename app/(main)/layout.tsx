@@ -15,7 +15,7 @@ async function MainLayout({ children }: Props) {
   return (
     <main className="relative max-w-2xl mx-auto px-5 w-full h-full">
       <Navbar />
-      {children}
+      <div className="pt-20 w-full h-full">{children}</div>
     </main>
   );
 }

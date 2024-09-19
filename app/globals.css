@@ -118,6 +118,10 @@ body {
   }
 }
 
+.blend-difference {
+  mix-blend-mode: difference;
+}
+
 .GifPickerReact {
   border: none !important;
   --gpr-bg-color: hsl(var(--background)) !important;
