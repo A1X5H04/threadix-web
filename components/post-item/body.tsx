@@ -9,11 +9,13 @@ import { postData } from "@/data";
 import PostPoll from "./poll";
 
 function PostItemBody({
+  registeredVotes,
   data,
   isReplied,
 }: {
   data: typeof postData;
   isReplied: boolean;
+  registeredVotes: any;
 }) {
   return (
     <div className="flex gap-x-3 relative h-fit">
@@ -39,7 +41,9 @@ function PostItemBody({
         </div>
         <PostContent content={data.content} />
         {data.media.length > 0 && <PostMedia media={data.media} />}
-        {data.poll && <PostPoll poll={data.poll} />}
+        {data.poll && (
+          <PostPoll poll={data.poll} registeredVotes={registeredVotes} />
+        )}
       </div>
     </div>
   );

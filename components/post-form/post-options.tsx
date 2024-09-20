@@ -237,7 +237,10 @@ function PostOptions({
   return (
     <>
       {watchedGif && (
-        <div key={watchedGif.name} className={`relative w-full min-w-20`}>
+        <div
+          key={watchedGif.name}
+          className={`relative w-full min-w-20 max-h-96`}
+        >
           <span>
             <button
               onClick={() => setValue(`posts.${index}.gif`, undefined)}

@@ -217,6 +217,7 @@ export const pollOptions = pgTable(
 export const votes = pgTable(
   "vote",
   {
+    pollId: varchar("poll_id", { length: 32 }).notNull(),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),

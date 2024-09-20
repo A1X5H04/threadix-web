@@ -15,7 +15,15 @@ type Post = {
   updatedAt: string;
 };
 
-function PostList({ user, likedPosts }: { user: any; likedPosts: any }) {
+function PostList({
+  user,
+  likedPosts,
+  registeredVotes,
+}: {
+  user: any;
+  likedPosts: any;
+  registeredVotes: any;
+}) {
   const { data, error, isLoading } = useSWR("/api/post", GET, {
     revalidateOnFocus: false,
   });
@@ -50,6 +58,7 @@ function PostList({ user, likedPosts }: { user: any; likedPosts: any }) {
           key={post.id}
           data={post}
           isLiked={likedPosts.includes(post.id)}
+          registeredVotes={registeredVotes}
         />
       ))}
     </div>

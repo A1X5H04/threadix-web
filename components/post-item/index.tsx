@@ -17,9 +17,10 @@ import Link from "next/link";
 type Props = {
   data: typeof postData;
   isLiked: boolean;
+  registeredVotes: any;
 };
 
-function PostItem({ data, isLiked }: Props) {
+function PostItem({ data, isLiked, registeredVotes }: Props) {
   return (
     // <Link href={`/@${data.user.username}/post/${data.id}`}>
     <div className="py-4 border-b">
@@ -29,6 +30,7 @@ function PostItem({ data, isLiked }: Props) {
       </p> */}
       <PostItemBody
         data={data}
+        registeredVotes={registeredVotes}
         isReplied={
           data.replies.length > 0 && data.replies[0]?.userId === data.user.id
         }

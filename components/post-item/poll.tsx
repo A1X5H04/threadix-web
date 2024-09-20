@@ -4,7 +4,13 @@ import React, { useCallback, useEffect, useMemo, useTransition } from "react";
 import toast from "react-hot-toast";
 import { produce } from "immer";
 
-function PostPoll({ poll }: { poll: typeof postData.poll }) {
+function PostPoll({
+  poll,
+  registeredVotes,
+}: {
+  poll: typeof postData.poll;
+  registeredVotes: any;
+}) {
   const [pending, transition] = useTransition();
   // Because I can't use swr mutate in the handleClick function, I'm using a local state to update the poll
   const [localPoll, setLocalPoll] = React.useState(poll);
@@ -15,10 +21,6 @@ function PostPoll({ poll }: { poll: typeof postData.poll }) {
       localPoll.poll_options.reduce((acc, option) => acc + option.voteCount, 0),
     [localPoll.poll_options]
   );
-
-  useEffect(() => {
-    setLocalPoll(poll);
-  }, [poll]);
 
   const calculateVotePercentage = useCallback(
     (votes: number) => {
@@ -54,7 +56,7 @@ function PostPoll({ poll }: { poll: typeof postData.poll }) {
                 const pollOption = draft.poll_options.find(
                   (o) => o.id === optionId
                 );
-                if (pollOption?.voteCount) {
+                if (pollOption) {
                   pollOption.voteCount += 1;
                 }
               })
@@ -64,7 +66,7 @@ function PostPoll({ poll }: { poll: typeof postData.poll }) {
       ))}
 
       <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
-        <span className="font-semibold">Ends in 24:24:24</span>
+        <span className="font-semibold">Ends in {poll.duration}</span>
         <span className="font-semibold">{totalVotes} Votes</span>
       </div>
     </div>

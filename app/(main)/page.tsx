@@ -9,11 +9,15 @@ import { likes } from "@/db/schemas/tables";
 
 import useSWR from "swr";
 import { InferSelectModel } from "drizzle-orm";
+import { getRegisteredVote } from "@/actions/registered-votes";
+import PostListSkeleton from "@/components/skeletons/post-list";
 
 export default async function Home({}) {
   const { user } = await validateRequest();
 
   const likedPosts = await getLikedPosts();
+  const registeredVotes = await getRegisteredVote();
 
-  return <PostList user={user} likedPosts={likedPosts.data} />;
+  // return <PostListSkeleton />;
+  return <PostList user={user} likedPosts={likedPosts.data} registeredVotes />;
 }
