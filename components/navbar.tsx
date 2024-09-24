@@ -20,7 +20,10 @@ import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 
-function Navbar() {
+import CreatePostDialog from "./dialogs/create-post";
+import { User } from "lucia";
+
+function Navbar({ user }: { user: User }) {
   const pathname = usePathname();
 
   const routes = [
@@ -76,17 +79,7 @@ function Navbar() {
               </Link>
             </li>
           ))}
-          <Dialog>
-            <DialogTrigger>
-              <li className="py-2 px-3 rounded-md bg-foreground text-background transition-colors cursor-pointer">
-                <RiAddLine className="w-6 h-6" />
-                <span className="sr-only">Create</span>
-              </li>
-            </DialogTrigger>
-            <DialogContent className="w-full max-w-2xl">
-              <PostFormIndex />
-            </DialogContent>
-          </Dialog>
+          <CreatePostDialog user={user} />
 
           {routes.splice(0, 2).map((route) => (
             <li

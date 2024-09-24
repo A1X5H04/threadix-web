@@ -5,24 +5,18 @@ import useSWR from "swr";
 import PostItem from "./post-item/index";
 import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 import { GET } from "@/lib/fetcher";
-
-type Post = {
-  id: string;
-  content: string;
-  parentId: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-};
+import { User } from "lucia";
+import { RegisteredVotes } from "@/types";
+import { PostContextProvider } from "@/context/post";
 
 function PostList({
   user,
   likedPosts,
   registeredVotes,
 }: {
-  user: any;
-  likedPosts: any;
-  registeredVotes: any;
+  user: User;
+  likedPosts?: string[];
+  registeredVotes: RegisteredVotes;
 }) {
   const { data, error, isLoading } = useSWR("/api/post", GET, {
     revalidateOnFocus: false,
@@ -51,16 +45,19 @@ function PostList({
     );
   }
 
+  console.log("Post List: REGISTERED VOTES", registeredVotes);
+
   return (
     <div>
-      {data?.posts?.map((post) => (
-        <PostItem
-          key={post.id}
-          data={post}
-          isLiked={likedPosts.includes(post.id)}
-          registeredVotes={registeredVotes}
-        />
-      ))}
+      <PostContextProvider
+        likedPosts={likedPosts}
+        registeredVotes={registeredVotes}
+        currentUserId={user.id}
+      >
+        {data?.posts?.map((post) => (
+          <PostItem key={post.id} data={post} />
+        ))}
+      </PostContextProvider>
     </div>
     // <h1>{JSON.stringify(data)}</h1>
     // <div className="space-y-5 my-3">
