@@ -358,9 +358,8 @@ function PostOptions({
               onClick={() =>
                 setValue(`posts.${index}.poll`, {
                   options: [{ title: "Yes" }, { title: "No" }],
-                  duration: "5d",
-                  anonymousVoting: true,
-                  multipleAnswers: true,
+                  duration: "30m",
+
                   quizMode: false,
                 })
               }

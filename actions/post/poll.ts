@@ -6,11 +6,7 @@ import { pool, poolDb } from "@/lib/db";
 import { increment } from "@/lib/queries";
 import { eq } from "drizzle-orm";
 
-export async function registerVote(
-  pollId: string,
-  optionId: number,
-  anonymousVotes: boolean
-) {
+export async function registerVote(pollId: string, optionId: number) {
   const { user } = await validateRequest();
 
   if (!user) {
@@ -25,12 +21,11 @@ export async function registerVote(
       })
       .where(eq(pollOptions.id, optionId));
 
-    if (!anonymousVotes) {
-      await txn.insert(votes).values({
-        optionId,
-        userId: user.id,
-      });
-    }
+    await txn.insert(votes).values({
+      pollId,
+      optionId,
+      userId: user.id,
+    });
 
     return { status: true, message: "Voted" };
   });

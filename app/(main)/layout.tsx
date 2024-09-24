@@ -8,13 +8,13 @@ interface Props {
 }
 
 async function MainLayout({ children }: Props) {
-  const { session } = await validateRequest();
+  const { session, user } = await validateRequest();
 
-  if (!session) return redirect("/login");
+  if (!session || !user) return redirect("/login");
 
   return (
     <main className="relative max-w-2xl mx-auto px-5 w-full h-full">
-      <Navbar />
+      <Navbar user={user} />
       <div className="pt-20 w-full h-full">{children}</div>
     </main>
   );

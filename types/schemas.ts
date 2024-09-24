@@ -70,8 +70,6 @@ export const pollSchema = z
       .max(4),
 
     duration: z.string(),
-    anonymousVoting: z.boolean(),
-    multipleAnswers: z.boolean(),
     quizMode: z.boolean(),
   })
   .refine((data) => {

@@ -11,13 +11,24 @@ import useSWR from "swr";
 import { InferSelectModel } from "drizzle-orm";
 import { getRegisteredVote } from "@/actions/registered-votes";
 import PostListSkeleton from "@/components/skeletons/post-list";
+import { redirect } from "next/navigation";
 
 export default async function Home({}) {
   const { user } = await validateRequest();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   const likedPosts = await getLikedPosts();
   const registeredVotes = await getRegisteredVote();
 
   // return <PostListSkeleton />;
-  return <PostList user={user} likedPosts={likedPosts.data} registeredVotes />;
+  return (
+    <PostList
+      user={user}
+      likedPosts={likedPosts.data}
+      registeredVotes={registeredVotes.data}
+    />
+  );
 }

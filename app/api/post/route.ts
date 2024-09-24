@@ -11,7 +11,7 @@ import { backendClient } from "@/lib/edgestore-server";
 export async function POST(req: Request) {
   try {
     const { user } = await validateRequest();
-    const request: ThreadSchema = await req.json();
+    const request: ThreadSchema & { parentId?: string } = await req.json();
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
       // Console Log 1
       console.log("Transaction Started");
       const parentIds: Array<string> = [];
+      if (request.parentId) parentIds.push(request.parentId);
       for (const post of request.posts) {
         // Inserting posts
         console.log("Inserting posts");
@@ -103,7 +104,6 @@ export async function POST(req: Request) {
             .values({
               postId: id,
               duration: convertRelativeDataToDate(post.poll.duration),
-              anonymousVotes: post.poll.anonymousVoting,
               multipleVotes: post.poll.multipleAnswers,
               quizMode: post.poll.quizMode,
             })
@@ -147,7 +147,27 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
+type Post = {
+  id: string;
+  content: string;
+  parentId: string;
+  poll: {
+    question: string;
+    options: { title: string }[];
+    duration: string;
+    anonymousVoting: boolean;
+    multipleAnswers: boolean;
+    quizMode: boolean;
+  };
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+  };
+};
+
+export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
   try {
     const { session } = await validateRequest();
 

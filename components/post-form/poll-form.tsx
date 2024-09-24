@@ -11,19 +11,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RiArrowDownSLine } from "@remixicon/react";
+import {
+  RiArrowDownSLine,
+  RiBarChartHorizontalFill,
+  RiBrainFill,
+} from "@remixicon/react";
 
 const timeInterval = [
   {
@@ -148,15 +146,15 @@ function PollForm({
                     <FormMessage />
 
                     {getValues(`posts.${itemIndex}.poll`)?.quizMode == true && (
-                      <div className="absolute bottom-[5.5px] right-4">
+                      <>
                         {field.value && (
                           <RadioGroupItem
-                            className="bg-white dark:bg-black"
+                            className="absolute bottom-1/2 translate-y-1/2 right-4 bg-white dark:bg-black"
                             value={`${idx}`}
                             id="radio"
                           />
                         )}
-                      </div>
+                      </>
                     )}
                   </FormItem>
                 )}
@@ -170,114 +168,54 @@ function PollForm({
           </span>
         )}
         <div className="w-full flex justify-between">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="inline-flex items-center gap-x-1 text-xs text-muted-foreground hover:bg-muted py-1 px-1.5 rounded-sm"
-              >
-                Ends in {getValues(`posts.${itemIndex}.poll.duration`)}
-                <RiArrowDownSLine className="w-4 h-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-w-10">
-              <DropdownMenuLabel className="text-xs py-1">
-                Poll Duration
-              </DropdownMenuLabel>
-
-              {timeInterval.map((item) => (
-                <DropdownMenuItem
-                  key={item.value}
-                  onClick={() =>
-                    setValue(`posts.${itemIndex}.poll.duration`, item.value)
-                  }
-                  className="text-xs py-1 cursor-pointer"
+          <div className="inline-flex items-center gap-x-2">
+            <button
+              type="button"
+              onClick={() => {
+                setValue(
+                  `posts.${itemIndex}.poll.quizMode`,
+                  !getValues(`posts.${itemIndex}.poll.quizMode`)
+                );
+              }}
+              className=" inline-flex items-center gap-x-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground rounded-sm py-1 px-1.5 disabled:opacity-25 disabled:cursor-default"
+            >
+              {getValues(`posts.${itemIndex}.poll.quizMode`) ? (
+                <RiBarChartHorizontalFill className="w-3 h-3" />
+              ) : (
+                <RiBrainFill className="w-3 h-3" />
+              )}
+              {getValues(`posts.${itemIndex}.poll.quizMode`) ? "Quiz" : "Poll"}
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-x-1 text-xs text-muted-foreground hover:bg-muted py-1 px-1.5 rounded-sm"
                 >
-                  {item.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <TooltipProvider>
-            <div className="inline-flex items-center gap-x-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    disabled={getValues(
-                      `posts.${itemIndex}.poll.multipleAnswers`
-                    )}
-                    onClick={() => {
-                      if (getValues(`posts.${itemIndex}.poll.multipleAnswers`))
-                        return;
-                      setValue(
-                        `posts.${itemIndex}.poll.quizMode`,
-                        !getValues(`posts.${itemIndex}.poll.quizMode`)
-                      );
-                    }}
-                    className={cn(
-                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5 disabled:opacity-25 disabled:cursor-default",
-                      getValues(`posts.${itemIndex}.poll.quizMode`) &&
-                        "text-foreground font-semibold bg-muted "
-                    )}
+                  Ends in {getValues(`posts.${itemIndex}.poll.duration`)}
+                  <RiArrowDownSLine className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="max-w-10">
+                <DropdownMenuLabel className="text-xs py-1">
+                  Poll Duration
+                </DropdownMenuLabel>
+
+                {timeInterval.map((item) => (
+                  <DropdownMenuItem
+                    key={item.value}
+                    onClick={() =>
+                      setValue(`posts.${itemIndex}.poll.duration`, item.value)
+                    }
+                    className="text-xs py-1 cursor-pointer"
                   >
-                    Quiz
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="text-xs">
-                  Create a quiz with one correct answer.
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    disabled={getValues(`posts.${itemIndex}.poll.quizMode`)}
-                    onClick={() => {
-                      if (getValues(`posts.${itemIndex}.poll.quizMode`)) return;
-                      setValue(
-                        `posts.${itemIndex}.poll.multipleAnswers`,
-                        !getValues(`posts.${itemIndex}.poll.multipleAnswers`)
-                      );
-                    }}
-                    className={cn(
-                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5 disabled:opacity-25 disabled:cursor-default",
-                      getValues(`posts.${itemIndex}.poll.multipleAnswers`) &&
-                        "text-foreground font-semibold bg-muted "
-                    )}
-                  >
-                    Multiple
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="text-xs">
-                  Allow users to pick multiple answers.
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setValue(
-                        `posts.${itemIndex}.poll.anonymousVoting`,
-                        !getValues(`posts.${itemIndex}.poll.anonymousVoting`)
-                      );
-                    }}
-                    className={cn(
-                      "text-xs text-muted-foreground hover:bg-muted rounded-sm py-1 px-1.5",
-                      getValues(`posts.${itemIndex}.poll.anonymousVoting`) &&
-                        "text-foreground font-semibold bg-muted "
-                    )}
-                  >
-                    Anonymous
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="text-xs">
-                  Collect responses without user identities.
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </TooltipProvider>
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <button
             type="button"
             onClick={() => setValue(`posts.${itemIndex}.poll`, undefined)}

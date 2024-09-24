@@ -1,29 +1,30 @@
-import React from "react";
+import React, { useContext } from "react";
 import PostContent from "./content";
 import PostMedia from "./media";
 import { formatDate } from "@/lib/format";
-import { RiMore2Fill } from "@remixicon/react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { postData } from "@/data";
 import PostPoll from "./poll";
+import { RegisteredVotes } from "@/types";
+import { PostContext } from "@/context/post";
 
 function PostItemBody({
-  registeredVotes,
   data,
-  isReplied,
+  isRepliedByCurrentUser,
 }: {
   data: typeof postData;
-  isReplied: boolean;
-  registeredVotes: any;
+  isRepliedByCurrentUser: boolean;
 }) {
+  const { currentUserId } = useContext(PostContext);
+
   return (
     <div className="flex gap-x-3 relative h-fit">
       <Avatar className="size-9 border">
         <AvatarImage src={data.user.avatar} />
         <AvatarFallback>A</AvatarFallback>
       </Avatar>
-      {isReplied && (
+      {isRepliedByCurrentUser && (
         <Separator
           className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
           orientation="vertical"
@@ -42,7 +43,10 @@ function PostItemBody({
         <PostContent content={data.content} />
         {data.media.length > 0 && <PostMedia media={data.media} />}
         {data.poll && (
-          <PostPoll poll={data.poll} registeredVotes={registeredVotes} />
+          <PostPoll
+            poll={data.poll}
+            isCurrentUser={currentUserId === data.userId}
+          />
         )}
       </div>
     </div>

@@ -180,8 +180,6 @@ export const polls = pgTable(
       .unique()
       .references(() => posts.id, { onDelete: "cascade" }),
     duration: timestamp("duration").notNull(),
-    anonymousVotes: boolean("anonymous_votes").notNull(),
-    multipleVotes: boolean("multiple_votes").notNull(),
     quizMode: boolean("quiz_mode").notNull(),
     createdAt: timestamp("created_at")
       .notNull()

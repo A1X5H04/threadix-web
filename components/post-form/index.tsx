@@ -1,7 +1,7 @@
 "use client";
 
 import { postSchema } from "@/types/schemas";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
@@ -22,6 +22,7 @@ import { useListTransition, Transition } from "transition-hooks";
 import useSWRMutation from "swr/mutation";
 import { POST } from "@/lib/fetcher";
 import hotToast from "react-hot-toast";
+import { User } from "lucia";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -30,7 +31,17 @@ const threadSchema = z.object({
 
 export type ThreadSchema = z.infer<typeof threadSchema>;
 
-function PostFormIndex({ parentId }: { parentId?: string }) {
+function PostFormIndex({
+  user,
+  parentId,
+  setIsFormDirty,
+  closeModal,
+}: {
+  user: User;
+  parentId?: string;
+  setIsFormDirty: (value: boolean) => void;
+  closeModal: () => void;
+}) {
   const { trigger, isMutating, error } = useSWRMutation(
     "/api/post",
     POST<ThreadSchema>
@@ -46,6 +57,10 @@ function PostFormIndex({ parentId }: { parentId?: string }) {
       reply: "",
     },
   });
+
+  useEffect(() => {
+    setIsFormDirty(form.formState.isDirty);
+  }, [form.formState.isDirty]);
 
   const { fields, append, remove } = useFieldArray({
     name: "posts",
@@ -86,6 +101,7 @@ function PostFormIndex({ parentId }: { parentId?: string }) {
       })
       .then(() => {
         form.reset();
+        closeModal();
       });
   };
 
@@ -150,15 +166,17 @@ function PostFormIndex({ parentId }: { parentId?: string }) {
                       key={field.id}
                     >
                       <Avatar className="size-9 border">
-                        <AvatarImage src="https://i.pinimg.com/236x/f1/97/0a/f1970a8b5bdf920a2e1977a28e2e8c77.jpg" />
-                        <AvatarFallback>A</AvatarFallback>
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback>
+                          {user.name.at(0)?.toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                       <Separator
                         className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
                         orientation="vertical"
                       />
                       <div className="flex flex-col gap-y-1 w-full h-full">
-                        <h3 className="font-semibold ">johndoe</h3>
+                        <h3 className="font-semibold ">{user.username}</h3>
                         <PostFormItem
                           key={field.id}
                           field={field}
@@ -186,7 +204,10 @@ function PostFormIndex({ parentId }: { parentId?: string }) {
               <div className="mt-6 w-full flex justify-between items-center ">
                 <PostPermission />
 
-                <Button disabled={isMutating} type="submit">
+                <Button
+                  disabled={isMutating || !form.formState.isDirty}
+                  type="submit"
+                >
                   {isMutating ? "Posting..." : "Post"}
                 </Button>
               </div>
