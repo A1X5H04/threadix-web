@@ -14,11 +14,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
   const validatedForm = loginSchema.safeParse(values);
 
   if (!validatedForm.success) {
-    return {
-      status: false,
-      title: "Invalid Credentials",
-      message: "The credentials your provide are invalid!",
-    };
+    throw new Error("Invalid form data");
   }
   const { email, password } = validatedForm.data;
 
@@ -27,15 +23,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
   });
 
   if (!existingUser || !existingUser.password) {
-    return {
-      status: false,
-      title: "User Does not Exist!",
-      message: "The user you are trying to login does not exist!",
-      action: {
-        title: "Register",
-        href: "/register",
-      },
-    };
+    throw new Error("User does not exist!");
   }
 
   const passwordMatch = await new Argon2id().verify(
@@ -44,11 +32,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
   );
 
   if (!passwordMatch) {
-    return {
-      status: false,
-      title: "Incorrect Credentials!",
-      message: "The credentials you provided are incorrect!",
-    };
+    throw new Error("Invalid credentials!");
   }
 
   const session = await lucia.createSession(existingUser.id, {});
@@ -60,9 +44,5 @@ export async function login(values: z.infer<typeof loginSchema>) {
     sessionCookie.attributes
   );
 
-  return {
-    status: true,
-    title: "Welcome Back!",
-    message: "You have successfully logged in!",
-  };
+  return "Welcome back!";
 }
