@@ -1,17 +1,20 @@
 "use client";
 
+import { User } from "lucia";
 import { createContext } from "react";
 
 interface PostContextType {
   likedPosts?: string[];
   registeredVotes?: { pollId: string; optionId: number }[];
-  currentUserId: string;
+  repostedPosts?: string[];
+  currentUser: User | null;
 }
 
 export const PostContext = createContext<PostContextType>({
   likedPosts: [],
   registeredVotes: [],
-  currentUserId: "",
+  repostedPosts: [],
+  currentUser: null,
 });
 
 interface PostProviderProps extends PostContextType {
