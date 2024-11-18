@@ -6,9 +6,9 @@ export async function GET(
   req: Request,
   { params: { postId } }: { params: { postId: string } }
 ) {
-  const { user } = await validateRequest();
+  const { session, user } = await validateRequest();
 
-  if (!user) {
+  if (!user || !session) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
@@ -29,14 +29,53 @@ export async function GET(
             },
           },
         },
+        quotePost: {
+          columns: {
+            id: true,
+            content: true,
+            userId: true,
+            createdAt: true,
+            mentions: true,
+            tags: true,
+          },
+          with: {
+            user: {
+              columns: {
+                id: true,
+                name: true,
+                username: true,
+                avatar: true,
+                isVerified: true,
+                createdAt: true,
+              },
+            },
+            media: true,
+            poll: {
+              with: {
+                poll_options: true,
+              },
+            },
+            quotePost: {
+              columns: {
+                id: true,
+                content: true,
+              },
+              with: {
+                user: {
+                  columns: {
+                    id: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         media: true,
         poll: {
           with: {
             poll_options: true,
           },
-        },
-        replies: {
-          orderBy: (reply, { asc }) => asc(reply.createdAt),
         },
         user: {
           columns: {
@@ -54,7 +93,60 @@ export async function GET(
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    return NextResponse.json({ post });
+    const replies = await db.query.posts.findMany({
+      where: (post, { eq }) => eq(post.parentId, postId),
+      with: {
+        likes: {
+          with: {
+            user: {
+              columns: {
+                name: true,
+                username: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        media: true,
+        poll: {
+          with: {
+            poll_options: true,
+          },
+        },
+        replies: {
+          where: (reply, { eq, or }) =>
+            or(eq(reply.userId, post.userId), eq(reply.userId, reply.userId)),
+          with: {
+            user: {
+              columns: {
+                id: true,
+                name: true,
+                username: true,
+                avatar: true,
+                isVerified: true,
+              },
+            },
+            media: true,
+            poll: {
+              with: {
+                poll_options: true,
+              },
+            },
+          },
+        },
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            username: true,
+            bio: true,
+            isVerified: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ post, replies });
   } catch (err) {
     console.log("POSTID_GET_ERROR", err);
     return new NextResponse("An error occurred", { status: 500 });

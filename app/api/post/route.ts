@@ -1,17 +1,23 @@
 import { NextResponse } from "next/server";
 
-import { ThreadSchema } from "@/components/post-form";
+import { ThreadSchema } from "@/components/post/form";
 import { validateRequest } from "@/lib/auth";
 import { pollOptions, polls, postMedia, posts } from "@/db/schemas/tables";
 
-import { convertRelativeDataToDate } from "@/lib/utils";
+import { convertRelativeDataToDate, shuffleArray } from "@/lib/utils";
 import { db, pool, poolDb } from "@/lib/db";
 import { backendClient } from "@/lib/edgestore-server";
+import { increment } from "@/lib/queries";
+import { eq } from "drizzle-orm";
+import { repost } from "@/actions/post/repost";
 
 export async function POST(req: Request) {
   try {
     const { user } = await validateRequest();
-    const request: ThreadSchema & { parentId?: string } = await req.json();
+    const request: ThreadSchema & {
+      postId?: string;
+      postType?: "reply" | "quote";
+    } = await req.json();
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -30,7 +36,20 @@ export async function POST(req: Request) {
       // Console Log 1
       console.log("Transaction Started");
       const parentIds: Array<string> = [];
-      if (request.parentId) parentIds.push(request.parentId);
+      if (request.postId && request.postType === "reply") {
+        console.log("Updating parent post replies count", request.posts.length);
+        txn
+          .update(posts)
+          .set({
+            repliesCount: increment(
+              posts.repliesCount,
+              request.posts.length || 1
+            ),
+          })
+          .where(eq(posts.id, request.postId));
+        parentIds.push(request.postId);
+      }
+
       for (const post of request.posts) {
         // Inserting posts
         console.log("Inserting posts");
@@ -40,6 +59,10 @@ export async function POST(req: Request) {
             content: post.content,
             userId: user.id,
             createdAt: new Date(),
+            quotePostId:
+              request.postId && request.postType === "quote"
+                ? request.postId
+                : null,
             repliesCount: request.posts.length - 1,
             parentId:
               parentIds.length > 0 ? parentIds[parentIds.length - 1] : null, // Last parent id
@@ -104,10 +127,15 @@ export async function POST(req: Request) {
             .values({
               postId: id,
               duration: convertRelativeDataToDate(post.poll.duration),
-              multipleVotes: post.poll.multipleAnswers,
               quizMode: post.poll.quizMode,
             })
             .returning();
+
+          console.log(
+            "Poll Duration and Relative Data",
+            post.poll.duration,
+            convertRelativeDataToDate(post.poll.duration)
+          );
 
           // insert poll options
           console.log("Inserting poll options");
@@ -138,34 +166,13 @@ export async function POST(req: Request) {
     return res;
   } catch (error) {
     console.log("POST_CREATE_ERROR", error);
-
     return new NextResponse("An error occurred", { status: 500 });
   } finally {
-    // Closes the connection as the transaction is completed
-    console.log("Closing the connection");
-    await pool.end();
+    // // Closes the connection as the transaction is completed
+    // console.log("Closing the connection");
+    // await pool.end();
   }
 }
-
-type Post = {
-  id: string;
-  content: string;
-  parentId: string;
-  poll: {
-    question: string;
-    options: { title: string }[];
-    duration: string;
-    anonymousVoting: boolean;
-    multipleAnswers: boolean;
-    quizMode: boolean;
-  };
-  user: {
-    id: string;
-    name: string;
-    username: string;
-    email: string;
-  };
-};
 
 export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
   try {
@@ -175,8 +182,9 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const allPosts = await db.query.posts.findMany({
-      where: (post, { isNull }) => isNull(post.parentId),
+    const postsList = await db.query.posts.findMany({
+      where: (post, { isNull, and, ne }) =>
+        and(isNull(post.parentId), ne(post.userId, session.userId)),
       with: {
         user: {
           columns: {
@@ -208,6 +216,49 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
           orderBy: (reply, { asc }) => asc(reply.createdAt),
           limit: 1,
         },
+        quotePost: {
+          columns: {
+            id: true,
+            content: true,
+            userId: true,
+            createdAt: true,
+            mentions: true,
+            tags: true,
+          },
+
+          with: {
+            user: {
+              columns: {
+                id: true,
+                name: true,
+                username: true,
+                avatar: true,
+                isVerified: true,
+                createdAt: true,
+              },
+            },
+            media: true,
+            poll: {
+              with: {
+                poll_options: true,
+              },
+            },
+            quotePost: {
+              columns: {
+                id: true,
+                content: true,
+              },
+              with: {
+                user: {
+                  columns: {
+                    id: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         media: true,
         poll: {
           with: {
@@ -218,9 +269,99 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
       orderBy: (post, { desc }) => desc(post.createdAt),
     });
 
-    return NextResponse.json({ posts: allPosts });
+    const repostsList = await db.query.reposts.findMany({
+      where: (repost, { ne }) => ne(repost.userId, session.userId),
+      with: {
+        post: {
+          with: {
+            user: {
+              columns: {
+                id: true,
+                name: true,
+                username: true,
+                avatar: true,
+                isVerified: true,
+                createdAt: true,
+              },
+            },
+            media: true,
+            poll: {
+              with: {
+                poll_options: true,
+              },
+            },
+            quotePost: {
+              columns: {
+                id: true,
+                content: true,
+                userId: true,
+                createdAt: true,
+                mentions: true,
+                tags: true,
+              },
+              with: {
+                user: {
+                  columns: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    avatar: true,
+                    isVerified: true,
+                    createdAt: true,
+                  },
+                },
+                media: true,
+                poll: {
+                  with: {
+                    poll_options: true,
+                  },
+                },
+                quotePost: {
+                  columns: {
+                    id: true,
+                    content: true,
+                  },
+                  with: {
+                    user: {
+                      columns: {
+                        id: true,
+                        username: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const shuffledArray = shuffleArray([...postsList, ...repostsList]);
+
+    return NextResponse.json({ posts: shuffledArray });
   } catch (err) {
     console.log("POST_GET_ERROR", err);
     return new NextResponse("An error occurred", { status: 500 });
   }
 }
+
+// type Post = {
+//   id: string;
+//   content: string;
+//   parentId: string;
+//   poll: {
+//     question: string;
+//     options: { title: string }[];
+//     duration: string;
+//     anonymousVoting: boolean;
+//     multipleAnswers: boolean;
+//     quizMode: boolean;
+//   };
+//   user: {
+//     id: string;
+//     name: string;
+//     username: string;
+//     email: string;
+//   };
+// };
