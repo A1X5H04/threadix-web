@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
-import { useTransition, useEffect } from "react";
+import { redirect } from "next/navigation";
+import { useTransition, useEffect, useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
 
@@ -29,14 +29,15 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
+import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/use-debounce";
+import { checkUsername } from "@/actions/check-username";
 
 function RegisterPage() {
-  const router = useRouter();
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
+  const [isCheckingUsername, checkUsernameTransition] = useTransition();
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -47,35 +48,39 @@ function RegisterPage() {
     },
   });
 
+  const debouncedUsername = useDebounce(form.watch("username")?.trim(), 500);
+
   useEffect(() => {
-    const watchUsername = form.watch("username");
-    if (watchUsername) {
-      console.log("Checking username availability", watchUsername);
+    if (debouncedUsername !== "" && debouncedUsername.length >= 4) {
+      checkUsernameTransition(() => {
+        checkUsername(debouncedUsername.trim())
+          .then(() => {
+            setIsUsernameAvailable(true);
+          })
+          .catch(() => setIsUsernameAvailable(false));
+      });
     }
-  }, [form]);
+  }, [debouncedUsername]);
+
+  // useEffect(() => {
+  //   const subscription = form.watch((value, { name }) => {
+  //     if (name === "username" && value.username?.trim() !== "") {
+  //       console.log("Value", value.username);
+  //     }
+  //   });
+  //   return () => subscription.unsubscribe();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [form.watch]);
 
   const onFormSubmit = (values: z.infer<typeof registerSchema>) => {
-    startTransition(() =>
+    startTransition(() => {
       register(values)
-        .then((res) => {
-          toast({
-            title: res.title,
-            description: res.message,
-            variant: res.status ? "default" : "destructive",
-            action: res.status ? (
-              <ToastAction
-                altText="Login Now"
-                onClick={() => router.push("/login")}
-              >
-                Login Now
-              </ToastAction>
-            ) : undefined,
-          });
+        .then((msg) => {
+          toast.success(msg);
+          redirect("/login");
         })
-        .catch((err: any) => {
-          console.log("Register Error", err);
-        })
-    );
+        .catch((err: any) => toast.error(err.message || "An error occurred"));
+    });
   };
 
   return (
@@ -88,7 +93,7 @@ function RegisterPage() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onFormSubmit)}>
+          <form autoComplete="off" onSubmit={form.handleSubmit(onFormSubmit)}>
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <FormField
@@ -113,12 +118,34 @@ function RegisterPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="john_doe12" {...field} />
+                        <Input
+                          role="presentation"
+                          type="text"
+                          autoComplete="new-password"
+                          placeholder="john_doe12"
+                          {...field}
+                        />
                       </FormControl>
                       <FormDescription className={cn("text-muted-foreground")}>
-                        {form.getFieldState("username").isTouched
-                          ? "Checking username availability..."
-                          : ""}
+                        {form.getFieldState("username").isDirty &&
+                          form.getValues("username").trim().length >= 4 && (
+                            <span
+                              className={cn(
+                                "text-xs -mt-0.5",
+                                isCheckingUsername
+                                  ? "text-gray-600"
+                                  : isUsernameAvailable
+                                  ? "text-emerald-600"
+                                  : "text-rose-600"
+                              )}
+                            >
+                              {isCheckingUsername
+                                ? "Checking username..."
+                                : isUsernameAvailable
+                                ? "Username is available"
+                                : "Username is not available"}
+                            </span>
+                          )}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

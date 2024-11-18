@@ -29,10 +29,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useToast } from "@/components/ui/use-toast";
+import toast from "react-hot-toast";
 
 function LoginPage() {
-  const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -45,33 +44,14 @@ function LoginPage() {
   });
 
   const onFormSubmit = (data: z.infer<typeof loginSchema>) => {
-    startTransition(() =>
+    startTransition(() => {
       login(data)
-        .then((res) => {
-          toast({
-            title: res.title,
-            description: res.message,
-            action: res.action ? (
-              <ToastAction
-                onClick={() => router.push(res.action.href)}
-                altText="Helo"
-              >
-                {res.action.title}
-              </ToastAction>
-            ) : undefined,
-          });
-          if (res.status) {
-            router.push("/");
-          }
+        .then((msg) => {
+          toast.success(msg);
+          router.push("/");
         })
-        .catch(() => {
-          toast({
-            title: "An error occurred",
-            description: "An error occurred while trying to login",
-            variant: "destructive",
-          });
-        })
-    );
+        .catch((err) => toast.error(err.message || "An error occurred"));
+    });
   };
 
   return (
