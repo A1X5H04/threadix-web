@@ -2,7 +2,7 @@
 
 import { likes, posts } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
-import { poolDb, pool } from "@/lib/db";
+import { poolDb, pool, db } from "@/lib/db";
 import { decrement, increment } from "@/lib/queries";
 import { and, eq } from "drizzle-orm";
 
@@ -56,4 +56,21 @@ export async function dislikePost(postId: string) {
 
   // console.log("DISLIKE_POST_ERROR", err);
   // return { status: false, error: "Unable to dislike the post" };
+}
+
+export async function getLikedPosts() {
+  const { session } = await validateRequest();
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const likedPost = await db.query.likes.findMany({
+    columns: {
+      postId: true,
+    },
+    where: (like, { eq }) => eq(like.userId, session.userId),
+  });
+
+  return likedPost.map((like) => like.postId);
 }

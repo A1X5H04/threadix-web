@@ -14,6 +14,10 @@ export async function getRegisteredVote() {
 
   try {
     const registeredVotes = await db.query.votes.findMany({
+      columns: {
+        pollId: true,
+        optionId: true,
+      },
       where: (vote, { eq }) => eq(vote.userId, user.id),
     });
 

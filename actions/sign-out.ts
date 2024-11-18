@@ -7,11 +7,7 @@ export async function signOut() {
   const { session } = await validateRequest();
 
   if (!session) {
-    return {
-      status: false,
-      title: "Unauthorized",
-      message: "You are not authorized to perform this action",
-    };
+    throw new Error("Unauthorized");
   }
 
   await lucia.invalidateSession(session.id);
