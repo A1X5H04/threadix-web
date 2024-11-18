@@ -58,8 +58,6 @@ export const posts = pgTable(
 
     quotePostId: varchar("quote_post_id", { length: 32 }),
 
-    location: text("location"),
-
     content: text("content").notNull(),
 
     mentions: text("mentions").array(),
@@ -127,13 +125,14 @@ export const reposts = pgTable(
       .$default(() => new Date()),
   },
   (table) => ({
-    repostPostIdx: index("repost_post_id").on(table.postId),
+    repostUserIdx: index("repost_post_id").on(table.userId),
   })
 );
 
 export const likes = pgTable(
   "like",
   {
+    id: serial("id").primaryKey().notNull(),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),

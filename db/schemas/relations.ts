@@ -12,6 +12,7 @@ import {
   polls,
   pollOptions,
   votes,
+  reposts,
 } from "./tables";
 
 // export const userRelation = relations(users, ({ many }) => ({
@@ -31,6 +32,12 @@ export const postRelation = relations(posts, ({ one, many }) => ({
     relationName: "replies",
   }),
 
+  quotePost: one(posts, {
+    fields: [posts.quotePostId],
+    references: [posts.id],
+    relationName: "quote",
+  }),
+
   replies: many(posts, { relationName: "replies" }),
 
   poll: one(polls, {
@@ -42,6 +49,18 @@ export const postRelation = relations(posts, ({ one, many }) => ({
   likes: many(likes),
 
   media: many(postMedia),
+}));
+
+export const repostsRelation = relations(reposts, ({ one }) => ({
+  post: one(posts, {
+    fields: [reposts.postId],
+    references: [posts.id],
+  }),
+
+  user: one(users, {
+    fields: [reposts.userId],
+    references: [users.id],
+  }),
 }));
 
 export const likesRelation = relations(likes, ({ one }) => ({
