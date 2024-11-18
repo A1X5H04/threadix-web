@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const GET = async (url: string) => {
-  const res = await axios.get(url);
+export const GET = async <T>(url: string) => {
+  const res = await axios.get<T>(url);
   return res.data;
 };
 
@@ -10,8 +10,8 @@ export const POST = async <T>(url: string, { arg }: { arg: T }) => {
   return res.data;
 };
 
-export const PUT = async <T>(url: string, { arg }: { arg: T }) => {
-  const res = await axios.put(url, arg);
+export const PATCH = async <T>(url: string, { arg }: { arg: T }) => {
+  const res = await axios.patch(url, arg);
   return res.data;
 };
 
