@@ -1,34 +1,51 @@
-import { getLikedPosts } from "@/actions/liked-posts";
-import FloatingAddPost from "@/components/floating-add-post";
-import PostForm from "@/components/post-form";
-import PostList from "@/components/post-list";
-import { validateRequest } from "@/lib/auth";
-
-import axios from "axios";
-import { likes } from "@/db/schemas/tables";
-
+"use client";
+import React from "react";
 import useSWR from "swr";
-import { InferSelectModel } from "drizzle-orm";
-import { getRegisteredVote } from "@/actions/registered-votes";
-import PostListSkeleton from "@/components/skeletons/post-list";
-import { redirect } from "next/navigation";
+import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 
-export default async function Home({}) {
-  const { user } = await validateRequest();
+import PostItem from "@/components/post-item";
+import { GET } from "@/lib/fetcher";
+import { Post } from "@/types/api-response";
 
-  if (!user) {
-    redirect("/login");
+function HomePage() {
+  const { data, error, isLoading } = useSWR(
+    "/api/post",
+    GET<{ posts: Post[] }>,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  if (isLoading)
+    return (
+      <div className="w-full h-72 grid place-items-center">
+        <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
+      </div>
+    );
+
+  if (error) {
+    return (
+      <div className="w-full h-72 grid place-items-center">
+        <div className="inline-flex flex-col gap-y-6 items-center justify-center">
+          <RiSignalWifiErrorFill className="w-12 h-12 text-gray-500" />
+          <span className="text-center">
+            <h3 className="text-2xl font-bold">Failed to fetch posts</h3>
+            <p className="text-sm mt-2 text-muted-foreground">
+              Refreshing the page might help
+            </p>
+          </span>
+        </div>
+      </div>
+    );
   }
 
-  const likedPosts = await getLikedPosts();
-  const registeredVotes = await getRegisteredVote();
-
-  // return <PostListSkeleton />;
   return (
-    <PostList
-      user={user}
-      likedPosts={likedPosts.data}
-      registeredVotes={registeredVotes.data}
-    />
+    <>
+      {data?.posts.map((post) => (
+        <PostItem key={post.id} data={post} />
+      ))}
+    </>
   );
 }
+
+export default HomePage;
