@@ -26,3 +26,5 @@ export type RegisteredVotes =
       optionId: number;
     }[]
   | undefined;
+
+export type PostResponse = {};

@@ -57,33 +57,30 @@ export const postAudioSchema = z.object({
   type: z.string(),
 });
 
-export const pollSchema = z
-  .object({
-    options: z
-      .array(
-        z.object({
-          title: z.string().max(30),
-          isCorrect: z.boolean().optional(),
-        })
-      )
-      .min(3, { message: "A poll must have at least 2 options" }) // min(3) because we need at least 2 options + 1 is a blank placeholder
-      .max(4),
+export const pollSchema = z.object({
+  options: z
+    .array(
+      z.object({
+        title: z.string().max(30),
+        isCorrect: z.boolean().optional(),
+      })
+    )
+    .min(3, { message: "A poll must have at least 2 options" }) // min(3) because we need at least 2 options + 1 is a blank placeholder
+    .max(4),
 
-    duration: z.string(),
-    quizMode: z.boolean(),
-  })
-  .refine((data) => {
-    if (data.quizMode) {
-      return data.options.some((option) => option.isCorrect);
-    } else {
-      return true;
-    }
-  });
+  duration: z.string(),
+  quizMode: z.boolean(),
+});
+// .refine((data) => {
+//   if (data.quizMode) {
+//     return data.options.some((option) => option.isCorrect);
+//   } else {
+//     return true;
+//   }
+// });
 
 export const postSchema = z.object({
-  content: z.string().min(10, {
-    message: "A thread content must have at least 10 characters",
-  }),
+  content: z.string(),
   location: z.string().optional(),
   media: z.array(postMediaSchema),
   mentions: z.array(z.string()).optional(),
