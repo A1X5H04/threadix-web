@@ -1,6 +1,6 @@
 import { accounts, users } from "@/db/schemas/auth";
 import { google, lucia } from "@/lib/auth";
-import db from "@/lib/db";
+import { db } from "@/lib/db";
 import { generateIdFromEntropySize } from "lucia";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";

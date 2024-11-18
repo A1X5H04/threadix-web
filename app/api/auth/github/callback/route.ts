@@ -3,7 +3,7 @@ import { github, lucia } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { OAuth2RequestError } from "arctic";
 import { generateIdFromEntropySize } from "lucia";
-import db from "@/lib/db";
+import { db } from "@/lib/db";
 import { accounts, users } from "@/db/schemas/auth";
 
 export async function GET(request: Request): Promise<Response> {
