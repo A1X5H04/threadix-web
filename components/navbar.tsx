@@ -14,16 +14,19 @@ import {
 } from "@remixicon/react";
 
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import PostFormIndex from "./post-form";
+import PostFormIndex from "./post/form";
 
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 
-import CreatePostDialog from "./dialogs/create-post";
+import CreatePostDialog from "./dialogs/post";
 import { User } from "lucia";
+import { useModalStore } from "@/hooks/use-store";
+import { signOut } from "@/actions/sign-out";
 
 function Navbar({ user }: { user: User }) {
+  const { onOpen } = useModalStore((state) => state.post);
   const pathname = usePathname();
 
   const routes = [
@@ -51,16 +54,19 @@ function Navbar({ user }: { user: User }) {
     },
     {
       name: "Profile",
-      path: "/profile",
+      path: "/me",
       icon: RiUserLine,
       activeIcon: RiUserFill,
-      isActive: pathname === "/profile",
+      isActive: pathname === "/me",
     },
   ];
 
   return (
     <>
-      <nav className="w-full h-20 border-b fixed max-w-2xl mx-auto z-50 backdrop-blur-md bg-background/85">
+      <nav className="w-full flex items-center justify-center h-20 border-b fixed max-w-2xl mx-auto z-50 backdrop-blur-md bg-background/85 transition-transform">
+        {/* <button>
+          <RiArrowLeftLine className="w-6 h-6" />
+        </button> */}
         <ul className="w-full h-full inline-flex items-center justify-center gap-x-10">
           {routes.splice(0, 2).map((route) => (
             <li
@@ -79,7 +85,12 @@ function Navbar({ user }: { user: User }) {
               </Link>
             </li>
           ))}
-          <CreatePostDialog user={user} />
+          <button onClick={() => onOpen()}>
+            <li className="py-2 px-3 rounded-md bg-foreground text-background transition-colors cursor-pointer">
+              <RiAddLine className="w-6 h-6" />
+              <span className="sr-only">Create</span>
+            </li>
+          </button>
 
           {routes.splice(0, 2).map((route) => (
             <li
@@ -99,15 +110,14 @@ function Navbar({ user }: { user: User }) {
             </li>
           ))}
           {/* <li>
-          <Button
-            variant="link"
-            onClick={async () => {
-              await signOut();
-            }}
-          >
-          <RiLogoutBoxLine className="w-6 h-6" />
-          </Button>
-        </li> */}
+            <button
+              onClick={async () => {
+                await signOut();
+              }}
+            >
+              Logout ( {user.username} )
+            </button>
+            </li> */}
         </ul>
       </nav>
     </>

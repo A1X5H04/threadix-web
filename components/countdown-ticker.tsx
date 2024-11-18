@@ -9,7 +9,7 @@ export default function CountDownTicker({ targetDate }: Props) {
   const countdown = useCountdown(targetDate);
 
   if (targetDate.getTime() < new Date().getTime()) {
-    return <p>Ended</p>;
+    return <p>Ended at {targetDate.toDateString()}</p>;
   }
 
   return (
