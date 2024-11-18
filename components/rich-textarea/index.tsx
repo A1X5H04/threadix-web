@@ -31,7 +31,6 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
     mentionListProps,
   } = useMentionList(textAreaRef, String(value), CHARACTERS);
   const {
-    richTextRegex,
     toolbarSelectionFn,
     optionSelectionFn,
     isToolbarMenuVisible,
@@ -49,38 +48,6 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
         background: "hsl(var(--muted))",
         color: "hsl(var(--muted-foreground))",
         borderRadius: "2.5px",
-      },
-    ],
-    [
-      richTextRegex.boldReg,
-      {
-        fontWeight: "bold",
-        // border: "1px solid hsl(var(--muted-foreground))",
-        // background: "hsl(var(--muted))",
-      },
-    ],
-    [
-      richTextRegex.italicReg,
-      {
-        fontStyle: "italic",
-        // border: "1px solid hsl(var(--muted-foreground))",
-        // background: "hsl(var(--muted))",
-      },
-    ],
-    [
-      richTextRegex.strikeReg,
-      {
-        textDecoration: "line-through",
-        // border: "1px solid hsl(var(--muted-foreground))",
-        // background: "hsl(var(--muted))",
-      },
-    ],
-    [
-      richTextRegex.monoReg,
-      {
-        fontFamily: "monospace",
-        // border: "1px solid hsl(var(--muted-foreground))",
-        // background: "hsl(var(--muted))",
       },
     ],
   ]);

@@ -103,14 +103,6 @@ interface UseToolbarMenuProps {
   optionSelectionFn: (option: FormatOptions) => void;
   toolbarMenuProps: { top: number | undefined; left: number | undefined };
   isToolbarMenuVisible: boolean;
-  richTextRegex: {
-    boldReg: RegExp;
-    italicReg: RegExp;
-    strikeReg: RegExp;
-    monoReg: RegExp;
-    underlineReg: RegExp;
-    spoilerReg: RegExp;
-  };
 }
 
 function useToolbarMenu(
@@ -239,14 +231,6 @@ function useToolbarMenu(
     toolbarMenuProps: {
       top: pos?.top,
       left: pos?.left,
-    },
-    richTextRegex: {
-      boldReg,
-      italicReg,
-      strikeReg,
-      monoReg,
-      underlineReg,
-      spoilerReg,
     },
   };
 }
