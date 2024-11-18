@@ -82,7 +82,7 @@ export async function GET(
             id: true,
             name: true,
             username: true,
-            bio: true,
+            avatar: true,
             isVerified: true,
           },
         },
@@ -96,17 +96,6 @@ export async function GET(
     const replies = await db.query.posts.findMany({
       where: (post, { eq }) => eq(post.parentId, postId),
       with: {
-        likes: {
-          with: {
-            user: {
-              columns: {
-                name: true,
-                username: true,
-                avatar: true,
-              },
-            },
-          },
-        },
         media: true,
         poll: {
           with: {
@@ -144,6 +133,7 @@ export async function GET(
           },
         },
       },
+      orderBy: (reply, { desc }) => [desc(reply.createdAt)],
     });
 
     return NextResponse.json({ post, replies });

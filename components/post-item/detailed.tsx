@@ -5,19 +5,19 @@ import React, { useContext } from "react";
 import Link from "next/link";
 
 import { PostContext } from "@/context/post";
-import { Post } from "@/types/api-response";
-import PostActions from "../action-bar";
-import PostItemBody from "../body";
+import { Post } from "@/types/api-responses/post/single";
+import PostActions from "./action-bar";
+import PostItemBody from "./body";
 import { formatDate } from "@/lib/format";
-import PostContent from "../content";
+import PostContent from "./content";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-import PostPoll from "../poll";
-import PostMedia from "../media/index";
+import PostPoll from "./poll";
+import PostMedia from "./media/index";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { RiMore2Line, RiMoreLine } from "@remixicon/react";
+import { RiMoreLine } from "@remixicon/react";
+import PostDropdown from "./post-dropdown";
 
 type Props = {
   data: Post;
@@ -48,9 +48,7 @@ function PostItem({ data }: Props) {
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon">
-          <RiMoreLine className="w-4 h-4" />
-        </Button>
+        <PostDropdown />
       </div>
 
       <div className="flex flex-col gap-y-1 w-full h-full">
@@ -65,7 +63,7 @@ function PostItem({ data }: Props) {
       </div>
 
       {data.quotePost && (
-        <div className="ml-12 p-4 border border-muted my-2 rounded-md relative">
+        <div className="p-4 border border-muted my-2 rounded-md relative">
           <Link
             href={`/users/${data.quotePost.user.username}/posts/${data.quotePost.id}`}
             className="absolute inset-0 w-full h-full"

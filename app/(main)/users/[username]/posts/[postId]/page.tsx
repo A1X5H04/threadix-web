@@ -3,7 +3,7 @@
 import PostItem from "@/components/post-item/detailed";
 import ReplyPostItem from "@/components/post/reply";
 import { GET } from "@/lib/fetcher";
-import { Post } from "@/types/api-response";
+import { Post } from "@/types/api-responses/post/single";
 import { RiArrowRightSLine, RiLoader2Line } from "@remixicon/react";
 import React from "react";
 import useSWR from "swr";

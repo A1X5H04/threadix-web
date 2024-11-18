@@ -2,15 +2,13 @@
 
 import React, { useContext } from "react";
 
-import Link from "next/link";
-
 import { PostContext } from "@/context/post";
-import { Post } from "@/types/api-response";
+import { DetailPost } from "@/types/api-responses/post/single";
 
 import ReplyPostItem from "./item";
 
 type Props = {
-  data: Post;
+  data: DetailPost;
   parentPostUserId: string;
 };
 

@@ -77,7 +77,9 @@ export const posts = pgTable(
       .notNull()
       .$default(() => "anyone"),
 
-    createdAt: timestamp("created_at").$default(() => new Date()),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
   },
   (table) => ({
@@ -116,10 +118,10 @@ export const reposts = pgTable(
     id: serial("id").primaryKey().notNull(),
     userId: text("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => users.id),
     postId: varchar("post_id", { length: 32 })
       .notNull()
-      .references(() => posts.id, { onDelete: "cascade" }),
+      .references(() => posts.id),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),

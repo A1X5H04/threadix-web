@@ -14,7 +14,7 @@ import { PostContext } from "@/context/post";
 import { cn } from "@/lib/utils";
 
 import CountDownTicker from "../countdown-ticker";
-import { Poll, type PollOption } from "@/types/api-response";
+import { Poll, type PollOption } from "@/types/api-responses/common";
 import { useSWRConfig } from "swr";
 import { useRouter } from "next/navigation";
 

@@ -19,10 +19,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import useSWRMutation from "swr/mutation";
 import { POST } from "@/lib/fetcher";
-import hotToast from "react-hot-toast";
+import toast from "react-hot-toast";
 import { User } from "lucia";
 import GifPickerDialog from "../../dialogs/gif-picker";
 import VoiceRecordDialog from "../../dialogs/voice-record";
+import Link from "next/link";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -83,28 +84,49 @@ function PostFormIndex({
         form.setValue(`posts.${idx}.poll.options`, optionsWithoutEmptyTitle);
       }
     });
-
-    hotToast
-      .promise(
-        trigger(
-          postId
-            ? {
-                postId,
-                postType: withQuote ? "quote" : "reply",
-                ...form.getValues(),
-              }
-            : form.getValues()
-        ),
-        {
-          loading: "Posting, please wait...",
-          success: "Thread posted successfully",
-          error: "Failed to post thread",
-        }
+    const pendingToast = toast.loading("Posting thread...");
+    closeModal();
+    trigger(
+      postId
+        ? { postId, postType: withQuote ? "quote" : "reply", ...data }
+        : data
+    )
+      .then((res: { id: string }) =>
+        toast.success(
+          <div className="flex items-center gap-x-2 justify-between">
+            <p>Thread posted successfully</p>
+            {!postId && (
+              <Link
+                className="hover:underline font-bold"
+                href={`/users/${user.id}/posts/${res.id}`}
+              >
+                View thread
+              </Link>
+            )}
+          </div>,
+          { id: pendingToast }
+        )
       )
-      .then(() => {
-        form.reset();
-        closeModal();
-      });
+      .catch(() => toast.error("Failed to post thread", { id: pendingToast }));
+    // hotToast
+    //   .promise(
+    //     trigger(
+    //       postId
+    //         ? {
+    //             postId,
+    //             postType: withQuote ? "quote" : "reply",
+    //             ...form.getValues(),
+    //           }
+    //         : form.getValues()
+    //     ),
+    //     {
+    //       loading: "Posting, please wait...",
+    //       error: "Failed to post thread",
+    //     }
+    //   )
+    //   .then(() => {
+    //     form.reset();
+    //   });
   };
 
   return (

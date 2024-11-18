@@ -67,7 +67,7 @@ function LikeButton({ postId, likes, isLiked }: Props) {
       ) : (
         <RiHeart3Line className="w-5 h-5 text-muted-foreground" />
       )}
-      {likesCounts}
+      {likesCounts > 0 && likesCounts}
     </Button>
   );
 }

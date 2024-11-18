@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       const parentIds: Array<string> = [];
       if (request.postId && request.postType === "reply") {
         console.log("Updating parent post replies count", request.posts.length);
-        txn
+        const returnValue = txn
           .update(posts)
           .set({
             repliesCount: increment(
@@ -47,7 +47,8 @@ export async function POST(req: Request) {
             ),
           })
           .where(eq(posts.id, request.postId));
-        parentIds.push(request.postId);
+        console.log("Update Query", returnValue);
+        -parentIds.push(request.postId);
       }
 
       for (const post of request.posts) {
@@ -63,7 +64,6 @@ export async function POST(req: Request) {
               request.postId && request.postType === "quote"
                 ? request.postId
                 : null,
-            repliesCount: request.posts.length - 1,
             parentId:
               parentIds.length > 0 ? parentIds[parentIds.length - 1] : null, // Last parent id
           })
@@ -160,7 +160,7 @@ export async function POST(req: Request) {
         parentIds.push(id);
       }
 
-      return NextResponse.json({ postIds: parentIds });
+      return NextResponse.json({ id: parentIds[0] });
     });
     console.log("Transaction Completed");
     return res;
@@ -185,6 +185,7 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
     const postsList = await db.query.posts.findMany({
       where: (post, { isNull, and, ne }) =>
         and(isNull(post.parentId), ne(post.userId, session.userId)),
+
       with: {
         user: {
           columns: {
@@ -193,13 +194,13 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
             username: true,
             avatar: true,
             isVerified: true,
-            createdAt: true,
           },
         },
         // This are only to show the user if the replies has a poll or media
         replies: {
+          where: (reply, { eq }) => eq(reply.userId, posts.userId),
           columns: {
-            userId: true,
+            id: true,
           },
           with: {
             poll: {
@@ -225,7 +226,6 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
             mentions: true,
             tags: true,
           },
-
           with: {
             user: {
               columns: {
@@ -266,7 +266,6 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
           },
         },
       },
-      orderBy: (post, { desc }) => desc(post.createdAt),
     });
 
     const repostsList = await db.query.reposts.findMany({
@@ -334,12 +333,37 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
             },
           },
         },
+        user: {
+          columns: {
+            id: true,
+            username: true,
+          },
+        },
       },
     });
 
-    const shuffledArray = shuffleArray([...postsList, ...repostsList]);
+    const formattedPosts = postsList.map((post) => ({
+      ...post,
+      isReposted: false,
+      createdAt: post.createdAt,
+    }));
 
-    return NextResponse.json({ posts: shuffledArray });
+    const formattedReposts = repostsList.map((repost) => ({
+      ...repost.post,
+      isReposted: true,
+      repostedBy: {
+        id: repost.user.id,
+        username: repost.user.username,
+      },
+      repostedAt: repost.createdAt,
+    }));
+
+    const combinedArray = [...formattedPosts, ...formattedReposts].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    return NextResponse.json({ posts: combinedArray });
   } catch (err) {
     console.log("POST_GET_ERROR", err);
     return new NextResponse("An error occurred", { status: 500 });

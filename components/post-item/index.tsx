@@ -7,40 +7,46 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RiBarChartHorizontalLine, RiImage2Line } from "@remixicon/react";
+import {
+  RiBarChartHorizontalLine,
+  RiImage2Line,
+  RiRepeat2Fill,
+} from "@remixicon/react";
 import Link from "next/link";
 
 import { PostContext } from "@/context/post";
-import { Post } from "@/types/api-response";
+import { Post } from "@/types/api-responses/post/single";
 import PostActions from "./action-bar";
 
 import PostItemBody from "./body";
+import { formatDate, formatRelativeDate } from "@/lib/format";
 
 type Props = {
   data: Post;
 };
 
 function PostItem({ data }: Props) {
-  const { currentUser, likedPosts } = useContext(PostContext);
-
-  const isRepliedByCurrentUser =
-    data.replies.length > 0 && data.replies[0].userId === currentUser?.id;
-
-  const isRepliesHasMedia = data.replies.some(
-    (reply) => (reply.media && reply.media.length > 0) || reply.poll
-  );
+  const { likedPosts } = useContext(PostContext);
 
   return (
     <Link href={`/users/${data.user.username}/posts/${data.id}`}>
       <div className="py-4 border-b">
-        {/* <p className="pl-10 text-xs text-muted-foreground inline-flex items-center gap-2">
-        <RiStarFill className="w-3 h-3 text-muted-foreground" />
-        First Thread
-      </p> */}
-        <PostItemBody
-          data={data}
-          showReplyBar={isRepliedByCurrentUser && isRepliesHasMedia}
-        />
+        {data.isReposted && (
+          <div className="pl-8 text-xs text-muted-foreground inline-flex items-center gap-2">
+            <RiRepeat2Fill className="w-4 h-4 text-muted-foreground" />
+            <p>
+              <Link
+                className="font-bold hover:underline"
+                href={`/users/${data.repostedBy.id}`}
+              >
+                {data.repostedBy.username}
+              </Link>
+              &nbsp; reposted {formatRelativeDate(new Date(data.repostedAt))}
+            </p>
+          </div>
+        )}
+
+        <PostItemBody data={data} showReplyBar={false} />
         {data.quotePost && (
           <div className="ml-12 p-4 border border-muted my-2 rounded-md relative">
             <Link
@@ -52,7 +58,7 @@ function PostItem({ data }: Props) {
         )}
         <div className="flex items-center gap-3">
           <div className="flex justify-center items-center h-full w-9">
-            {isRepliedByCurrentUser && isRepliesHasMedia && (
+            {false && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>

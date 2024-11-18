@@ -28,6 +28,30 @@ export function formatDate(dateInput: Date): string {
   return `${dateString} at ${timeString}`;
 }
 
+export function formatRelativeDate(dateInput: Date): string {
+  const now = new Date();
+  const diffInSeconds = Math.floor(
+    (now.getTime() - dateInput.getTime()) / 1000
+  );
+
+  const secondsInMinute = 60;
+  const secondsInHour = 60 * secondsInMinute;
+  const secondsInDay = 24 * secondsInHour;
+
+  if (diffInSeconds < secondsInMinute) {
+    return `now`;
+  } else if (diffInSeconds < secondsInHour) {
+    const minutes = Math.floor(diffInSeconds / secondsInMinute);
+    return `${minutes}m ago`;
+  } else if (diffInSeconds < secondsInDay) {
+    const hours = Math.floor(diffInSeconds / secondsInHour);
+    return `${hours}h ago`;
+  } else {
+    const days = Math.floor(diffInSeconds / secondsInDay);
+    return `${days}d ago`;
+  }
+}
+
 export function formatSecondsToMinutes(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);

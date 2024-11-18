@@ -5,7 +5,7 @@ import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 
 import PostItem from "@/components/post-item";
 import { GET } from "@/lib/fetcher";
-import { Post } from "@/types/api-response";
+import { Post } from "@/types/api-responses/post/single";
 
 function HomePage() {
   const { data, error, isLoading } = useSWR(
