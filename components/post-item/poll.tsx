@@ -12,16 +12,20 @@ import { produce } from "immer";
 import { RegisteredVotes } from "@/types";
 import { PostContext } from "@/context/post";
 import { cn } from "@/lib/utils";
-import useCountdown from "@/hooks/use-countdown";
+
 import CountDownTicker from "../countdown-ticker";
+import { Poll, type PollOption } from "@/types/api-response";
+import { useSWRConfig } from "swr";
+import { useRouter } from "next/navigation";
 
 function PostPoll({
   poll,
   isCurrentUser,
 }: {
-  poll: typeof postData.poll;
+  poll: Poll;
   isCurrentUser: boolean;
 }) {
+  const router = useRouter();
   const { registeredVotes } = useContext(PostContext);
   const [pending, transition] = useTransition();
   const [isVoted, setIsVoted] = React.useState(false);
@@ -65,6 +69,7 @@ function PostPoll({
               registerVote(poll.id, optionId)
                 .then(() => {
                   toast.success("Vote Registered");
+                  router.refresh();
                 })
                 .catch(() => {
                   toast.error("Failed to register vote");
@@ -107,7 +112,7 @@ function PollOption({
   handleClick,
 }: {
   shouldDisabled: boolean;
-  option: (typeof postData.poll.poll_options)[0];
+  option: PollOption;
   calculateVotePercentage: (votes: number) => number;
   voteOptionId: number | null;
   handleClick: (optionId: number) => void;

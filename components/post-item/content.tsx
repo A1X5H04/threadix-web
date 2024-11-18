@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React from "react";
+import React, { memo } from "react";
 import reactReplace from "react-string-replace";
 
 function PostContent({ content }: { content: string }) {
@@ -65,4 +65,4 @@ function PostContent({ content }: { content: string }) {
   return <div className="text-[15px]">{parsedContent}</div>;
 }
 
-export default PostContent;
+export default memo(PostContent);
