@@ -1,53 +1,73 @@
-import React, { useTransition } from "react";
+import React, { useMemo, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { dislikePost, likePost } from "@/actions/post/like";
 import { RiHeart3Fill, RiHeart3Line } from "@remixicon/react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { useSWRConfig } from "swr";
+import { produce } from "immer";
+import { Post } from "@/types/api-responses/post/single";
+import { useAppStore } from "@/hooks/use-store";
 
 type Props = {
   postId: string;
   likes: number;
-  isLiked: boolean;
 };
 
-function LikeButton({ postId, likes, isLiked }: Props) {
+function LikeButton({ postId, likes }: Props) {
+  const { likedPosts, setLikedPosts } = useAppStore();
+  const { mutate } = useSWRConfig();
   const [pending, transition] = useTransition();
-  // Using local state because mutating a section of cached data is too inefficient :(
-  const [isLike, setIsLike] = React.useState(isLiked);
-  const [likesCounts, setLikesCounts] = React.useState(likes);
 
-  const handleLike = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const isLiked = useMemo(
+    () => likedPosts.includes(postId),
+    [likedPosts, postId]
+  );
+
+  const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (isLike) {
-      setLikesCounts((prev) => prev - 1);
-      setIsLike(false);
-      transition(() =>
-        dislikePost(postId)
-          .then(() => {
-            toast.success("Post disliked");
-          })
-          .catch(() => {
-            toast.error("Failed to dislike the post");
-            setLikesCounts(likes);
-            setIsLike(true);
-          })
+    if (isLiked) {
+      mutate(
+        "/api/post",
+        (data) => {
+          return produce(data, (draft: { posts: Post[] }) => {
+            const post = draft.posts.find((post) => post?.id === postId);
+            if (post) {
+              post.likesCount = post.likesCount - 1;
+            }
+          });
+        },
+        { revalidate: false, populateCache: true }
       );
+      setLikedPosts(likedPosts.filter((id) => id !== postId));
+      try {
+        await dislikePost(postId);
+        toast.success("Post disliked");
+      } catch {
+        toast.error("Failed to dislike the post");
+        mutate("/api/post");
+      }
     } else {
-      setLikesCounts((prev) => prev + 1);
-      setIsLike(true);
-
-      transition(() =>
-        likePost(postId)
-          .then(() => {
-            toast.success("Post liked");
-          })
-          .catch(() => {
-            toast.error("Failed to like the post");
-            setLikesCounts(likes);
-            setIsLike(false);
-          })
+      mutate(
+        "/api/post",
+        (data) => {
+          return produce(data, (draft: { posts: Post[] }) => {
+            const post = draft.posts.find((post) => post?.id === postId);
+            if (post) {
+              post.likesCount = post.likesCount + 1;
+            }
+          });
+        },
+        { revalidate: false, populateCache: true }
       );
+      setLikedPosts([...likedPosts, postId]);
+      try {
+        await likePost(postId);
+        toast.success("Post liked");
+      } catch {
+        toast.error("Failed to like the post");
+        mutate("/api/post");
+      }
     }
   };
 
@@ -62,12 +82,12 @@ function LikeButton({ postId, likes, isLiked }: Props) {
       variant="ghost"
       size="sm"
     >
-      {isLike ? (
+      {isLiked ? (
         <RiHeart3Fill className="w-5 h-5 text-rose-500" />
       ) : (
         <RiHeart3Line className="w-5 h-5 text-muted-foreground" />
       )}
-      {likesCounts > 0 && likesCounts}
+      {likes > 0 && likes}
     </Button>
   );
 }
