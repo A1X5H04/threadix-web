@@ -19,10 +19,9 @@ type Props = {
     replies: number;
     reposts: number;
   };
-  isLiked: boolean;
 };
 
-function PostActions({ data, postId, counts, isLiked }: Props) {
+function PostActions({ data, postId, counts }: Props) {
   const { onOpen } = useModalStore((state) => state.post);
   const { currentUser, repostedPosts } = useContext(PostContext);
 

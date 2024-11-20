@@ -16,10 +16,12 @@ import PostDropdown from "./post-dropdown";
 function PostItemBody({
   data,
   showReplyBar,
+  showMenu,
   isQuoted,
 }: {
   data: Post;
   showReplyBar?: boolean;
+  showMenu?: boolean;
   isQuoted?: boolean;
 }) {
   const { currentUser } = useContext(PostContext);
@@ -62,7 +64,12 @@ function PostItemBody({
               {formatDate(new Date(data.createdAt))}
             </p>
           </div>
-          <PostDropdown isCurrentUser={currentUser?.id === data.userId} />
+          {showMenu && !isQuoted && (
+            <PostDropdown
+              userId={currentUser?.id}
+              isCurrentUser={currentUser?.id === data.userId}
+            />
+          )}
         </div>
         <PostContent content={data.content} />
         {data.media.length > 0 && <PostMedia media={data.media} />}

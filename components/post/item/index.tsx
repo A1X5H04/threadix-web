@@ -47,7 +47,7 @@ function PostItem({ data }: Props) {
           </div>
         )}
 
-        <PostItemBody data={data} showReplyBar={false} />
+        <PostItemBody data={data} showReplyBar={false} showMenu />
         {data.quotePost && (
           <div className="ml-12 p-4 border border-muted my-2 rounded-md relative">
             <Link
@@ -94,7 +94,6 @@ function PostItem({ data }: Props) {
           </div>
           <PostActions
             data={data}
-            isLiked={likedPosts?.includes(data.id) ?? false}
             counts={{
               likes: data.likesCount,
               replies: data.repliesCount,

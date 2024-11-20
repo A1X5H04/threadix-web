@@ -65,10 +65,10 @@ function PostPoll({
       },
       { revalidate: false, populateCache: true }
     );
-    setRegisteredVotes([...registeredVotes, { pollId: poll.id, optionId }]);
 
     try {
       await registerVote(poll.id, optionId);
+      setRegisteredVotes([...registeredVotes, { pollId: poll.id, optionId }]);
       toast.success("Vote Registered");
     } catch (error) {
       mutate("/api/posts"); // Revalidate the cache
@@ -100,7 +100,7 @@ function PostPoll({
 
       <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
         <span className="font-semibold inline-flex gap-x-1">
-          {poll.quizMode ? "Quiz" : "Poll"} &middot;{" "}
+          {poll.quizMode ? "Quiz" : "Poll"}&nbsp;&middot;
           <CountDownTicker targetDate={new Date(poll.duration)} />
         </span>
         <span className="font-semibold">{totalVotes} Votes</span>

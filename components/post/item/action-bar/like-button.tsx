@@ -17,7 +17,6 @@ type Props = {
 function LikeButton({ postId, likes }: Props) {
   const { likedPosts, setLikedPosts } = useAppStore();
   const { mutate } = useSWRConfig();
-  const [pending, transition] = useTransition();
 
   const isLiked = useMemo(
     () => likedPosts.includes(postId),
@@ -73,7 +72,6 @@ function LikeButton({ postId, likes }: Props) {
 
   return (
     <Button
-      disabled={pending}
       onClick={handleLike}
       className={cn(
         "text-sm gap-x-2 text-muted-foreground font-light"

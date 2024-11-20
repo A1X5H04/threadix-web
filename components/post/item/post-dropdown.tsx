@@ -5,8 +5,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
+} from "../../ui/dropdown-menu";
+import { Button } from "../../ui/button";
 import {
   RiBookmark2Fill,
   RiBookmarkLine,
@@ -20,10 +20,11 @@ import {
 import toast from "react-hot-toast";
 
 interface PostDropdownProps {
+  userId?: string;
   isCurrentUser: boolean;
 }
 
-function PostDropdown({ isCurrentUser }: PostDropdownProps) {
+function PostDropdown({ userId, isCurrentUser }: PostDropdownProps) {
   const handleSavePost = () => {
     toast.success(
       <div className="flex items-center gap-x-2 justify-between min-w-52">
@@ -43,16 +44,25 @@ function PostDropdown({ isCurrentUser }: PostDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button
+          onClick={(e) => e.preventDefault()}
+          variant="ghost"
+          size="icon"
+          className="-mb-4 size-6 rounded-sm"
+        >
           <RiMoreFill className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-56" align="end">
+      <DropdownMenuContent
+        onClick={(e) => e.preventDefault()}
+        className="min-w-56"
+        align="end"
+      >
         <DropdownMenuItem onClick={handleSavePost} className="justify-between">
           Save Post
           <RiBookmarkLine className="w-4 h-4" />
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSavePost} className="justify-between">
+        <DropdownMenuItem className="justify-between">
           Copy Link
           <RiLinkM className="w-4 h-4" />
         </DropdownMenuItem>
@@ -60,7 +70,7 @@ function PostDropdown({ isCurrentUser }: PostDropdownProps) {
           Edit Post
           <RiPencilLine className="w-4 h-4" />
         </DropdownMenuItem> */}
-        <DropdownMenuSeparator />
+        {/* <DropdownMenuSeparator />
 
         <DropdownMenuItem
           className="justify-between"
@@ -75,7 +85,7 @@ function PostDropdown({ isCurrentUser }: PostDropdownProps) {
         >
           Block User
           <RiUserForbidLine className="w-4 h-4" />
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         {/* <DropdownMenuItem
           onClick={() =>
             toast(

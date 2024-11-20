@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAppStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
 import { type PollOption } from "@/types/api-responses/common";
 import { RiCheckFill, RiCloseFill } from "@remixicon/react";
@@ -22,6 +23,8 @@ function PollOption({
   voteOptionId: number | null;
   handleClick: (optionId: number) => void;
 }) {
+  const { currentUser } = useAppStore();
+
   return (
     <button
       onClick={() => handleClick(option.id)}
@@ -33,30 +36,44 @@ function PollOption({
       //     ? "You can't vote on your own poll!"
       //     : undefined
       // }
-      className={cn(
-        "relative flex items-center justify-between text-sm gap-2 px-3 py-1.5 w-full rounded-md text-white border border-muted overflow-hidden disabled:cursor-default"
-      )}
+      className="relative flex items-center justify-between text-sm gap-2 px-3 py-1.5 w-full rounded-md text-white border border-muted overflow-hidden disabled:cursor-default"
     >
       <div
         className={cn(
           "absolute inset-0 h-full transition-all duration-150 bg-foreground",
-          isEnded && "bg-muted"
+          isEnded && "bg-muted",
+          isEnded && option.voteCount === highestVotes && "bg-foreground"
         )}
         style={{
           width: `${calculateVotePercentage(option.voteCount)}%`,
         }}
       />
-      <div className="inline-flex items-center gap-x-2 z-10">
+      <div className="inline-flex items-center gap-x-2">
+        <p
+          className="mix-blend-difference font-semibold"
+          // className={cn(
+          //   "font-semibold",
+          //   isQuiz && !isEnded && "mix-blend-difference",
+          //   !isQuiz && isEnded
+          //     ? "mix-blend-difference"
+          //     : isEnded &&
+          //         isQuiz &&
+          //         option.isCorrect &&
+          //         "text-emerald-800 z-10",
+          //   isEnded && isQuiz && !option.isCorrect && "text-red-800 z-10"
+          // )}
+        >
+          {option.title}
+        </p>
         {isQuiz && isEnded && (
           <>
             {option.isCorrect ? (
-              <RiCheckFill className="w-4 h-4 text-emerald-500" />
+              <RiCheckFill className="w-4 h-4 text-emerald-500 z-10" />
             ) : (
-              <RiCloseFill className="w-4 h-4 text-red-500" />
+              <RiCloseFill className="w-4 h-4 text-red-500 z-10" />
             )}
           </>
         )}
-        <p className="mix-blend-difference font-bold">{option.title}</p>
       </div>
       <div className="inline-flex items-center gap-x-2">
         {voteOptionId === option.id && (
@@ -65,10 +82,12 @@ function PollOption({
             title="Voted by you"
           >
             <AvatarImage
-              src="https://api.dicebear.com/9.x/avataaars-neutral/svg"
-              alt="F"
+              src={currentUser?.avatar ?? undefined}
+              alt={currentUser?.username}
             />
-            <AvatarFallback>F</AvatarFallback>
+            <AvatarFallback>
+              {currentUser?.username?.charAt(0)?.toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         )}
         <span className="mix-blend-difference text-foreground">

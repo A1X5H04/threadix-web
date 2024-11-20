@@ -28,10 +28,6 @@ function PostItem({ data }: Props) {
 
   return (
     <div className="p-4 border-b space-y-2">
-      {/* <p className="pl-10 text-xs text-muted-foreground inline-flex items-center gap-2">
-        <RiStarFill className="w-3 h-3 text-muted-foreground" />
-        First Thread
-      </p> */}
       <div className="flex items-start justify-between">
         <div className="flex gap-x-3 relative h-fit">
           <Avatar className="size-9 border">
@@ -48,7 +44,7 @@ function PostItem({ data }: Props) {
             </p>
           </div>
         </div>
-        <PostDropdown />
+        <PostDropdown isCurrentUser={data.userId === currentUser?.id} />
       </div>
 
       <div className="flex flex-col gap-y-1 w-full h-full">
@@ -73,7 +69,6 @@ function PostItem({ data }: Props) {
       )}
       <PostActions
         data={data}
-        isLiked={likedPosts?.includes(data.id) ?? false}
         counts={{
           likes: data.likesCount,
           replies: data.repliesCount,
