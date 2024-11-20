@@ -37,18 +37,13 @@ export async function POST(req: Request) {
       console.log("Transaction Started");
       const parentIds: Array<string> = [];
       if (request.postId && request.postType === "reply") {
-        console.log("Updating parent post replies count", request.posts.length);
-        const returnValue = txn
+        await txn
           .update(posts)
           .set({
-            repliesCount: increment(
-              posts.repliesCount,
-              request.posts.length || 1
-            ),
+            repliesCount: increment(posts.repliesCount, request.posts.length),
           })
           .where(eq(posts.id, request.postId));
-        console.log("Update Query", returnValue);
-        -parentIds.push(request.postId);
+        parentIds.push(request.postId);
       }
 
       for (const post of request.posts) {
