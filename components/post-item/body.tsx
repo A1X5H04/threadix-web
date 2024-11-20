@@ -4,14 +4,14 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 import { formatDate } from "@/lib/format";
-import PostPoll from "./poll";
+import PostPoll from "./poll/index";
 import PostMedia from "./media/index";
 
 import { PostContext } from "@/context/post";
-import { Post } from "@/types/api-response";
-import { Button } from "../ui/button";
-import { RiMore2Line } from "@remixicon/react";
+import { Post } from "@/types/api-responses/post/single";
+
 import { cn } from "@/lib/utils";
+import PostDropdown from "./post-dropdown";
 
 function PostItemBody({
   data,
@@ -62,6 +62,7 @@ function PostItemBody({
               {formatDate(new Date(data.createdAt))}
             </p>
           </div>
+          <PostDropdown isCurrentUser={currentUser?.id === data.userId} />
         </div>
         <PostContent content={data.content} />
         {data.media.length > 0 && <PostMedia media={data.media} />}

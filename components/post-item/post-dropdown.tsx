@@ -10,12 +10,20 @@ import { Button } from "../ui/button";
 import {
   RiBookmark2Fill,
   RiBookmarkLine,
+  RiDeleteBin2Line,
+  RiEyeOffLine,
+  RiLinkM,
   RiMoreFill,
+  RiPencilLine,
   RiUserForbidLine,
 } from "@remixicon/react";
 import toast from "react-hot-toast";
 
-function PostDropdown() {
+interface PostDropdownProps {
+  isCurrentUser: boolean;
+}
+
+function PostDropdown({ isCurrentUser }: PostDropdownProps) {
   const handleSavePost = () => {
     toast.success(
       <div className="flex items-center gap-x-2 justify-between min-w-52">
@@ -26,7 +34,7 @@ function PostDropdown() {
           className="p-0"
           onClick={() => toast.dismiss()}
         >
-          Dismiss
+          View
         </Button>
       </div>
     );
@@ -39,12 +47,28 @@ function PostDropdown() {
           <RiMoreFill className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-60" align="end">
+      <DropdownMenuContent className="min-w-56" align="end">
         <DropdownMenuItem onClick={handleSavePost} className="justify-between">
           Save Post
           <RiBookmarkLine className="w-4 h-4" />
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSavePost} className="justify-between">
+          Copy Link
+          <RiLinkM className="w-4 h-4" />
+        </DropdownMenuItem>
+        {/* <DropdownMenuItem onClick={handleSavePost} className="justify-between">
+          Edit Post
+          <RiPencilLine className="w-4 h-4" />
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          className="justify-between"
+          onClick={() => toast.error("Feature not yet implemented!")}
+        >
+          Not Interested
+          <RiEyeOffLine className="w-4 h-4" />
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="justify-between text-red-500"
           onClick={() => toast.error("Feature not yet implemented!")}
@@ -52,12 +76,7 @@ function PostDropdown() {
           Block User
           <RiUserForbidLine className="w-4 h-4" />
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => toast.error("Feature not yet implemented!")}
-        >
-          Not Interested
-        </DropdownMenuItem>
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
           onClick={() =>
             toast(
               <p>
@@ -71,7 +90,16 @@ function PostDropdown() {
           }
         >
           Report Post
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
+
+        {/* <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={handleSavePost}
+          className="justify-between text-red-500"
+        >
+          Delete Post
+          <RiDeleteBin2Line className="w-4 h-4" />
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

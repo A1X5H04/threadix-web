@@ -20,13 +20,14 @@ import PostActions from "./action-bar";
 
 import PostItemBody from "./body";
 import { formatDate, formatRelativeDate } from "@/lib/format";
+import { useAppStore } from "@/hooks/use-store";
 
 type Props = {
   data: Post;
 };
 
 function PostItem({ data }: Props) {
-  const { likedPosts } = useContext(PostContext);
+  const { likedPosts } = useAppStore();
 
   return (
     <Link href={`/users/${data.user.username}/posts/${data.id}`}>

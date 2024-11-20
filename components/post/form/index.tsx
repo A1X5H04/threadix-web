@@ -88,13 +88,19 @@ function PostFormIndex({
     closeModal();
     trigger(
       postId
-        ? { postId, postType: withQuote ? "quote" : "reply", ...data }
-        : data
+        ? {
+            postId,
+            postType: withQuote ? "quote" : "reply",
+            ...form.getValues(),
+          }
+        : form.getValues()
     )
       .then((res: { id: string }) =>
         toast.success(
           <div className="flex items-center gap-x-2 justify-between">
-            <p>Thread posted successfully</p>
+            <p>
+              {postId ? "Replied to the post" : "Thread posted successfully"}
+            </p>
             {!postId && (
               <Link
                 className="hover:underline font-bold"

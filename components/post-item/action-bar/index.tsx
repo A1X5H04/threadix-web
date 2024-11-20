@@ -4,7 +4,7 @@ import { RiChat1Line, RiShareForwardLine } from "@remixicon/react";
 
 import { Button } from "@/components/ui/button";
 import { PostContext } from "@/context/post";
-import { Post } from "@/types/api-response";
+import { Post } from "@/types/api-responses/post/single";
 import { useModalStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
 
@@ -30,11 +30,12 @@ function PostActions({ data, postId, counts, isLiked }: Props) {
 
   return (
     <div
+      data-prevent-nprogress={true}
       className="flex items-center gap-x-2"
       onClick={(e) => e.preventDefault()}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <LikeButton postId={postId} likes={counts.likes} isLiked={isLiked} />
+      <LikeButton postId={postId} likes={counts.likes} />
       <Button
         isWrappedInLink
         onClick={() => onOpen(data, "reply")}

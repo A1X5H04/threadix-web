@@ -4,7 +4,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 
 import { cn } from "@/lib/utils";
-import { Media } from "@/types/api-response";
+import { Media } from "@/types/api-responses/common";
 import PostMediaGif from "./gif";
 import PostMediaAudio from "./audio";
 
@@ -30,6 +30,7 @@ function PostMedia({ media }: { media: Media[] }) {
 
   return (
     <div
+      data-prevent-nprogress
       onClick={(e) => e.preventDefault()}
       onMouseDown={(e) => e.preventDefault()}
     >
@@ -46,6 +47,7 @@ function PostMedia({ media }: { media: Media[] }) {
             {media.map((mediaItem, index) => (
               <div
                 onClick={(evt) => {
+                  evt.stopPropagation();
                   evt.preventDefault();
 
                   /* The video should be paused when the lightbox is open but there is now way to resume 
