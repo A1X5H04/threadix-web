@@ -1,4 +1,5 @@
-import { Post } from "@/types/api-response";
+import { postSlice, PostState } from "@/slices/posts";
+import { Post } from "@/types/api-responses/post/single";
 import { create } from "zustand";
 
 interface ModalState {
@@ -26,4 +27,10 @@ export const useModalStore = create<ModalState>((set) => ({
       })),
     onClose: () => set((state) => ({ post: { ...state.post, isOpen: false } })),
   },
+}));
+
+type AppState = PostState;
+
+export const useAppStore = create<AppState>()((...args) => ({
+  ...postSlice(...args),
 }));

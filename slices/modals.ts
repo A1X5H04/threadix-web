@@ -1,11 +1,13 @@
 import { StateCreator } from "zustand";
 
+export interface ModalActionState {
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}
+
 export interface ModalState {
-  post: {
-    isOpen: boolean;
-    onOpen: () => void;
-    onClose: () => void;
-  };
+  post: ModalActionState;
 }
 
 export const modalStore: StateCreator<ModalState, [], [], ModalState> = (
