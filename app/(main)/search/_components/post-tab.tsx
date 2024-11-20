@@ -1,4 +1,4 @@
-import PostItem from "@/components/post-item";
+import PostItem from "@/components/post/item";
 import React from "react";
 
 interface PostTabsProps {

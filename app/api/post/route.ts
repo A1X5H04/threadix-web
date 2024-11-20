@@ -235,7 +235,9 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
             media: true,
             poll: {
               with: {
-                poll_options: true,
+                poll_options: {
+                  orderBy: (option, { asc }) => asc(option.id),
+                },
               },
             },
             quotePost: {

@@ -33,8 +33,10 @@ import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
 import { checkUsername } from "@/actions/check-username";
+import { useRouter } from "next-nprogress-bar";
 
 function RegisterPage() {
+  const router = useRouter();
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
   const [isCheckingUsername, checkUsernameTransition] = useTransition();
   const [isPending, startTransition] = useTransition();
@@ -77,7 +79,7 @@ function RegisterPage() {
       register(values)
         .then((msg) => {
           toast.success(msg);
-          redirect("/login");
+          router.replace("/login");
         })
         .catch((err: any) => toast.error(err.message || "An error occurred"));
     });
@@ -142,8 +144,8 @@ function RegisterPage() {
                               {isCheckingUsername
                                 ? "Checking username..."
                                 : isUsernameAvailable
-                                ? "Username is available"
-                                : "Username is not available"}
+                                ? `${debouncedUsername} is available`
+                                : `${debouncedUsername} is not available`}
                             </span>
                           )}
                       </FormDescription>

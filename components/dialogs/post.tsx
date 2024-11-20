@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import PostFormIndex from "@/components/post/form";
 import { User } from "lucia";
 import { useModalStore } from "@/hooks/use-store";
-import PostItemBody from "../post-item/body";
+import PostItemBody from "../post/item/body";
 
 function PostDialog({ user }: { user: User }) {
   const { isOpen, onClose, post, intent } = useModalStore(

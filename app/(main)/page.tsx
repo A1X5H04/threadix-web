@@ -1,15 +1,16 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useTransition } from "react";
 import useSWR from "swr";
 import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 
-import PostItem from "@/components/post-item";
+import PostItem from "@/components/post/item";
 import { GET } from "@/lib/fetcher";
 import { Post } from "@/types/api-responses/post/single";
 import { useAppStore } from "@/hooks/use-store";
 
 function HomePage() {
   const { fetchData } = useAppStore();
+  const [isFetching, startFetching] = useTransition();
   const { data, error, isLoading } = useSWR(
     "/api/post",
     GET<{ posts: Post[] }>,
@@ -19,11 +20,10 @@ function HomePage() {
   );
 
   useEffect(() => {
-    fetchData();
-    console.log("Fetching data");
+    startFetching(() => fetchData());
   }, [fetchData]);
 
-  if (isLoading)
+  if (isLoading || isFetching)
     return (
       <div className="w-full h-72 grid place-items-center">
         <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
