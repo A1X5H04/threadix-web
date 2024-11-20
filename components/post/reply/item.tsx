@@ -25,9 +25,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-type Props = { data: Post; showReplyBar?: boolean };
+type Props = { data: Post; showReplyBar?: boolean; isOriginalPoster?: boolean };
 
-function PostItem({ data, showReplyBar }: Props) {
+function PostItem({ data, showReplyBar, isOriginalPoster }: Props) {
   const { currentUser, likedPosts } = useContext(PostContext);
 
   //   const isRepliedByCurrentUser =
@@ -81,12 +81,12 @@ function PostItem({ data, showReplyBar }: Props) {
                     </Tooltip>
                   </TooltipProvider>
                 )}
-                {data.userId === currentUser?.id && (
+                {isOriginalPoster && (
                   <Badge
                     className="h-5 text-[11px] px-1 -ml-0.5"
                     variant="outline"
                   >
-                    You
+                    OP
                   </Badge>
                 )}
                 &middot;
