@@ -1,13 +1,15 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import useSWR from "swr";
 import { RiLoader2Line, RiSignalWifiErrorFill } from "@remixicon/react";
 
 import PostItem from "@/components/post-item";
 import { GET } from "@/lib/fetcher";
 import { Post } from "@/types/api-responses/post/single";
+import { useAppStore } from "@/hooks/use-store";
 
 function HomePage() {
+  const { fetchData } = useAppStore();
   const { data, error, isLoading } = useSWR(
     "/api/post",
     GET<{ posts: Post[] }>,
@@ -15,6 +17,11 @@ function HomePage() {
       revalidateOnFocus: false,
     }
   );
+
+  useEffect(() => {
+    fetchData();
+    console.log("Fetching data");
+  }, [fetchData]);
 
   if (isLoading)
     return (

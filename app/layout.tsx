@@ -8,6 +8,7 @@ import {
   RiErrorWarningFill,
   RiLoader2Line,
 } from "@remixicon/react";
+import RouteProgressBar from "@/components/route-progress";
 
 const font = Manrope({ subsets: ["latin"] });
 
@@ -25,7 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={font.className}>
-        <EdgeStoreProvider>{children}</EdgeStoreProvider>
+        <RouteProgressBar>
+          <EdgeStoreProvider>{children}</EdgeStoreProvider>
+        </RouteProgressBar>
         <Toaster
           position="bottom-center"
           toastOptions={{

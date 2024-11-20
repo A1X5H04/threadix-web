@@ -9,6 +9,7 @@ import { PostContextProvider } from "@/context/post";
 import Navbar from "@/components/navbar";
 import CreatePostDialog from "@/components/dialogs/post";
 import { validateRequest } from "@/lib/auth";
+import { useAppStore } from "@/hooks/use-store";
 
 interface Props {
   children: React.ReactNode;
