@@ -7,11 +7,11 @@ import { formatDate } from "@/lib/format";
 import PostPoll from "./poll/index";
 import PostMedia from "./media/index";
 
-import { PostContext } from "@/context/post";
 import { Post } from "@/types/api-responses/post/single";
 
 import { cn } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
+import { useAppStore } from "@/hooks/use-store";
 
 function PostItemBody({
   data,
@@ -24,7 +24,7 @@ function PostItemBody({
   showMenu?: boolean;
   isQuoted?: boolean;
 }) {
-  const { currentUser } = useContext(PostContext);
+  const { currentUser } = useAppStore();
 
   return (
     <div

@@ -1,4 +1,4 @@
-import { PostSchema } from "@/types";
+import { PostSchema, Username } from "@/types";
 import React, { memo, ReactNode } from "react";
 import {
   Control,
@@ -18,11 +18,16 @@ import { ThreadSchema } from ".";
 
 import { Textarea } from "../../ui/textarea";
 import RichTextArea from "../../rich-textarea";
+import useSWR from "swr";
 
 interface PostFormItemProps {
   field: PostSchema;
   index: number;
   quotePost: ReactNode;
+  lists: {
+    usernames: Username[];
+    tags: string[];
+  };
   setGifPostIndex: React.Dispatch<React.SetStateAction<number>>;
   setAudioPostIndex: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -31,6 +36,7 @@ function PostFormItem({
   field,
   index,
   quotePost,
+  lists,
   setGifPostIndex,
   setAudioPostIndex,
 }: PostFormItemProps) {
@@ -45,6 +51,8 @@ function PostFormItem({
           <FormControl>
             <RichTextArea
               {...field}
+              fieldIndex={index}
+              lists={lists}
               placeholder={index === 0 ? "Start a thread..." : "Say more..."}
               className="w-full bg-transparent text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none"
               rows={1}

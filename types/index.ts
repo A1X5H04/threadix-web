@@ -27,4 +27,8 @@ export type RegisteredVotes =
     }[]
   | undefined;
 
-export type PostResponse = {};
+export type Username = {
+  name: string | null;
+  username: string | null;
+  avatar: string | null;
+};

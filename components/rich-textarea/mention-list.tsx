@@ -8,6 +8,9 @@ import {
   RichTextareaHandle,
 } from "rich-textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Username } from "@/types";
+import { useFormContext } from "react-hook-form";
+import { ThreadSchema } from "../post/form";
 
 const MAX_LIST_LENGTH = 8;
 const MENTION_REG = /\B@([\-+\w]*)$/;
@@ -20,7 +23,7 @@ const MentionList = ({
   left,
   complete,
 }: {
-  chars: string[];
+  chars: Username[];
   index: number;
   top: number;
   left: number;
@@ -39,7 +42,7 @@ const MentionList = ({
         {chars.length > 0 ? (
           chars.map((c, i) => (
             <li
-              key={c}
+              key={c.name || i}
               className={cn(
                 "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45",
                 index === i && "bg-accent text-accent-foreground"
@@ -51,13 +54,15 @@ const MentionList = ({
             >
               <div className="flex items-center gap-x-2">
                 <Avatar className="w-6 h-6">
-                  <AvatarFallback>{c[0].toUpperCase()}</AvatarFallback>
-                  <AvatarImage src="" />
+                  <AvatarFallback>
+                    {c.username?.charAt(0)?.toUpperCase()}
+                  </AvatarFallback>
+                  <AvatarImage src={c.avatar ?? undefined} />
                 </Avatar>
                 <div className="flex-col text-xs">
-                  <p>{c}</p>
+                  <p>{c.name}</p>
                   <span className="text-[0.70rem] text-muted-foreground">
-                    @a1x5h04
+                    @{c.username}
                   </span>
                 </div>
               </div>
@@ -78,7 +83,7 @@ interface RenderMentionProps {
   mentionKeyDownFn: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   mentionSelectionChangeFn: (caretPos: CaretPosition) => void;
   mentionListProps: {
-    chars: string[];
+    chars: Username[];
     index: number;
     complete: (index: number) => void;
     top: number | undefined;
@@ -89,40 +94,52 @@ interface RenderMentionProps {
 function useMentionList(
   ref: React.RefObject<RichTextareaHandle>,
   value: string | undefined,
-  usernames: string[]
+  usernames: Username[],
+  formIndex: number
 ): RenderMentionProps {
+  const { getValues, setValue } = useFormContext<ThreadSchema>();
   const [pos, setPos] = useState<{
     top: number;
     left: number;
     caret: number;
   } | null>(null);
   const [index, setIndex] = useState<number>(0);
-
   const mentionRegex = new RegExp(
-    `(${usernames.map((c) => `@${c}`).join("|")})`,
+    `(${usernames.map((c) => `@${c.username}`).join("|")})`,
     "g"
   );
 
   const targetText = pos ? value?.slice(0, pos.caret) : value;
   const match = pos && targetText?.match(MENTION_REG);
   const name = match?.[1] ?? "";
+
+  const mentions = getValues(`posts.${formIndex}.mentions`);
   const filteredUsernames = useMemo(
     () =>
       usernames
-        .filter((c) => c.toLowerCase().includes(name.toLowerCase()))
+        .filter(
+          (c) =>
+            !mentions?.includes(c.username!) &&
+            c.username?.toLowerCase().includes(name.toLowerCase())
+        )
         .slice(0, MAX_LIST_LENGTH),
-    [usernames, name]
+    [mentions, usernames, name]
   );
   const complete = (i: number) => {
     if (!ref.current || !pos) return;
     const selected = filteredUsernames[i];
     ref.current.setRangeText(
-      `@${selected} `,
+      `@${selected.username} `,
       pos.caret - name.length - 1,
       pos.caret,
       "end"
     );
-    console.log("Add Mentions", selected);
+
+    setValue(
+      `posts.${formIndex}.mentions`,
+      mentions ? [...mentions, selected.username!] : [selected.username!]
+    );
+    console.log("Mentioned:", getValues(`posts.${formIndex}.mentions`));
     setPos(null);
     setIndex(0);
   };
@@ -133,7 +150,9 @@ function useMentionList(
       if (!textarea || !value) return;
 
       const cursorPosition = textarea.selectionStart;
+      const selectionEnd = textarea.selectionEnd;
       const textBeforeCursor = value.slice(0, cursorPosition);
+      const textAfterCursor = value.slice(selectionEnd);
       const mentionMatch = textBeforeCursor.match(mentionRegex);
 
       if (mentionMatch) {
@@ -149,7 +168,27 @@ function useMentionList(
             cursorPosition,
             "select"
           );
-          console.log("Removed mention:", lastMention.slice(1));
+          const mentions = getValues(`posts.${formIndex}.mentions`)?.filter(
+            (m) => m !== lastMention.slice(1)
+          );
+          setValue(`posts.${formIndex}.mentions`, mentions);
+          console.log(
+            "Removed mention:",
+            getValues(`posts.${formIndex}.mentions`)
+          );
+        }
+      }
+
+      // Handle selection case
+      if (cursorPosition !== selectionEnd) {
+        const selectedText = value.slice(cursorPosition, selectionEnd);
+        const selectedMentionMatch = selectedText.match(mentionRegex);
+
+        if (selectedMentionMatch) {
+          e.preventDefault();
+
+          textarea.setRangeText("", cursorPosition, selectionEnd, "select");
+          console.log("Removed mention:", selectedMentionMatch[0].slice(1));
         }
       }
     }

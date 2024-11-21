@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useContext } from "react";
+import React from "react";
 
 import Link from "next/link";
 
-import { PostContext } from "@/context/post";
 import { Post } from "@/types/api-responses/post/single";
 import PostActions from "@/components/post/item/action-bar";
 
@@ -24,11 +23,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAppStore } from "@/hooks/use-store";
 
 type Props = { data: Post; showReplyBar?: boolean; isOriginalPoster?: boolean };
 
 function PostItem({ data, showReplyBar, isOriginalPoster }: Props) {
-  const { currentUser, likedPosts } = useContext(PostContext);
+  const { currentUser } = useAppStore();
 
   //   const isRepliedByCurrentUser =
   //     data.replies.length > 0 && data.replies[0].userId === currentUser?.id;

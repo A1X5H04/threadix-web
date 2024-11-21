@@ -3,9 +3,8 @@ import { redirect } from "next/navigation";
 import { RiChat1Line, RiShareForwardLine } from "@remixicon/react";
 
 import { Button } from "@/components/ui/button";
-import { PostContext } from "@/context/post";
 import { Post } from "@/types/api-responses/post/single";
-import { useModalStore } from "@/hooks/use-store";
+import { useAppStore, useModalStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
 
 import LikeButton from "./like-button";
@@ -23,7 +22,7 @@ type Props = {
 
 function PostActions({ data, postId, counts }: Props) {
   const { onOpen } = useModalStore((state) => state.post);
-  const { currentUser, repostedPosts } = useContext(PostContext);
+  const { currentUser, repostedPosts } = useAppStore();
 
   if (!currentUser) redirect("/login");
 

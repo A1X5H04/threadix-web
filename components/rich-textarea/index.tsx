@@ -12,30 +12,38 @@ import { createPortal } from "react-dom";
 import ToolbarMenu, { useToolbarMenu } from "./toolbar-menu";
 
 import EmojiList, { useEmojiList } from "./emoji-list";
+import { Username } from "@/types";
+import HashTagList, { useHashTagList } from "./hashtags-list";
 
-const Tag = ({ children }: { children: string }) => {
-  return (
-    <span className="text-xs text-blue-900 hover:underline cursor-default">
-      {children}
-    </span>
-  );
-};
+interface RichTextAreaProps
+  extends Omit<TextareaProps, "children">,
+    RichTextareaProps {
+  lists: { usernames: Username[]; tags: string[] };
+  fieldIndex: number;
+}
 
-function RichTextArea(props: TextareaProps & RichTextareaProps) {
-  const { value } = props;
+function RichTextArea(props: RichTextAreaProps) {
+  const { value, fieldIndex, lists } = props;
   const textAreaRef = useRef<RichTextareaHandle>(null);
   const {
     mentionRegex,
     mentionKeyDownFn,
     mentionSelectionChangeFn,
     mentionListProps,
-  } = useMentionList(textAreaRef, String(value), CHARACTERS);
+  } = useMentionList(textAreaRef, String(value), lists.usernames, fieldIndex);
+  const {
+    hashtagRegex,
+    hashtagKeyDownFn,
+    hashtagSelectionChangeFn,
+    hashtagListProps,
+  } = useHashTagList(textAreaRef, String(value), lists.tags, fieldIndex);
   const {
     toolbarSelectionFn,
     optionSelectionFn,
     isToolbarMenuVisible,
     toolbarMenuProps,
   } = useToolbarMenu(textAreaRef, String(value));
+
   const { emojiKeyDownFn, emojiListProps, emojiSelectionKeyFn } = useEmojiList(
     textAreaRef,
     String(value)
@@ -48,6 +56,13 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
         background: "hsl(var(--muted))",
         color: "hsl(var(--muted-foreground))",
         borderRadius: "2.5px",
+      },
+    ],
+    [
+      hashtagRegex,
+      {
+        color: "#1D4ED8",
+        textDecoration: "underline",
       },
     ],
   ]);
@@ -69,11 +84,13 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
         {...props}
         autoHeight
         onKeyDown={(e) => {
+          hashtagKeyDownFn(e);
           mentionKeyDownFn(e);
           emojiKeyDownFn(e);
         }}
         onSelectionChange={(e) => {
           mentionSelectionChangeFn(e);
+          hashtagSelectionChangeFn(e);
           emojiSelectionKeyFn(e);
           toolbarSelectionFn(e);
         }}
@@ -93,6 +110,20 @@ function RichTextArea(props: TextareaProps & RichTextareaProps) {
           />,
           document.body
         )}
+      {hashtagListProps.left &&
+        hashtagListProps.top &&
+        createPortal(
+          <HashTagList
+            name={hashtagListProps.name}
+            chars={hashtagListProps.chars}
+            complete={hashtagListProps.complete}
+            index={hashtagListProps.index}
+            left={hashtagListProps.left}
+            top={hashtagListProps.top}
+          />,
+          document.body
+        )}
+
       {emojiListProps.left &&
         emojiListProps.top &&
         createPortal(

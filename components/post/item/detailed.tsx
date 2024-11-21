@@ -4,7 +4,6 @@ import React, { useContext } from "react";
 
 import Link from "next/link";
 
-import { PostContext } from "@/context/post";
 import { Post } from "@/types/api-responses/post/single";
 import PostActions from "./action-bar";
 import PostItemBody from "./body";
@@ -18,13 +17,15 @@ import PostMedia from "./media/index";
 import { Button } from "@/components/ui/button";
 import { RiMoreLine } from "@remixicon/react";
 import PostDropdown from "./post-dropdown";
+import VerifiedBadge from "../../verified-badge";
+import { useAppStore } from "@/hooks/use-store";
 
 type Props = {
   data: Post;
 };
 
 function PostItem({ data }: Props) {
-  const { currentUser, likedPosts } = useContext(PostContext);
+  const { currentUser } = useAppStore();
 
   return (
     <div className="p-4 border-b space-y-2">
@@ -38,6 +39,7 @@ function PostItem({ data }: Props) {
           </Avatar>
           <div className="inline-flex items-center gap-x-2">
             <h3 className="font-semibold text-sm">{data.user.username}</h3>
+            {data.user.isVerified && <VerifiedBadge user={data.user} />}
             &middot;
             <p className="text-xs font-semibold text-muted-foreground">
               {formatDate(new Date(data.createdAt))}

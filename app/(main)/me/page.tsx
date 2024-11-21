@@ -10,6 +10,7 @@ import { EditDialog } from "./_components/edit-dialog";
 import FollowDialog from "./_components/follow-dialog";
 import { cn } from "@/lib/utils";
 import ProfileMenu from "./_components/profile-menu";
+import VerifiedBadge from "@/components/verified-badge";
 
 async function ProfilePage() {
   const { user } = await validateRequest();
@@ -20,7 +21,12 @@ async function ProfilePage() {
     <div className="w-full p-5">
       <div className="flex items-center justify-between">
         <div className="inline-flex flex-col">
-          <h4 className="text-xl font-bold">{user.name}</h4>
+          <div className="inline-flex gap-x-2 items-center">
+            <h4 className="text-xl font-bold">{user.name}</h4>
+            {user.isVerified && (
+              <VerifiedBadge user={user} iconClassName="size-6" />
+            )}
+          </div>
 
           <span className="text-muted-foreground text-sm">
             @{user.username}

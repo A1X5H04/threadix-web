@@ -11,9 +11,9 @@ interface DatabaseUserAttributes {
   avatar: string;
   name: string;
   username: string;
-  email: string;
   bio: string;
   link: string;
+  isVerified: boolean;
 }
 
 declare module "lucia" {

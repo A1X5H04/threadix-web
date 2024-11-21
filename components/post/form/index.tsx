@@ -9,7 +9,7 @@ import PostFormItem from "./form-item";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { Separator } from "@/components/ui/separator";
-import { RiCloseLine } from "@remixicon/react";
+import { RiCloseLine, RiLoader2Line } from "@remixicon/react";
 import { Button } from "../../ui/button";
 
 import AddThread from "./add-thread";
@@ -164,6 +164,10 @@ function PostFormIndex({
                           key={field.id}
                           field={field}
                           index={index}
+                          lists={{
+                            usernames: [],
+                            tags: [],
+                          }}
                           quotePost={withQuote}
                           setGifPostIndex={setGifPostIndex}
                           setAudioPostIndex={setAudioPostIndex}
