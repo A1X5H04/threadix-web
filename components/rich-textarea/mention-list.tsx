@@ -104,10 +104,13 @@ function useMentionList(
     caret: number;
   } | null>(null);
   const [index, setIndex] = useState<number>(0);
-  const mentionRegex = new RegExp(
-    `(${usernames.map((c) => `@${c.username}`).join("|")})`,
-    "g"
-  );
+  const mentionRegex = useMemo(() => {
+    if (usernames.length === 0) return new RegExp(`(?!x)x`, "g"); // Default regex that won't match anything
+    return new RegExp(
+      `(${usernames.map((c) => `@${c.username}`).join("|")})`,
+      "g"
+    );
+  }, [usernames]);
 
   const targetText = pos ? value?.slice(0, pos.caret) : value;
   const match = pos && targetText?.match(MENTION_REG);

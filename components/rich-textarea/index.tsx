@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { CHARACTERS } from "@/mock";
+
 import {
   RichTextarea,
   RichTextareaHandle,

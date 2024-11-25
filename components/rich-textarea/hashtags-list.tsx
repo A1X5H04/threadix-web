@@ -37,9 +37,9 @@ const HashTagList = ({
         left: left,
       }}
     >
-      <p className="text-sm p-2 font-semibold border-b">
+      {/* <p className="text-sm p-2 font-semibold border-b">
         Add a subject to your post
-      </p>
+      </p> */}
       <ul className="p-1">
         {chars.length > 0 ? (
           chars.map((c, i) => (
@@ -110,10 +110,10 @@ function useHashTagList(
   } | null>(null);
   const [hashtags, setHashTags] = useState<string[]>(tags);
   const [index, setIndex] = useState<number>(0);
-  const hashtagRegex = new RegExp(
-    `(${hashtags.map((tag) => `${tag}`).join("|")})`,
-    "g"
-  );
+  const hashtagRegex = useMemo(() => {
+    if (hashtags.length === 0) return new RegExp(`(?!x)x`, "g"); // Default regex that won't match anything
+    return new RegExp(`(${hashtags.map((tag) => `#${tag}`).join("|")})`, "g");
+  }, [hashtags]);
 
   const tagValues = getValues(`posts.${formIndex}.tags`);
 
@@ -140,7 +140,7 @@ function useHashTagList(
       console.log("Added new tag:", value);
 
       ref.current.setRangeText(
-        `${value} `,
+        `#${value} `,
         pos.caret - name.length - 1,
         pos.caret,
         "end"
@@ -157,14 +157,12 @@ function useHashTagList(
     console.log("Filtered hashtags:", filteredHashtags);
 
     const selected = filteredHashtags[i];
-
-    if (!selected)
-      ref.current.setRangeText(
-        `${selected} `,
-        pos.caret - name.length - 1,
-        pos.caret,
-        "end"
-      );
+    ref.current.setRangeText(
+      `#${selected} `,
+      pos.caret - name.length - 1,
+      pos.caret,
+      "end"
+    );
 
     setValue(
       `posts.${formIndex}.tags`,
@@ -183,40 +181,46 @@ function useHashTagList(
       const cursorPosition = textarea.selectionStart;
       const selectionEnd = textarea.selectionEnd;
       const textBeforeCursor = value.slice(0, cursorPosition);
-      const textAfterCursor = value.slice(selectionEnd);
+
       const hashTagMatch = textBeforeCursor.match(hashtagRegex);
 
       if (hashTagMatch) {
         const lastHashtag = hashTagMatch[hashTagMatch.length - 1];
-        const mentionStartIndex = textBeforeCursor.lastIndexOf(lastHashtag);
+        const hashTagsStartIndex = textBeforeCursor.lastIndexOf(lastHashtag);
 
-        if (cursorPosition === mentionStartIndex + lastHashtag.length) {
+        if (cursorPosition === hashTagsStartIndex + lastHashtag.length) {
           e.preventDefault();
 
           textarea.setRangeText(
             "",
-            mentionStartIndex,
+            hashTagsStartIndex,
             cursorPosition,
             "select"
           );
-          const mentions = getValues(`posts.${formIndex}.tags`)?.filter(
+          const hashTags = getValues(`posts.${formIndex}.tags`)?.filter(
             (m) => m !== lastHashtag.slice(1)
           );
-          setValue(`posts.${formIndex}.tags`, mentions);
-          console.log("Removed mention:", getValues(`posts.${formIndex}.tags`));
+          setValue(`posts.${formIndex}.tags`, hashTags);
+          console.log(
+            "Removed hashTags:",
+            getValues(`posts.${formIndex}.tags`)
+          );
         }
       }
 
       // Handle selection case
       if (cursorPosition !== selectionEnd) {
         const selectedText = value.slice(cursorPosition, selectionEnd);
-        const selectedMentionMatch = selectedText.match(hashtagRegex);
+        const selectedhashTagsMatch = selectedText.match(hashtagRegex);
 
-        if (selectedMentionMatch) {
+        if (selectedhashTagsMatch) {
           e.preventDefault();
 
           textarea.setRangeText("", cursorPosition, selectionEnd, "select");
-          console.log("Removed mention:", selectedMentionMatch[0].slice(1));
+          console.log(
+            "Removed hashTags in select:",
+            selectedhashTagsMatch[0].slice(1)
+          );
         }
       }
     }
@@ -261,7 +265,7 @@ function useHashTagList(
       filteredHashtags.length > 0 ? setIndex(0) : setIndex(-1);
     } else {
       setPos(null);
-      setIndex(0);
+      filteredHashtags.length > 0 ? setIndex(0) : setIndex(-1);
     }
   };
 
