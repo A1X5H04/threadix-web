@@ -11,14 +11,11 @@ import { User } from "@/types/api-responses/common";
 import { cn } from "@/lib/utils";
 
 interface VerifiedBadgeProps {
-  user: {
-    name: string;
-    isVerified: boolean;
-  };
+  userName: string;
   iconClassName?: string;
 }
 
-function VerifiedBadge({ user, iconClassName }: VerifiedBadgeProps) {
+function VerifiedBadge({ userName, iconClassName }: VerifiedBadgeProps) {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -34,7 +31,7 @@ function VerifiedBadge({ user, iconClassName }: VerifiedBadgeProps) {
         </TooltipTrigger>
         <TooltipContent>
           <p className="text-xs font-semibold">
-            {user.name} is <b>Verified</b> user.
+            {userName} is <b>Verified</b> user.
           </p>
         </TooltipContent>
       </Tooltip>
