@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import PostTab from "./_components/post-tab";
 import UsersTab from "./_components/users-tab";
 import TagTab from "./_components/tag-tab";
+import { RiSearch2Line } from "@remixicon/react";
 
 function SearchPage() {
   return (
@@ -13,7 +14,15 @@ function SearchPage() {
         <TabsTrigger value="users">Users</TabsTrigger>
         <TabsTrigger value="tags">Tags</TabsTrigger>
       </TabsList>
-      <Input placeholder="Search Anything" />
+      <div className="relative">
+        <Input
+          placeholder="Search Anything"
+          className="h-12 indent-8 text-base"
+        />
+        <div className="absolute inset-y-0 left-4 flex items-center">
+          <RiSearch2Line className="text-muted-foreground size-5" />
+        </div>
+      </div>
       <TabsContent value="all">All</TabsContent>
       <TabsContent value="posts">
         <PostTab searchQuery="Hello" />
