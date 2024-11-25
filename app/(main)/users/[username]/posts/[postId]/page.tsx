@@ -8,6 +8,7 @@ import { DetailPost, Post } from "@/types/api-responses/post/single";
 import { RiArrowRightSLine, RiLoader2Line } from "@remixicon/react";
 import React from "react";
 import useSWR from "swr";
+import { Button } from "@/components/ui/button";
 
 function PostIdPage({ params: { postId } }: { params: { postId: string } }) {
   const { data, isLoading } = useSWR(
@@ -32,10 +33,17 @@ function PostIdPage({ params: { postId } }: { params: { postId: string } }) {
       <PostItem data={data.post} />
       <div className="flex justify-between py-3 px-1.5">
         <h4 className="font-bold">Replies ({data.replies.length || 0})</h4>
-        <PostActivity data={data.post}>
-          <span className="inline-flex gap-x-2 items-center text-muted-foreground text-sm">
+        <PostActivity
+          postId={data.post.id}
+          user={data.post.user}
+          postData={{
+            content: data.post.content,
+            createdAt: data.post.createdAt,
+          }}
+        >
+          <Button variant="link" className="px-0 text-muted-foreground">
             View all Activities <RiArrowRightSLine className="size-5" />
-          </span>
+          </Button>
         </PostActivity>
       </div>
       {data.replies.map((reply) => (
