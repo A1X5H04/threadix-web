@@ -81,9 +81,7 @@ export function EditDialog({ user }: { user: User }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
-          Edit Profile
-        </Button>
+        <Button className="w-full font-semibold">Edit Profile</Button>
       </DialogTrigger>
       <DialogContent className="w-full sm:max-w-[425px] lg:max-w-xl">
         <DialogHeader>

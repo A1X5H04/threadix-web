@@ -14,7 +14,7 @@ interface ListItemProps {
     isVerified: boolean;
   };
   content?: string;
-  type: "like" | "repost" | "quote";
+  type?: "like" | "repost" | "quote";
   createdAt: string;
 }
 

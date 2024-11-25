@@ -18,7 +18,7 @@ function PostIdPage({ params: { postId } }: { params: { postId: string } }) {
 
   if (isLoading) {
     return (
-      <div className="w-full h-72 grid place-items-center">
+      <div className="w-full h-56 grid place-items-center">
         <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
       </div>
     );
@@ -40,11 +40,8 @@ function PostIdPage({ params: { postId } }: { params: { postId: string } }) {
             content: data.post.content,
             createdAt: data.post.createdAt,
           }}
-        >
-          <Button variant="link" className="px-0 text-muted-foreground">
-            View all Activities <RiArrowRightSLine className="size-5" />
-          </Button>
-        </PostActivity>
+          pollData={data.post.poll}
+        ></PostActivity>
       </div>
       {data.replies.map((reply) => (
         <ReplyPostItem

@@ -10,20 +10,23 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useSWR from "swr";
 
 interface FollowDialogProps {
-  children: React.ReactNode;
+  username: string;
 }
 
-function FollowDialog({ children }: FollowDialogProps) {
+function FollowDialog({ username }: FollowDialogProps) {
+  const { data } = useSWR(`/api/profile/${username}/followers`);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="link" className="px-0 text-muted-foreground">
-          {children}
+          No Followers
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] max-w-2xl">
+      <DialogContent className="w-full max-w-2xl">
         <DialogHeader>
           <DialogTitle>Your Circle</DialogTitle>
         </DialogHeader>

@@ -39,7 +39,9 @@ function PostItem({ data }: Props) {
           </Avatar>
           <div className="inline-flex items-center gap-x-2">
             <h3 className="font-semibold text-sm">{data.user.username}</h3>
-            {data.user.isVerified && <VerifiedBadge user={data.user} />}
+            {data.user.isVerified && (
+              <VerifiedBadge userName={data.user.name} />
+            )}
             &middot;
             <p className="text-xs font-semibold text-muted-foreground">
               {formatDate(new Date(data.createdAt))}

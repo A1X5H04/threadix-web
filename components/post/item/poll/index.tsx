@@ -104,10 +104,7 @@ function PostPoll({
           {poll.quizMode ? "Quiz" : "Poll"}&nbsp;&middot;
           <CountDownTicker targetDate={new Date(poll.duration)} />
         </span>
-        <div className="inline-flex gap-x-1">
-          <span className="font-semibold">{totalVotes} Votes</span>&middot;
-          {isPollEnded && <PollActivity />}
-        </div>
+        <span className="font-semibold">{totalVotes} Votes</span>
       </div>
     </div>
   );

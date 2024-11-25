@@ -14,6 +14,7 @@ interface DatabaseUserAttributes {
   bio: string;
   link: string;
   isVerified: boolean;
+  isPublic: boolean;
 }
 
 declare module "lucia" {

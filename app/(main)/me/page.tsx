@@ -2,15 +2,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { validateRequest } from "@/lib/auth";
-import { RiLockFill, RiMoreFill } from "@remixicon/react";
 import { redirect } from "next/navigation";
 import React from "react";
-import { twMerge } from "tailwind-merge";
 import { EditDialog } from "./_components/edit-dialog";
-import FollowDialog from "./_components/follow-dialog";
+import FollowDialog from "@/components/profile/follow-dialog";
 import { cn } from "@/lib/utils";
-import ProfileMenu from "./_components/profile-menu";
+import ProfileMenu from "@/components/profile/profile-menu";
 import VerifiedBadge from "@/components/verified-badge";
+import { RiLockFill } from "@remixicon/react";
+import ProfileHeader from "@/components/profile/header";
 
 async function ProfilePage() {
   const { user } = await validateRequest();
@@ -19,28 +19,7 @@ async function ProfilePage() {
 
   return (
     <div className="w-full p-5">
-      <div className="flex items-center justify-between">
-        <div className="inline-flex flex-col">
-          <div className="inline-flex gap-x-2 items-center">
-            <h4 className="text-xl font-bold">{user.name}</h4>
-            {user.isVerified && (
-              <VerifiedBadge user={user} iconClassName="size-6" />
-            )}
-          </div>
-
-          <span className="text-muted-foreground text-sm">
-            @{user.username}
-          </span>
-        </div>
-        <div>
-          <Avatar className="w-16 h-16">
-            <AvatarImage src={user.avatar} />
-            <AvatarFallback className="uppercase">
-              {user.name.at(0)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </div>
+      <ProfileHeader user={user} />
 
       <div className="mt-3.5 space-y-3">
         <p
@@ -53,7 +32,7 @@ async function ProfilePage() {
         </p>
         <div className="flex items-center justify-between gap-x-2">
           <div className="inline-flex items-center gap-x-2">
-            <FollowDialog>No Followers</FollowDialog>
+            <FollowDialog username={user.username} />
             {user.link && (
               <>
                 -
@@ -75,9 +54,25 @@ async function ProfilePage() {
             <TabsTrigger value="repost">Reposts</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="posts">Posts</TabsContent>
-          <TabsContent value="replies">Replies</TabsContent>
-          <TabsContent value="repost">Repost</TabsContent>
+          {user.isPublic ? (
+            <>
+              <TabsContent value="posts">Posts</TabsContent>
+              <TabsContent value="replies">Replies</TabsContent>
+              <TabsContent value="repost">Repost</TabsContent>
+            </>
+          ) : (
+            <div className="grid place-items-center w-full h-60">
+              <div className="grid place-items-center">
+                <RiLockFill className="w-16 h-16 text-muted mb-2" />
+                <h4 className="font-semibold text-lg">
+                  {user.name} has a private account.
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Only followers can see their posts.
+                </p>
+              </div>
+            </div>
+          )}
         </Tabs>
       </div>
     </div>

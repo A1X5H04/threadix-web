@@ -3,7 +3,7 @@ import { Skeleton } from "../ui/skeleton";
 
 function PostListSkeleton() {
   return (
-    <div>
+    <>
       <div className="py-4 border-b">
         <div className="flex gap-x-3 h-fit">
           <Skeleton className="size-9 rounded-full min-w-9" />
@@ -28,6 +28,55 @@ function PostListSkeleton() {
             <Skeleton className="w-8 h-8" />
             <Skeleton className="w-12 h-8" />
             <Skeleton className="w-12 h-8" />
+            <Skeleton className="w-8 h-8" />
+          </div>
+        </div>
+      </div>
+      <div className="py-4 border-b">
+        <div className="flex gap-x-3 h-fit">
+          <Skeleton className="size-9 rounded-full min-w-9" />
+          <div className="flex flex-col gap-y-1 w-full h-full">
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-x-2 mb-2">
+                <Skeleton className="w-24 h-4" />
+                <Skeleton className="w-14 h-3" />
+              </div>
+            </div>
+            <Skeleton className="w-1/3 h-4 my-0.5" />
+            <Skeleton className="w-full my-1 h-fit bg-transparent border">
+              <div className="p-4">
+                <div className="flex gap-x-3 h-fit">
+                  <Skeleton className="size-20" />
+                  <div className="flex gap-x-1 items-center">
+                    {Array.from({ length: 58 }).map((_, index) => (
+                      <Skeleton
+                        key={index}
+                        className="min-w-1"
+                        style={{
+                          height: `${Math.floor(Math.random() * 5) + 1}rem`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-between mt-4 w-full">
+                  <div className="inline-flex gap-x-1">
+                    <Skeleton className="w-3 h-3" />
+                    <Skeleton className="w-20 h-3" />
+                    <Skeleton className="w-10 h-3" />
+                  </div>
+                  <Skeleton className="w-14 h-3" />
+                </div>
+              </div>
+            </Skeleton>
+            <Skeleton className="w-80 my-1" />
+          </div>
+        </div>
+        <div className="flex items-center gap-3 mt-2">
+          <div className="inline-flex items-center gap-x-3 ml-12">
+            <Skeleton className="w-8 h-8" />
+            <Skeleton className="w-12 h-8" />
+            <Skeleton className="w-8 h-8" />
             <Skeleton className="w-8 h-8" />
           </div>
         </div>
@@ -136,7 +185,7 @@ function PostListSkeleton() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

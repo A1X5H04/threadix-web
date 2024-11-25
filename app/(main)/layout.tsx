@@ -8,7 +8,6 @@ import { getRepostedPostsId } from "@/actions/post/repost";
 import Navbar from "@/components/navbar";
 import CreatePostDialog from "@/components/dialogs/post";
 import { validateRequest } from "@/lib/auth";
-import { useAppStore } from "@/hooks/use-store";
 
 interface Props {
   children: React.ReactNode;
@@ -19,7 +18,6 @@ async function MainLayout({ children }: Props) {
 
   if (!session || !user) return redirect("/login");
 
-  // return <PostListSkeleton />;
   return (
     <main className="relative max-w-2xl mx-auto px-5 w-full h-full">
       <Navbar user={user} />
