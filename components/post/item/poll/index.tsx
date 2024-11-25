@@ -10,6 +10,7 @@ import { useAppStore } from "@/hooks/use-store";
 
 import CountDownTicker from "./countdown-ticker";
 import PollOption from "./option";
+import PollActivity from "@/components/dialogs/poll-activity";
 
 function PostPoll({
   poll,
@@ -103,7 +104,10 @@ function PostPoll({
           {poll.quizMode ? "Quiz" : "Poll"}&nbsp;&middot;
           <CountDownTicker targetDate={new Date(poll.duration)} />
         </span>
-        <span className="font-semibold">{totalVotes} Votes</span>
+        <div className="inline-flex gap-x-1">
+          <span className="font-semibold">{totalVotes} Votes</span>&middot;
+          {isPollEnded && <PollActivity />}
+        </div>
       </div>
     </div>
   );

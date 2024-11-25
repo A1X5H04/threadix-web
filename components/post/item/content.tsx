@@ -2,7 +2,11 @@ import Link from "next/link";
 import React, { memo } from "react";
 import reactReplace from "react-string-replace";
 
-function PostContent({ content }: { content: string }) {
+interface PostContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  content: string;
+}
+
+function PostContent({ content, ...rest }: PostContentProps) {
   // For Bold Text (**text**)
   let parsedContent = reactReplace(content, /\*\*(.*?)\*\*/g, (match, i) => (
     <strong key={i}>{match}</strong>
@@ -45,7 +49,7 @@ function PostContent({ content }: { content: string }) {
     <Link
       key={i}
       className="px-0.5 bg-muted border rounded text-muted-foreground font-bold"
-      href={`/u/${match}`}
+      href={`/users/${match}`}
     >
       @{match}
     </Link>
@@ -53,16 +57,20 @@ function PostContent({ content }: { content: string }) {
 
   // For Hashtag (#hashtag)
   parsedContent = reactReplace(parsedContent, /#(\w+)/g, (match, i) => (
-    <a
+    <Link
       key={i}
       className="text-blue-500 hover:underline"
-      href={`/tags/${match}`}
+      href={`/search?query=${match}&type=hashtag`}
     >
       {match}
-    </a>
+    </Link>
   ));
 
-  return <div className="text-[15px]">{parsedContent}</div>;
+  return (
+    <div {...rest} onClick={(e) => e.preventDefault()} className="text-[15px]">
+      {parsedContent}
+    </div>
+  );
 }
 
 export default memo(PostContent);

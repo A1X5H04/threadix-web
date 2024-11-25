@@ -1,29 +1,31 @@
 "use client";
 
-import { postSchema } from "@/types/schemas";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form } from "../../ui/form";
-import PostFormItem from "./form-item";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
-import { Separator } from "@/components/ui/separator";
-import { RiCloseLine, RiLoader2Line } from "@remixicon/react";
-import { Button } from "../../ui/button";
-
-import AddThread from "./add-thread";
-
-import PostPermission from "./post-permission";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { RiCloseLine } from "@remixicon/react";
 import useSWRMutation from "swr/mutation";
-import { POST } from "@/lib/fetcher";
 import toast from "react-hot-toast";
 import { User } from "lucia";
+import Link from "next/link";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Form } from "@/components/ui/form";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { postSchema } from "@/types/schemas";
+import { POST } from "@/lib/fetcher";
+
 import GifPickerDialog from "../../dialogs/gif-picker";
 import VoiceRecordDialog from "../../dialogs/voice-record";
-import Link from "next/link";
+import AddThread from "./add-thread";
+import PostFormItem from "./form-item";
+import PostPermission from "./post-permission";
+import PostFormSkeleton from "@/components/skeletons/post-form";
+import useSWR from "swr";
+import { getUsers } from "@/actions/users";
+import { getTags } from "@/actions/tags";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
@@ -45,13 +47,22 @@ function PostFormIndex({
   // setIsFormDirty: (value: boolean) => void;
   closeModal: () => void;
 }) {
+  const { data: usernames, isLoading: isUsernameLoading } = useSWR(
+    "usernames",
+    getUsers,
+    { onError: () => toast.error("Failed to fetch mentions") }
+  );
+  const { data: tags, isLoading: isTagsLoading } = useSWR("tags", getTags, {
+    onError: () => toast.error("Failed to fetch tags"),
+  });
+
   const { trigger, isMutating, error } = useSWRMutation(
     "/api/post",
     POST<ThreadSchema & { postId?: string; postType?: "quote" | "reply" }>
   );
 
-  const [gifPostIndex, setGifPostIndex] = useState(-1);
   const [audioPostIndex, setAudioPostIndex] = useState(-1);
+  const [gifPostIndex, setGifPostIndex] = useState(-1);
 
   const form = useForm<ThreadSchema>({
     resolver: zodResolver(threadSchema),
@@ -114,26 +125,9 @@ function PostFormIndex({
         )
       )
       .catch(() => toast.error("Failed to post thread", { id: pendingToast }));
-    // hotToast
-    //   .promise(
-    //     trigger(
-    //       postId
-    //         ? {
-    //             postId,
-    //             postType: withQuote ? "quote" : "reply",
-    //             ...form.getValues(),
-    //           }
-    //         : form.getValues()
-    //     ),
-    //     {
-    //       loading: "Posting, please wait...",
-    //       error: "Failed to post thread",
-    //     }
-    //   )
-    //   .then(() => {
-    //     form.reset();
-    //   });
   };
+
+  if (isUsernameLoading || isTagsLoading) return <PostFormSkeleton />;
 
   return (
     <div className="h-fit w-full z-40">
@@ -155,7 +149,7 @@ function PostFormIndex({
                         </AvatarFallback>
                       </Avatar>
                       <Separator
-                        className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[18px] bg-muted"
+                        className="absolute w-0.5 translate-y-[2.88rem] h-[calc(100%-2.88rem)] left-[17px] bg-muted"
                         orientation="vertical"
                       />
                       <div className="flex flex-col gap-y-1 w-full h-full">
@@ -165,8 +159,8 @@ function PostFormIndex({
                           field={field}
                           index={index}
                           lists={{
-                            usernames: [],
-                            tags: [],
+                            usernames: usernames ?? [],
+                            tags: tags ?? [],
                           }}
                           quotePost={withQuote}
                           setGifPostIndex={setGifPostIndex}

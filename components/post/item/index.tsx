@@ -14,12 +14,11 @@ import {
 } from "@remixicon/react";
 import Link from "next/link";
 
-import { PostContext } from "@/context/post";
 import { Post } from "@/types/api-responses/post/single";
 import PostActions from "./action-bar";
 
 import PostItemBody from "./body";
-import { formatDate, formatRelativeDate } from "@/lib/format";
+import { formatRelativeDate } from "@/lib/format";
 import { useAppStore } from "@/hooks/use-store";
 
 type Props = {
