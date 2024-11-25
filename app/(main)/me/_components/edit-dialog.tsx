@@ -115,7 +115,7 @@ export function EditDialog({ user }: { user: User }) {
                       src={
                         avatarImage
                           ? URL.createObjectURL(avatarImage)
-                          : undefined
+                          : user.avatar
                       }
                     />
                   </Avatar>
