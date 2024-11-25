@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 
 import { ThreadSchema } from "@/components/post/form";
 import { validateRequest } from "@/lib/auth";
-import { pollOptions, polls, postMedia, posts } from "@/db/schemas/tables";
+import {
+  pollOptions,
+  polls,
+  postMedia,
+  posts,
+  postsTags,
+  tags,
+} from "@/db/schemas/tables";
 
 import { convertRelativeDataToDate, shuffleArray } from "@/lib/utils";
 import { db, pool, poolDb } from "@/lib/db";
@@ -59,6 +66,7 @@ export async function POST(req: Request) {
               request.postId && request.postType === "quote"
                 ? request.postId
                 : null,
+            mentions: post.mentions ? post.mentions : [],
             parentId:
               parentIds.length > 0 ? parentIds[parentIds.length - 1] : null, // Last parent id
           })
@@ -145,11 +153,42 @@ export async function POST(req: Request) {
         }
 
         if (post.mentions && post.mentions.length > 0) {
-          // TODO: insert mentions
+          // TODO: check if mentioned users exist
+          // TODO: send notifications to mentioned users
         }
 
         if (post.tags && post.tags.length > 0) {
-          // TODO: insert tags
+          // TODO: create tags if not exist and assign them to the post
+          const existingTags = await txn.query.tags.findMany({
+            where: (tag, { inArray }) =>
+              inArray(tag.name, post.tags ? post.tags : []),
+          });
+
+          const newTags = post.tags.filter(
+            (tag) => !existingTags.map((t) => t.name).includes(tag)
+          );
+
+          if (newTags.length > 0) {
+            await txn.insert(tags).values(
+              newTags.map((tag) => ({
+                name: tag,
+                userId: user.id,
+              }))
+            );
+          }
+
+          // Assigning tags to the post
+          const tagsToAssign = await txn.query.tags.findMany({
+            where: (tag, { inArray }) =>
+              inArray(tag.name, post.tags ? post.tags : []),
+          });
+
+          await txn.insert(postsTags).values(
+            tagsToAssign.map((tag) => ({
+              postId: id,
+              tagId: tag.id,
+            }))
+          );
         }
 
         parentIds.push(id);
@@ -219,7 +258,6 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
             userId: true,
             createdAt: true,
             mentions: true,
-            tags: true,
           },
           with: {
             user: {
@@ -293,7 +331,6 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
                 userId: true,
                 createdAt: true,
                 mentions: true,
-                tags: true,
               },
               with: {
                 user: {

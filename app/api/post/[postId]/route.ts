@@ -36,7 +36,6 @@ export async function GET(
             userId: true,
             createdAt: true,
             mentions: true,
-            tags: true,
           },
           with: {
             user: {

@@ -2,7 +2,6 @@
 
 import React, { useContext } from "react";
 
-import { PostContext } from "@/context/post";
 import { DetailPost } from "@/types/api-responses/post/single";
 
 import ReplyPostItem from "./reply-post-item";
