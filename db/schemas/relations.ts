@@ -96,28 +96,42 @@ export const postPollRelations = relations(polls, ({ many }) => ({
   poll_options: many(pollOptions),
 }));
 
-export const pollOptionRelation = relations(pollOptions, ({ one }) => ({
+export const pollOptionRelation = relations(pollOptions, ({ one, many }) => ({
   poll: one(polls, {
     fields: [pollOptions.pollId],
     references: [polls.id],
   }),
+
+  votes: many(votes),
 }));
 
-// export const tagRelation = relations(tags, ({ many, one }) => ({
-//   user: one(users, {
-//     fields: [tags.userId],
-//     references: [users.id],
-//   }),
-//   posts: many(posts),
-// }));
+export const voteRelation = relations(votes, ({ one }) => ({
+  user: one(users, {
+    fields: [votes.userId],
+    references: [users.id],
+  }),
 
-// export const postToTagRelation = relations(postsTags, ({ one }) => ({
-//   post: one(posts, {
-//     fields: [postsTags.postId],
-//     references: [posts.id],
-//   }),
-//   tag: one(tags, {
-//     fields: [postsTags.tagId],
-//     references: [tags.id],
-//   }),
-// }));
+  poll_option: one(pollOptions, {
+    fields: [votes.optionId],
+    references: [pollOptions.id],
+  }),
+}));
+
+export const tagRelation = relations(tags, ({ many, one }) => ({
+  user: one(users, {
+    fields: [tags.userId],
+    references: [users.id],
+  }),
+  posts: many(posts),
+}));
+
+export const postToTagRelation = relations(postsTags, ({ one }) => ({
+  post: one(posts, {
+    fields: [postsTags.postId],
+    references: [posts.id],
+  }),
+  tag: one(tags, {
+    fields: [postsTags.tagId],
+    references: [tags.id],
+  }),
+}));

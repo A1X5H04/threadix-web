@@ -62,8 +62,6 @@ export const posts = pgTable(
 
     mentions: text("mentions").array(),
 
-    tags: text("tags").array(),
-
     likesCount: bigint("likes_count", { mode: "number" })
       .notNull()
       .$default(() => 0),
@@ -155,7 +153,9 @@ export const likes = pgTable(
 export const tags = pgTable(
   "tag",
   {
-    id: text("id").primaryKey(),
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
     name: varchar("name", { length: 128 }).unique().notNull(),
     userId: text("user_id")
       .notNull()
