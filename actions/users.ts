@@ -77,7 +77,7 @@ export async function getFollowingUsers() {
   if (!user) return redirect("/login");
 
   const followingUsers = await db.query.userFollowers.findMany({
-    where: (follower, { eq }) => eq(follower.followerId, user.id),
+    where: (follower, { eq }) => eq(follower.userId, user.id),
     with: {
       following_user: {
         columns: {
