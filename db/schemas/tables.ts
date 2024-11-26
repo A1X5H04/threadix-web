@@ -13,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
+import { unique } from "drizzle-orm/mysql-core";
 
 const createId = init({
   random: Math.random,

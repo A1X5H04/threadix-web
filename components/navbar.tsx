@@ -24,6 +24,12 @@ import CreatePostDialog from "./dialogs/post";
 import { User } from "lucia";
 import { useModalStore } from "@/hooks/use-store";
 import { signOut } from "@/actions/sign-out";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 function Navbar({ user }: { user: User }) {
   const { onOpen } = useModalStore((state) => state.post);
@@ -38,8 +44,8 @@ function Navbar({ user }: { user: User }) {
       isActive: pathname === "/",
     },
     {
-      name: "Search",
-      path: "/search",
+      name: "Explore",
+      path: "/explore",
       icon: RiSearchLine,
       activeIcon: RiSearchFill,
       isActive: pathname === "/search",
@@ -62,28 +68,31 @@ function Navbar({ user }: { user: User }) {
   ];
 
   return (
-    <>
+    <TooltipProvider>
       <nav className="w-full flex items-center justify-center h-20 border-b fixed max-w-2xl mx-auto z-50 backdrop-blur-md bg-background/85 transition-transform">
         {/* <button>
           <RiArrowLeftLine className="w-6 h-6" />
         </button> */}
+
         <ul className="w-full h-full inline-flex items-center justify-center gap-x-10">
           {routes.splice(0, 2).map((route) => (
-            <li
-              key={route.path}
-              className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer"
-            >
-              <Link href={route.path} className="w-full h-full">
-                {route.isActive ? (
-                  <div>
-                    <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
-                  </div>
-                ) : (
-                  <route.icon className="w-6 h-6" />
-                )}
-                <span className="sr-only">{route.name}</span>
-              </Link>
-            </li>
+            <Tooltip key={route.path}>
+              <TooltipTrigger>
+                <li className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer">
+                  <Link href={route.path} className="w-full h-full">
+                    {route.isActive ? (
+                      <div>
+                        <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
+                      </div>
+                    ) : (
+                      <route.icon className="w-6 h-6" />
+                    )}
+                    <span className="sr-only">{route.name}</span>
+                  </Link>
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{route.name}</TooltipContent>
+            </Tooltip>
           ))}
           <button onClick={() => onOpen()}>
             <li className="py-2 px-3 rounded-md bg-foreground text-background transition-colors cursor-pointer">
@@ -120,7 +129,7 @@ function Navbar({ user }: { user: User }) {
             </li> */}
         </ul>
       </nav>
-    </>
+    </TooltipProvider>
   );
 }
 

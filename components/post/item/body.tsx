@@ -12,6 +12,7 @@ import { Post } from "@/types/api-responses/post/single";
 import { cn } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
 import { useAppStore } from "@/hooks/use-store";
+import { RiDoubleQuotesL } from "@remixicon/react";
 
 function PostItemBody({
   data,
@@ -78,6 +79,12 @@ function PostItemBody({
             poll={data.poll}
             isCurrentUser={currentUser?.id === data.userId}
           />
+        )}
+        {isQuoted && data.quotePost && (
+          <div className="inline-flex items-center gap-x-2 text-muted-foreground text-sm">
+            <RiDoubleQuotesL className="w-4 h-4" />{" "}
+            {data.quotePost.user.username}: {data.quotePost.content}
+          </div>
         )}
       </div>
     </div>

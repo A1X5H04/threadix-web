@@ -8,10 +8,11 @@ import { EditDialog } from "./_components/edit-dialog";
 import FollowDialog from "@/components/profile/follow-dialog";
 import { cn } from "@/lib/utils";
 import ProfileMenu from "@/components/profile/profile-menu";
-import VerifiedBadge from "@/components/verified-badge";
 import { RiLockFill } from "@remixicon/react";
 import ProfileHeader from "@/components/profile/header";
 import ProfileTabsContent from "@/components/profile/tabs-content";
+import UserProfileSkeleton from "@/components/skeletons/user-profile";
+import Link from "next/link";
 
 async function ProfilePage() {
   const { user } = await validateRequest();
@@ -36,10 +37,14 @@ async function ProfilePage() {
             <FollowDialog username={user.username} />
             {user.link && (
               <>
-                -
-                <Button variant="link" className="px-0 text-muted-foreground">
+                &middot;
+                <Link
+                  href={user.link}
+                  target="_blank"
+                  className="text-muted-foreground hover:text-foreground hover:underline text-sm"
+                >
                   {user.link}
-                </Button>
+                </Link>
               </>
             )}
           </div>

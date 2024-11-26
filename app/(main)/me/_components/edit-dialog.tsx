@@ -32,8 +32,10 @@ import useSWRMutation from "swr/mutation";
 import { PATCH } from "@/lib/fetcher";
 import toast from "react-hot-toast";
 import { useEdgeStore } from "@/lib/edgestore";
+import { useRouter } from "next/navigation";
 
 export function EditDialog({ user }: { user: User }) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const { edgestore } = useEdgeStore();
   const [avatarImage, setAvatarImage] = React.useState<File | null>(null);
@@ -50,7 +52,7 @@ export function EditDialog({ user }: { user: User }) {
   });
 
   const { trigger, isMutating } = useSWRMutation(
-    "/api/profile",
+    `/api/profile/${user.username}`,
     PATCH<z.infer<typeof profileSchema>>
   );
 
@@ -61,9 +63,10 @@ export function EditDialog({ user }: { user: User }) {
       form.setValue("avatar", res.url);
     }
 
-    trigger({ ...data, avatar: form.getValues("avatar") || undefined })
+    trigger({ ...data, avatar: form.getValues("avatar") })
       .then(() => {
         toast.success("Profile updated successfully");
+        router.refresh();
         setIsOpen(false);
       })
       .catch(() => {

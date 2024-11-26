@@ -9,7 +9,6 @@ import FollowDialog from "@/components/profile/follow-dialog";
 import { cn } from "@/lib/utils";
 import ProfileMenu from "@/components/profile/profile-menu";
 
-import { RiLoader2Line, RiLockFill } from "@remixicon/react";
 import { useAppStore } from "@/hooks/use-store";
 import useSWR from "swr";
 import { GET } from "@/lib/fetcher";
@@ -17,9 +16,10 @@ import ProfileHeader from "@/components/profile/header";
 import { User } from "lucia";
 import { followUser, getFollowingUsers, unfollowUser } from "@/actions/users";
 import toast from "react-hot-toast";
-import useConfirm from "@/hooks/use-confirm";
+
 import useConfirmDialog from "@/hooks/use-confirm";
 import ProfileTabsContent from "@/components/profile/tabs-content";
+import UserProfileSkeleton from "@/components/skeletons/user-profile";
 
 function ProfilePage({
   params: { username },
@@ -28,13 +28,6 @@ function ProfilePage({
 }) {
   const { currentUser, followedUsers, setFollowedUsers } = useAppStore();
 
-  console.log("followedUser", followedUsers);
-
-  useEffect(() => {
-    getFollowingUsers().then((data) => {
-      console.log("data", data);
-    });
-  });
   const [pending, startTransition] = useTransition();
   const [openDialog, ConfirmDialog] = useConfirmDialog();
 
@@ -47,13 +40,7 @@ function ProfilePage({
     GET<User>
   );
 
-  if (!user || isLoading) {
-    return (
-      <div className="w-full h-60 grid place-items-center">
-        <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
-      </div>
-    );
-  }
+  if (!user || isLoading) return <UserProfileSkeleton />;
 
   const handleFollowUnfollow = () => {
     if (isFollowing) {

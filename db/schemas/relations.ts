@@ -78,11 +78,11 @@ export const likesRelation = relations(likes, ({ one }) => ({
 
 export const followerRelation = relations(userFollowers, ({ one }) => ({
   followed_user: one(users, {
-    fields: [userFollowers.userId],
+    fields: [userFollowers.followerId],
     references: [users.id],
   }),
   following_user: one(users, {
-    fields: [userFollowers.followerId],
+    fields: [userFollowers.userId],
     references: [users.id],
   }),
 }));

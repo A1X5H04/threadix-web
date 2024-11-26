@@ -34,7 +34,10 @@ export async function GET(
   }
 }
 
-export async function PATCH(req: Request, params: { profileId: string }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: { profileId: string } }
+) {
   const { profileId } = params;
 
   const body = await req.json();
@@ -53,7 +56,7 @@ export async function PATCH(req: Request, params: { profileId: string }) {
         link: body.link,
         bio: body.bio,
       })
-      .where(eq(users.id, profileId))
+      .where(eq(users.username, profileId))
       .returning({ id: users.id });
 
     return NextResponse.json(user, { status: 200 });
