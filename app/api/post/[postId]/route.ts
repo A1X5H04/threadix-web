@@ -18,13 +18,62 @@ export async function GET(
     const post = await db.query.posts.findFirst({
       where: (post, { eq }) => eq(post.id, postId),
       with: {
-        likes: {
+        parentPost: {
           with: {
             user: {
               columns: {
                 name: true,
                 username: true,
                 avatar: true,
+                isVerified: true,
+              },
+            },
+            quotePost: {
+              columns: {
+                id: true,
+                content: true,
+                userId: true,
+                createdAt: true,
+                mentions: true,
+              },
+              with: {
+                user: {
+                  columns: {
+                    name: true,
+                    username: true,
+                    avatar: true,
+                    isVerified: true,
+                    createdAt: true,
+                  },
+                },
+                media: true,
+                poll: {
+                  with: {
+                    poll_options: {
+                      orderBy: (option, { asc }) => asc(option.id),
+                    },
+                  },
+                },
+                quotePost: {
+                  columns: {
+                    id: true,
+                    content: true,
+                  },
+                  with: {
+                    user: {
+                      columns: {
+                        id: true,
+                        username: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            media: true,
+            poll: {
+              with: {
+                poll_options: true,
               },
             },
           },

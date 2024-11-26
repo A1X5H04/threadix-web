@@ -3,7 +3,10 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request, params: { profileId: string }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { profileId: string } }
+) {
   const { profileId } = params;
 
   try {

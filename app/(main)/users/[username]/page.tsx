@@ -1,30 +1,100 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { validateRequest } from "@/lib/auth";
+
 import { redirect } from "next/navigation";
-import React from "react";
+import React, { useEffect, useTransition } from "react";
 import FollowDialog from "@/components/profile/follow-dialog";
 import { cn } from "@/lib/utils";
 import ProfileMenu from "@/components/profile/profile-menu";
-import VerifiedBadge from "@/components/verified-badge";
-import { RiLockFill } from "@remixicon/react";
 
-async function ProfilePage({
+import { RiLoader2Line, RiLockFill } from "@remixicon/react";
+import { useAppStore } from "@/hooks/use-store";
+import useSWR from "swr";
+import { GET } from "@/lib/fetcher";
+import ProfileHeader from "@/components/profile/header";
+import { User } from "lucia";
+import { followUser, getFollowingUsers, unfollowUser } from "@/actions/users";
+import toast from "react-hot-toast";
+import useConfirm from "@/hooks/use-confirm";
+import useConfirmDialog from "@/hooks/use-confirm";
+import ProfileTabsContent from "@/components/profile/tabs-content";
+
+function ProfilePage({
   params: { username },
 }: {
   params: { username: string };
 }) {
-  const { user } = await validateRequest();
+  const { currentUser, followedUsers, setFollowedUsers } = useAppStore();
 
-  if (!user) {
-    redirect("/login");
-  } else if (user.username === username) {
-    redirect("/me");
+  console.log("followedUser", followedUsers);
+
+  useEffect(() => {
+    getFollowingUsers().then((data) => {
+      console.log("data", data);
+    });
+  });
+  const [pending, startTransition] = useTransition();
+  const [openDialog, ConfirmDialog] = useConfirmDialog();
+
+  const isFollowing = followedUsers.includes(username);
+
+  if (currentUser?.username === username) redirect("/me");
+
+  const { data: user, isLoading } = useSWR(
+    `/api/profile/${username}`,
+    GET<User>
+  );
+
+  if (!user || isLoading) {
+    return (
+      <div className="w-full h-60 grid place-items-center">
+        <RiLoader2Line className="w-8 h-8 animate-spin text-gray-500" />
+      </div>
+    );
   }
+
+  const handleFollowUnfollow = () => {
+    if (isFollowing) {
+      openDialog({
+        cancelText: "Cancel",
+        confirmText: `Yes, Unfollow`,
+        description: `Are you sure you want to unfollow ${user.name}?`,
+        title: "Unfollow User",
+        variant: "destructive",
+        onConfirm: () => {
+          startTransition(() => {
+            unfollowUser(user.username)
+              .then(() => {
+                setFollowedUsers(
+                  followedUsers.filter((u) => u !== user.username)
+                );
+                toast.success(`Unfollowed ${user.name}`);
+              })
+              .catch(() => {
+                toast.error("Failed to unfollow user");
+              });
+          });
+        },
+      });
+    } else {
+      startTransition(() => {
+        followUser(user.username)
+          .then(() => {
+            setFollowedUsers([...followedUsers, user.username]);
+            toast.success(`Followed ${user.name}`);
+          })
+          .catch(() => {
+            toast.error("Failed to follow user");
+          });
+      });
+    }
+  };
 
   return (
     <div className="w-full p-5">
+      <ProfileHeader user={user} />
       <div className="mt-3.5 space-y-3">
         <p
           className={cn(
@@ -36,7 +106,7 @@ async function ProfilePage({
         </p>
         <div className="flex items-center justify-between gap-x-2">
           <div className="inline-flex items-center gap-x-2">
-            <FollowDialog>No Followers</FollowDialog>
+            <FollowDialog username={user.username} />
             {user.link && (
               <>
                 -
@@ -48,7 +118,15 @@ async function ProfilePage({
           </div>
           <ProfileMenu username={user.username} />
         </div>
-        <Button>Follow {user.name}</Button>
+
+        <Button
+          variant={isFollowing ? "outline" : "default"}
+          onClick={handleFollowUnfollow}
+          isLoading={pending}
+          className="w-full"
+        >
+          {isFollowing ? `Unfollow ${user.name}` : `Follow ${user.name}`}
+        </Button>
       </div>
       <div className="mt-6">
         <Tabs defaultValue="posts">
@@ -57,15 +135,9 @@ async function ProfilePage({
             <TabsTrigger value="replies">Replies</TabsTrigger>
             <TabsTrigger value="repost">Reposts</TabsTrigger>
           </TabsList>
+          <ProfileTabsContent username={user.username} />
 
-          {user.isPublic ? (
-            <>
-              <TabsContent value="posts">Posts</TabsContent>
-              <TabsContent value="replies">Replies</TabsContent>
-              <TabsContent value="repost">Repost</TabsContent>
-            </>
-          ) : (
-            <div className="grid place-items-center w-full h-60">
+          {/* <div className="grid place-items-center w-full h-60">
               <div className="grid place-items-center">
                 <RiLockFill className="w-16 h-16 text-muted mb-2" />
                 <h4 className="font-semibold text-lg">
@@ -75,10 +147,10 @@ async function ProfilePage({
                   Only followers can see their posts.
                 </p>
               </div>
-            </div>
-          )}
+            </div> */}
         </Tabs>
       </div>
+      <ConfirmDialog />
     </div>
   );
 }

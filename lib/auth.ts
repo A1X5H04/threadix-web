@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 import { GitHub, Google } from "arctic";
 
 interface DatabaseUserAttributes {
-  id: string;
   avatar: string;
   name: string;
   username: string;

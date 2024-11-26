@@ -219,7 +219,6 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
     const postsList = await db.query.posts.findMany({
       where: (post, { isNull, and, ne }) =>
         and(isNull(post.parentId), ne(post.userId, session.userId)),
-
       with: {
         user: {
           columns: {

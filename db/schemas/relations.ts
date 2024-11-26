@@ -74,12 +74,14 @@ export const likesRelation = relations(likes, ({ one }) => ({
   }),
 }));
 
+// I am getting confused with this followers relation, better I query it directly, (this sh*t is real illuminating)
+
 export const followerRelation = relations(userFollowers, ({ one }) => ({
-  following: one(users, {
+  followed_user: one(users, {
     fields: [userFollowers.userId],
     references: [users.id],
   }),
-  follower: one(users, {
+  following_user: one(users, {
     fields: [userFollowers.followerId],
     references: [users.id],
   }),

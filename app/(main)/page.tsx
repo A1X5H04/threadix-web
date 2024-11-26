@@ -1,17 +1,14 @@
 "use client";
-import React, { useEffect, useTransition } from "react";
+
 import useSWR from "swr";
 import { RiSignalWifiErrorFill } from "@remixicon/react";
 
 import PostItem from "@/components/post/item";
 import { GET } from "@/lib/fetcher";
 import { Post } from "@/types/api-responses/post/single";
-import { useAppStore } from "@/hooks/use-store";
 import PostListSkeleton from "@/components/skeletons/post-list";
 
 function HomePage() {
-  const { fetchData } = useAppStore();
-  const [isFetching, startFetching] = useTransition();
   const { data, error, isLoading } = useSWR(
     "/api/post",
     GET<{ posts: Post[] }>,
@@ -20,11 +17,7 @@ function HomePage() {
     }
   );
 
-  useEffect(() => {
-    startFetching(() => fetchData());
-  }, [fetchData]);
-
-  if (isFetching || isLoading) return <PostListSkeleton />;
+  if (isLoading) return <PostListSkeleton />;
 
   if (error) {
     return (

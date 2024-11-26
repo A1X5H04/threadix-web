@@ -8,6 +8,7 @@ import { getRepostedPostsId } from "@/actions/post/repost";
 import Navbar from "@/components/navbar";
 import CreatePostDialog from "@/components/dialogs/post";
 import { validateRequest } from "@/lib/auth";
+import DataFetcher from "@/components/data-fetcher";
 
 interface Props {
   children: React.ReactNode;
@@ -18,10 +19,12 @@ async function MainLayout({ children }: Props) {
 
   if (!session || !user) return redirect("/login");
 
+  console.log("This will work on any page that uses the MainLayout component");
+
   return (
     <main className="relative max-w-2xl mx-auto px-5 w-full h-full">
       <Navbar user={user} />
-      <div className="pt-20 w-full h-full">{children}</div>
+      <DataFetcher>{children}</DataFetcher>
       <CreatePostDialog user={user} />
     </main>
   );

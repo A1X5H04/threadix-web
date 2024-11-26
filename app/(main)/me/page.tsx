@@ -11,6 +11,7 @@ import ProfileMenu from "@/components/profile/profile-menu";
 import VerifiedBadge from "@/components/verified-badge";
 import { RiLockFill } from "@remixicon/react";
 import ProfileHeader from "@/components/profile/header";
+import ProfileTabsContent from "@/components/profile/tabs-content";
 
 async function ProfilePage() {
   const { user } = await validateRequest();
@@ -53,13 +54,8 @@ async function ProfilePage() {
             <TabsTrigger value="replies">Replies</TabsTrigger>
             <TabsTrigger value="repost">Reposts</TabsTrigger>
           </TabsList>
-
           {user.isPublic ? (
-            <>
-              <TabsContent value="posts">Posts</TabsContent>
-              <TabsContent value="replies">Replies</TabsContent>
-              <TabsContent value="repost">Repost</TabsContent>
-            </>
+            <ProfileTabsContent username={user.username} />
           ) : (
             <div className="grid place-items-center w-full h-60">
               <div className="grid place-items-center">

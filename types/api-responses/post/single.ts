@@ -31,3 +31,7 @@ export interface Post {
 export interface DetailPost extends Post {
   replies: Post[];
 }
+
+export interface ReplyPost extends Post {
+  parentPost: Post;
+}
