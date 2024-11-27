@@ -94,29 +94,38 @@ function Navbar({ user }: { user: User }) {
               <TooltipContent>{route.name}</TooltipContent>
             </Tooltip>
           ))}
-          <button onClick={() => onOpen()}>
-            <li className="py-2 px-3 rounded-md bg-foreground text-background transition-colors cursor-pointer">
-              <RiAddLine className="w-6 h-6" />
-              <span className="sr-only">Create</span>
-            </li>
-          </button>
-
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={() => onOpen()}>
+                <li className="py-2 px-3 rounded-md bg-foreground text-background transition-colors cursor-pointer">
+                  <RiAddLine className="w-6 h-6" />
+                  <span className="sr-only">Create</span>
+                </li>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Create post</TooltipContent>
+          </Tooltip>
           {routes.splice(0, 2).map((route) => (
-            <li
-              key={route.path}
-              className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer"
-            >
-              <Link href={route.path} className="w-full h-full">
-                {route.isActive ? (
-                  <div>
-                    <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
-                  </div>
-                ) : (
-                  <route.icon className="w-6 h-6" />
-                )}
-                <span className="sr-only">{route.name}</span>
-              </Link>
-            </li>
+            <Tooltip key={route.path}>
+              <TooltipTrigger>
+                <li
+                  key={route.path}
+                  className="p-4 rounded-xl bg-transparent hover:text-black dark:hover:text-white text-muted-foreground transition-colors cursor-pointer"
+                >
+                  <Link href={route.path} className="w-full h-full">
+                    {route.isActive ? (
+                      <div>
+                        <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
+                      </div>
+                    ) : (
+                      <route.icon className="w-6 h-6" />
+                    )}
+                    <span className="sr-only">{route.name}</span>
+                  </Link>
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{route.name}</TooltipContent>
+            </Tooltip>
           ))}
           {/* <li>
             <button
