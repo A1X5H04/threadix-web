@@ -36,8 +36,9 @@ export interface User {
 }
 
 export type Tag = {
+  id: string;
   name: string;
   createdAt: string;
-  postsCount: number;
+  postsCount?: number;
   user: User;
 };
