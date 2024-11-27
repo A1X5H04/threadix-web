@@ -15,9 +15,9 @@ function DataFetcher({ children }: { children: React.ReactNode }) {
     startFetching(() => fetchData());
   }, [fetchData]);
 
-  if (!mounted || isFetching) {
+  if (!mounted) {
     return (
-      <div className="w-full h-[calc(100vh-6rem)] grid place-items-center">
+      <div className="w-full h-full absolute z-50 inset grid place-items-center bg-background">
         <Image src="/logo.svg" alt="logo" width={100} height={100} />
       </div>
     );
