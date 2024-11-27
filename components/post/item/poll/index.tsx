@@ -80,7 +80,7 @@ function PostPoll({
   return (
     <div
       data-prevent-nprogress
-      className="flex flex-col gap-y-2 mb-2"
+      className="flex flex-col gap-y-2 "
       onClick={(e) => e.preventDefault()}
     >
       {poll.poll_options.map((option) => (

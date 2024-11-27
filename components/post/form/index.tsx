@@ -29,7 +29,7 @@ import { getTags } from "@/actions/tags";
 
 const threadSchema = z.object({
   posts: z.array(postSchema).min(1),
-  reply: z.string().optional(),
+  reply: z.enum(["anyone", "followers", "mentions"]),
 });
 
 export type ThreadSchema = z.infer<typeof threadSchema>;
@@ -68,7 +68,7 @@ function PostFormIndex({
     resolver: zodResolver(threadSchema),
     defaultValues: {
       posts: [{ content: "", poll: undefined, media: [] }],
-      reply: "",
+      reply: "anyone",
     },
   });
 

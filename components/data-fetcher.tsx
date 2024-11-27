@@ -15,10 +15,12 @@ function DataFetcher({ children }: { children: React.ReactNode }) {
     startFetching(() => fetchData());
   }, [fetchData]);
 
-  if (!mounted) {
-    <div className="w-full h-[calc(100vh-6rem)] grid place-items-center">
-      <Image src="/logo.svg" alt="logo" width={100} height={100} />
-    </div>;
+  if (!mounted || isFetching) {
+    return (
+      <div className="w-full h-[calc(100vh-6rem)] grid place-items-center">
+        <Image src="/logo.svg" alt="logo" width={100} height={100} />
+      </div>
+    );
   } else if (isFetching) {
     return (
       <div className="w-full h-[calc(100vh-6rem)] grid place-items-center">

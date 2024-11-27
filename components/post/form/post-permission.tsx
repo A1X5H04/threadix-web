@@ -20,7 +20,7 @@ function PostPermission() {
 
   let value = "Everyone can reply & quote";
   switch (permission) {
-    case "following":
+    case "followers":
       value = "Profiles only you follow can reply & quote";
       break;
     case "mentions":
@@ -47,8 +47,8 @@ function PostPermission() {
         <DropdownMenuRadioGroup
           value={permission}
           onValueChange={(value) => {
-            setValue("reply", value);
-            setPermission(value);
+            setValue("reply", value as "anyone" | "followers" | "mentions");
+            setPermission(value as "anyone" | "followers" | "mentions");
           }}
         >
           <DropdownMenuRadioItem value="anyone">Anyone</DropdownMenuRadioItem>

@@ -26,8 +26,6 @@ type Props = {
 };
 
 function PostItem({ data }: Props) {
-  const { likedPosts } = useAppStore();
-
   return (
     <Link href={`/users/${data.user.username}/posts/${data.id}`}>
       <div className="py-4 border-b">
@@ -92,6 +90,7 @@ function PostItem({ data }: Props) {
             )}
           </div>
           <PostActions
+            mentions={data.mentions ?? []}
             data={data}
             counts={{
               likes: data.likesCount,

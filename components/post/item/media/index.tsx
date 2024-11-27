@@ -40,7 +40,7 @@ function PostMedia({ media }: { media: Media[] }) {
       {isAudioFile && <PostMediaAudio media={media.at(0)!} />}
       {isMediaFiles && (
         <div
-          className="overflow-hidden mb-4 w-full"
+          className="overflow-hidden w-full"
           ref={media.length > 1 ? emblaRef : undefined}
         >
           <div className="flex flex-nowrap gap-x-2 w-full max-h-80">

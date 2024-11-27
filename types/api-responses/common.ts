@@ -34,3 +34,10 @@ export interface User {
   isVerified: boolean;
   createdAt: Date;
 }
+
+export type Tag = {
+  name: string;
+  createdAt: string;
+  postsCount: number;
+  user: User;
+};

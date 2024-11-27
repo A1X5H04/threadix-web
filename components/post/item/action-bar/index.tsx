@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { RiChat1Line, RiShareForwardLine } from "@remixicon/react";
 
 import { Button } from "@/components/ui/button";
-import { Post } from "@/types/api-responses/post/single";
+import { Post, ReplyPermissions } from "@/types/api-responses/post/single";
 import { useAppStore, useModalStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,7 @@ import RepostDropdown from "./repost-dropdown";
 type Props = {
   data: Post;
   postId: string;
+  mentions: string[];
   counts: {
     likes: number;
     replies: number;
@@ -20,21 +21,37 @@ type Props = {
   };
 };
 
-function PostActions({ data, postId, counts }: Props) {
+function PostActions({ data, postId, counts, mentions }: Props) {
+  let replyPermission = false;
   const { onOpen } = useModalStore((state) => state.post);
-  const { currentUser, repostedPosts } = useAppStore();
+  const { currentUser, repostedPosts, followedUsers } = useAppStore();
 
   if (!currentUser) redirect("/login");
+
+  switch (data.replyPermissions) {
+    case ReplyPermissions.ANYONE:
+      replyPermission = true;
+      break;
+    case ReplyPermissions.FOLLOWERS:
+      replyPermission = followedUsers.includes(data.user.username);
+      break;
+    case ReplyPermissions.MENTIONS:
+      replyPermission = mentions.includes(currentUser.username ?? "");
+      break;
+    default:
+      replyPermission = currentUser.username === data.user.username;
+  }
 
   return (
     <div
       data-prevent-nprogress={true}
-      className="flex items-center gap-x-2"
+      className="flex items-center gap-x-2 mt-2"
       onClick={(e) => e.preventDefault()}
       onMouseDown={(e) => e.preventDefault()}
     >
       <LikeButton postId={postId} likes={counts.likes} />
       <Button
+        disabled={!replyPermission}
         isWrappedInLink
         onClick={() => onOpen(data, "reply")}
         className="text-sm gap-x-2 text-muted-foreground font-light px-2"
@@ -45,6 +62,8 @@ function PostActions({ data, postId, counts }: Props) {
         {counts.replies > 0 && counts.replies}
       </Button>
       <RepostDropdown
+        reposts={counts.reposts}
+        hasPermission={replyPermission}
         postId={postId}
         openQuoteModal={() => onOpen(data, "quote")}
         initialIsReposted={repostedPosts?.includes(postId) ?? false}

@@ -18,12 +18,16 @@ import { useToast } from "@/components/ui/use-toast";
 import toast from "react-hot-toast";
 
 interface RepostDropdownProps {
+  reposts: number;
+  hasPermission: boolean;
   postId: string;
   openQuoteModal: () => void;
   initialIsReposted: boolean;
 }
 
 function RepostDropdown({
+  reposts,
+  hasPermission,
   postId,
   openQuoteModal,
   initialIsReposted,
@@ -78,7 +82,7 @@ function RepostDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center">
-        <DropdownMenuItem onClick={openQuoteModal}>
+        <DropdownMenuItem disabled={!hasPermission} onClick={openQuoteModal}>
           <RiChatQuoteLine className="w-4 h-4 mr-2" /> Quote
         </DropdownMenuItem>
         <DropdownMenuItem

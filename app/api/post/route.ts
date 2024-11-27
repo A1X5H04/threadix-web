@@ -66,6 +66,7 @@ export async function POST(req: Request) {
               request.postId && request.postType === "quote"
                 ? request.postId
                 : null,
+            replyPermissions: request.reply ?? "anyone",
             mentions: post.mentions ? post.mentions : [],
             parentId:
               parentIds.length > 0 ? parentIds[parentIds.length - 1] : null, // Last parent id

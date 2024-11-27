@@ -1,5 +1,11 @@
 import { Media, Poll, User } from "../common";
 
+export enum ReplyPermissions {
+  MENTIONS = "mentions",
+  FOLLOWERS = "followers",
+  ANYONE = "anyone",
+}
+
 export interface Post {
   id: string;
   userId: string;
@@ -12,7 +18,7 @@ export interface Post {
   likesCount: number;
   repliesCount: number;
   repostCount: number;
-  replyPermissions: string;
+  replyPermissions: ReplyPermissions;
   createdAt: Date;
   updatedAt: Date;
   user: User;
