@@ -150,6 +150,12 @@ export async function GET() {
   const recommendedUsers = await db.query.users.findMany({
     where: (dbUser, { ne, and, notInArray }) =>
       and(ne(dbUser.id, user.id), notInArray(dbUser.id, followingUsers)),
+    columns: {
+      name: true,
+      username: true,
+      avatar: true,
+      isVerified: true,
+    },
   });
 
   const popularUsers = await db.query.users
@@ -159,6 +165,13 @@ export async function GET() {
           ne(dbUser.id, user.id),
           inArray(dbUser.id, Object.keys(followsCount))
         ),
+      columns: {
+        id: true,
+        name: true,
+        username: true,
+        avatar: true,
+        isVerified: true,
+      },
     })
     .then((users) =>
       users
@@ -191,4 +204,37 @@ export async function GET() {
     popularUsers,
     trendingTags,
   });
+}
+
+export async function POST(req: Request) {
+  const { user } = await validateRequest();
+  const { searchTerm }: { searchTerm: string } = await req.json();
+
+  if (!user) {
+    return new NextResponse("Unauthenticated", { status: 401 });
+  }
+
+  if (!searchTerm) {
+    return new NextResponse("Invalid Search Term!", { status: 400 });
+  }
+
+  const tags = await db.query.tags.findMany({
+    where: (tag, { ilike }) => ilike(tag.name, `%${searchTerm}%`),
+    with: {
+      user: {
+        columns: {
+          name: true,
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+
+  const users = await db.query.users.findMany({
+    where: (user, { or, ilike }) =>
+      or(ilike(user.username, searchTerm), ilike(user.name, `%${searchTerm}%`)),
+  });
+
+  return NextResponse.json({ tags, users });
 }

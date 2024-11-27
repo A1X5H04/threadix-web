@@ -6,7 +6,7 @@ import { Tag, User } from "@/types/api-responses/common";
 import Link from "next/link";
 import { RiEye2Fill, RiEyeFill } from "@remixicon/react";
 
-function UserItemHorizontal({ tag }: { tag: Tag }) {
+function HashTagItem({ tag }: { tag: Tag }) {
   return (
     <div className="flex items-center gap-x-4">
       <div className="flex items-center justify-between w-full py-2">
@@ -22,13 +22,17 @@ function UserItemHorizontal({ tag }: { tag: Tag }) {
             <span className="text-sm text-muted-foreground">
               {tag.user.username}
             </span>
-            &middot;
-            <span className="text-sm text-muted-foreground">
-              {tag.postsCount} Posts
-            </span>
+            {tag.postsCount && (
+              <>
+                &middot;
+                <span className="text-sm text-muted-foreground">
+                  {tag.postsCount} Posts
+                </span>
+              </>
+            )}
           </div>
         </div>
-        <Link href={`/explore/tags/${tag.name}`}>
+        <Link href={`/explore/tags/${tag.id}`}>
           <Button
             variant="secondary"
             size="sm"
@@ -43,4 +47,4 @@ function UserItemHorizontal({ tag }: { tag: Tag }) {
   );
 }
 
-export default UserItemHorizontal;
+export default HashTagItem;
