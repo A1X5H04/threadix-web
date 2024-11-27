@@ -50,17 +50,18 @@ function PostActions({ data, postId, counts, mentions }: Props) {
       onMouseDown={(e) => e.preventDefault()}
     >
       <LikeButton postId={postId} likes={counts.likes} />
-      <Button
-        disabled={!replyPermission}
-        isWrappedInLink
-        onClick={() => onOpen(data, "reply")}
-        className="text-sm gap-x-2 text-muted-foreground font-light px-2"
-        variant="ghost"
-        size={counts.replies > 0 ? "sm" : "icon"}
-      >
-        <RiChat1Line className="w-5 h-5 text-muted-foreground" />
-        {counts.replies > 0 && counts.replies}
-      </Button>
+      {replyPermission && (
+        <Button
+          isWrappedInLink
+          onClick={() => onOpen(data, "reply")}
+          className="text-sm gap-x-2 text-muted-foreground font-light px-2"
+          variant="ghost"
+          size={counts.replies > 0 ? "sm" : "icon"}
+        >
+          <RiChat1Line className="w-5 h-5 text-muted-foreground" />
+          {counts.replies > 0 && counts.replies}
+        </Button>
+      )}
       <RepostDropdown
         reposts={counts.reposts}
         hasPermission={replyPermission}

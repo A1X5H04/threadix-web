@@ -82,9 +82,11 @@ function RepostDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center">
-        <DropdownMenuItem disabled={!hasPermission} onClick={openQuoteModal}>
-          <RiChatQuoteLine className="w-4 h-4 mr-2" /> Quote
-        </DropdownMenuItem>
+        {hasPermission && (
+          <DropdownMenuItem onClick={openQuoteModal}>
+            <RiChatQuoteLine className="w-4 h-4 mr-2" /> Quote
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           onClick={handleRepost}
           className={cn(isReposted && "text-red-500")}
