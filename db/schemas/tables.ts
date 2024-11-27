@@ -14,6 +14,7 @@ import {
 import { init } from "@paralleldrive/cuid2";
 import { users } from "./auth";
 import { unique } from "drizzle-orm/mysql-core";
+import { sql } from "drizzle-orm";
 
 const createId = init({
   random: Math.random,
@@ -83,6 +84,10 @@ export const posts = pgTable(
   },
   (table) => ({
     userIdx: index("user_post_idx").on(table.userId),
+    contentSearchIdx: index("content_search_idx").using(
+      "gin",
+      sql`to_tsvector('english', ${table.content})`
+    ),
   })
 );
 
