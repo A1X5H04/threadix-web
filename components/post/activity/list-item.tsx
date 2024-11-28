@@ -1,10 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { RiDoubleQuotesL, RiHeart3Fill, RiRepeat2Fill } from "@remixicon/react";
+import {
+  RiDoubleQuotesL,
+  RiHeart3Fill,
+  RiQuoteText,
+  RiRepeat2Fill,
+} from "@remixicon/react";
 import React from "react";
 import VerifiedBadge from "@/components/verified-badge";
 import Link from "next/link";
 import { formatRelativeDate } from "@/lib/format";
+import { useAppStore } from "@/hooks/use-store";
+import FollowButton from "@/components/profile/follow-button";
+import Content from "../item/content";
 
 interface ListItemProps {
   user: {
@@ -19,6 +27,7 @@ interface ListItemProps {
 }
 
 function ListItem({ user, type, content, createdAt }: ListItemProps) {
+  const { currentUser } = useAppStore();
   let icon;
 
   switch (type) {
@@ -59,10 +68,15 @@ function ListItem({ user, type, content, createdAt }: ListItemProps) {
         {icon}
       </div>
       <div className="w-full">
-        <div className="flex justify-between w-full py-2">
+        <div className="flex justify-between w-full pt-2 pb-1">
           <div className="inline-flex flex-col">
             <div className="inline-flex items-center gap-x-2">
-              <span className="font-bold text-sm">{user.name}</span>
+              <Link
+                className="font-bold text-sm hover:underline"
+                href={`/users/${user.username}`}
+              >
+                {user.name}
+              </Link>
               {user.isVerified && (
                 <VerifiedBadge userName={user.name} iconClassName="size-3" />
               )}
@@ -74,11 +88,21 @@ function ListItem({ user, type, content, createdAt }: ListItemProps) {
               {user.username}
             </span>
           </div>
-          <Button size="sm" variant="outline">
-            <Link href={`/users/${user.username}`}>View Profile</Link>
-          </Button>
+          {currentUser?.username !== user.username && (
+            <FollowButton
+              username={user.username}
+              size="sm"
+              variant="outline"
+            />
+          )}
         </div>
-        {content && <p className="text-sm">{content}</p>}
+
+        {content && (
+          <div className="inline-flex items-center gap-x-2 text-foreground/80">
+            <RiQuoteText className="size-4" />
+            <Content content={content} className="text-[14px]" />
+          </div>
+        )}
       </div>
     </div>
   );

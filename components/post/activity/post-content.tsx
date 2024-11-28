@@ -121,6 +121,7 @@ function ActivityPostContent({ postId }: { postId: string }) {
                   key={i}
                   user={qoutedPost.user}
                   createdAt={qoutedPost.createdAt}
+                  content={qoutedPost.content}
                 />
               ))}
             </AccordionContent>
