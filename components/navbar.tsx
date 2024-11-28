@@ -2,34 +2,29 @@
 
 import {
   RiAddLine,
-  RiArrowLeftLine,
   RiHeartFill,
   RiHeartLine,
   RiHomeFill,
   RiHomeLine,
-  RiSearchFill,
-  RiSearchLine,
+  RiCompass4Line,
   RiUserFill,
   RiUserLine,
+  RiCompass4Fill,
 } from "@remixicon/react";
-
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import PostFormIndex from "./post/form";
 
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 
-import CreatePostDialog from "./dialogs/post";
 import { User } from "lucia";
 import { useModalStore } from "@/hooks/use-store";
-import { signOut } from "@/actions/sign-out";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "@/components/ui/tooltip";
 
 function Navbar({ user }: { user: User }) {
   const { onOpen } = useModalStore((state) => state.post);
@@ -46,9 +41,9 @@ function Navbar({ user }: { user: User }) {
     {
       name: "Explore",
       path: "/explore",
-      icon: RiSearchLine,
-      activeIcon: RiSearchFill,
-      isActive: pathname === "/search",
+      icon: RiCompass4Line,
+      activeIcon: RiCompass4Fill,
+      isActive: pathname.startsWith("/explore"),
     },
 
     {
@@ -56,14 +51,14 @@ function Navbar({ user }: { user: User }) {
       path: "/activity",
       icon: RiHeartLine,
       activeIcon: RiHeartFill,
-      isActive: pathname === "/activity",
+      isActive: pathname.startsWith("/activity"),
     },
     {
       name: "Profile",
       path: "/me",
       icon: RiUserLine,
       activeIcon: RiUserFill,
-      isActive: pathname === "/me",
+      isActive: pathname.startsWith("/me"),
     },
   ];
 
