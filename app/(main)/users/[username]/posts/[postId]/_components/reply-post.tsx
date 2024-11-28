@@ -27,7 +27,6 @@ function PostItem({ data, parentPostUserId }: Props) {
           <ReplyPostItem
             key={reply.id}
             data={reply}
-            isOriginalPoster={reply.userId === data.userId}
             showReplyBar={index !== data.replies.length - 1}
           />
         ))}

@@ -25,9 +25,9 @@ import {
 } from "@/components/ui/tooltip";
 import { useAppStore } from "@/hooks/use-store";
 
-type Props = { data: Post; showReplyBar?: boolean; isOriginalPoster?: boolean };
+type Props = { data: Post; showReplyBar?: boolean };
 
-function PostItem({ data, showReplyBar, isOriginalPoster }: Props) {
+function PostItem({ data, showReplyBar }: Props) {
   const { currentUser } = useAppStore();
 
   //   const isRepliedByCurrentUser =
@@ -80,14 +80,6 @@ function PostItem({ data, showReplyBar, isOriginalPoster }: Props) {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                )}
-                {isOriginalPoster && (
-                  <Badge
-                    className="h-5 text-[11px] px-1 -ml-0.5"
-                    variant="outline"
-                  >
-                    OP
-                  </Badge>
                 )}
                 •
                 <p className="text-xs font-semibold text-muted-foreground">

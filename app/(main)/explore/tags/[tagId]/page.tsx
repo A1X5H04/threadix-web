@@ -6,6 +6,7 @@ import { GET } from "@/lib/fetcher";
 import { formatDate } from "@/lib/format";
 import { Tag } from "@/types/api-responses/common";
 import { Post } from "@/types/api-responses/post/single";
+import { Separator } from "@radix-ui/react-separator";
 import { RiHashtag } from "@remixicon/react";
 import Link from "next/link";
 import React from "react";
@@ -55,7 +56,7 @@ function TagIdPage({ params }: { params: { tagId: string } }) {
           <RiHashtag className="size-16 text-muted-foreground" />
         </div>
       </div>
-
+      <Separator className="mt-4" />
       <div className="mt-4">
         {data?.posts.map((post) => (
           <PostItem key={post.id} data={post} />

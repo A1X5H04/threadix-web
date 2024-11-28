@@ -74,7 +74,7 @@ function SearchDialog() {
         />
         <div
           onClick={() => setIsOpen(false)}
-          className="mt-2 max-h-96 overflow-y-auto"
+          className="mt-2 max-h-96 overflow-y-auto no-scrollbar"
         >
           {data?.results.map((result, index) => (
             <Link
@@ -85,8 +85,8 @@ function SearchDialog() {
             >
               <div className="flex items-center justify-between">
                 <div className="inline-flex flex-col">
-                  <p className="font-semibold">{result.word}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-semibold text-sm">{result.word}</p>
+                  <p className="text-xs text-muted-foreground">
                     Score: {result.score.toFixed(2)}
                   </p>
                 </div>
@@ -97,9 +97,12 @@ function SearchDialog() {
               )}
             </Link>
           ))}
+
+          {data && data?.tags.length > 0 && <Separator className="my-4" />}
           {data?.tags.map((tag) => (
             <HashTagItem key={tag.id} tag={tag} />
           ))}
+          {data && data?.users.length > 0 && <Separator className="my-4" />}
           {data?.users.map((user) => (
             <UserItemHorizontal key={user.username} user={user} />
           ))}

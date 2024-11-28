@@ -26,12 +26,12 @@ function ProfilePage({
 }: {
   params: { username: string };
 }) {
-  const { currentUser, followedUsers, setFollowedUsers } = useAppStore();
+  const { currentUser, followingUser, setFollowingUser } = useAppStore();
 
   const [pending, startTransition] = useTransition();
   const [openDialog, ConfirmDialog] = useConfirmDialog();
 
-  const isFollowing = followedUsers.includes(username);
+  const isFollowing = followingUser.includes(username);
 
   if (currentUser?.username === username) redirect("/me");
 
@@ -54,8 +54,8 @@ function ProfilePage({
           startTransition(() => {
             unfollowUser(user.username)
               .then(() => {
-                setFollowedUsers(
-                  followedUsers.filter((u) => u !== user.username)
+                setFollowingUser(
+                  followingUser.filter((u) => u !== user.username)
                 );
                 toast.success(`Unfollowed ${user.name}`);
               })
@@ -69,7 +69,7 @@ function ProfilePage({
       startTransition(() => {
         followUser(user.username)
           .then(() => {
-            setFollowedUsers([...followedUsers, user.username]);
+            setFollowingUser([...followingUser, user.username]);
             toast.success(`Followed ${user.name}`);
           })
           .catch(() => {
