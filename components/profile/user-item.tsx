@@ -9,6 +9,7 @@ import { followUser, unfollowUser } from "@/actions/users";
 import { useRouter } from "next-nprogress-bar";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import FollowButton from "./follow-button";
 
 function UserItem({
   type,
@@ -18,25 +19,8 @@ function UserItem({
   user: User;
 }) {
   const router = useRouter();
-  const { currentUser, followedUsers, setFollowedUsers } = useAppStore();
+  const { currentUser } = useAppStore();
   const [pending, startTransition] = useTransition();
-
-  const isFollowing = followedUsers.includes(user.username);
-
-  const handleClick = () => {
-    if (type === "following") {
-      router.push(`/users/${user.username}`);
-    } else {
-      startTransition(() => {
-        followUser(user.username)
-          .then(() => {
-            setFollowedUsers([...followedUsers, user.username]);
-            toast.success(`Followed ${user.name}`);
-          })
-          .catch(() => toast.error("Failed to follow user"));
-      });
-    }
-  };
 
   return (
     <div className="flex items-center gap-x-4">
@@ -61,19 +45,7 @@ function UserItem({
           <span className="text-xs text-muted-foreground">{user.username}</span>
         </div>
         {currentUser?.username !== user.username && (
-          <Button
-            onClick={handleClick}
-            isLoading={pending}
-            disabled={type === "follower" && isFollowing}
-            size="sm"
-            variant="outline"
-          >
-            {type === "follower" && isFollowing
-              ? "Following"
-              : type === "following"
-              ? "View Profile"
-              : "Follow"}
-          </Button>
+          <FollowButton username={user.username} size="sm" variant="outline" />
         )}
       </div>
     </div>

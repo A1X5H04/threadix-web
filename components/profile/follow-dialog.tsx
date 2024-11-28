@@ -30,7 +30,6 @@ type ResponseData = {
 };
 
 function FollowDialog({ username }: FollowDialogProps) {
-  const { followedUsers } = useAppStore();
   const { data, isLoading } = useSWR(
     `/api/profile/${username}/followers`,
     GET<ResponseData>,
