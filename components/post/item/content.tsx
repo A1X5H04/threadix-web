@@ -60,7 +60,7 @@ function PostContent({ content, ...rest }: PostContentProps) {
     <Link
       key={i}
       className="text-blue-500 hover:underline"
-      href={`/search?query=${match}&type=hashtag`}
+      href={`/explore/tags/${match}`}
     >
       {match}
     </Link>
