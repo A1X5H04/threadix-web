@@ -24,7 +24,7 @@ function HashTagItem({ tag }: { tag: Tag }) {
             </span>
             {tag.postsCount && (
               <>
-                &middot;
+                &•
                 <span className="text-xs text-muted-foreground">
                   {tag.postsCount} Posts
                 </span>

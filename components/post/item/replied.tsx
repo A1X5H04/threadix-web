@@ -48,7 +48,7 @@ function ReplyPostItem({ data }: ReplyPostItemProps) {
                 <h3 className="font-semibold text-sm">
                   {data.parentPost.user.username}
                 </h3>
-                &middot;
+                &•
                 <p className="text-xs font-semibold text-muted-foreground">
                   {formatDate(new Date(data.parentPost.createdAt))}
                 </p>

@@ -30,7 +30,7 @@ function PostBody({ user, content, createdAt }: PostBodyProps) {
         {user.isVerified && (
           <VerifiedBadge userName={user.name} iconClassName="size-3.5" />
         )}
-        &middot;
+        &•
         <p className="text-xs text-muted-foreground">
           {formatRelativeDate(new Date(createdAt))}
         </p>

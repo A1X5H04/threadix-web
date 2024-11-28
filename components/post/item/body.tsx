@@ -60,7 +60,7 @@ function PostItemBody({
               </Avatar>
             )}
             <h3 className="font-semibold text-sm">{data.user.username}</h3>
-            &middot;
+            &•
             <p className="text-xs font-semibold text-muted-foreground">
               {formatDate(new Date(data.createdAt))}
             </p>
