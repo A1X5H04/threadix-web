@@ -109,16 +109,13 @@ function ExploreIndexPage() {
   }
 
   return (
-    <div className="py-5">
-      <SearchDialog />
-      <div className="mt-5">
-        {shuffleArray(sections).map((section) => (
-          <React.Fragment key={section.key}>
-            {section.content}
-            <Separator className="my-4" />
-          </React.Fragment>
-        ))}
-      </div>
+    <div className="mt-5">
+      {shuffleArray(sections).map((section) => (
+        <React.Fragment key={section.key}>
+          {section.content}
+          <Separator className="my-4" />
+        </React.Fragment>
+      ))}
     </div>
   );
 }

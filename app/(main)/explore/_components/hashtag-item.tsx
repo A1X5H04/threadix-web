@@ -11,7 +11,7 @@ function HashTagItem({ tag }: { tag: Tag }) {
     <div className="flex items-center gap-x-4">
       <div className="flex items-center justify-between w-full py-2">
         <div className="inline-flex flex-col">
-          <p className="font-bold">{tag.name}</p>
+          <p className="font-bold text-sm">{tag.name}</p>
           <div className="inline-flex items-center gap-x-1">
             <Avatar className="size-4 mr-1">
               <AvatarImage src={tag.user.avatar ?? undefined} />
@@ -19,13 +19,13 @@ function HashTagItem({ tag }: { tag: Tag }) {
                 {tag.user.username[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {tag.user.username}
             </span>
             {tag.postsCount && (
               <>
                 &middot;
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {tag.postsCount} Posts
                 </span>
               </>

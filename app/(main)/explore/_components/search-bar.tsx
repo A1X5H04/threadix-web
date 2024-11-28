@@ -6,17 +6,19 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 function SearchBar({
+  defaultValue,
   isLoading,
   onChange,
   onEnter,
 }: {
+  defaultValue: string;
   isLoading: boolean;
   onChange: (debouncedValue: string) => void;
   onEnter: () => void;
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(defaultValue);
   const debouncedsearch = useDebounce(searchTerm, 500);
 
   useEffect(() => {

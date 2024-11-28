@@ -6,8 +6,8 @@ import { User } from "@/types/api-responses/common";
 
 function UserItemHorizontal({ user }: { user: User }) {
   return (
-    <div className="flex items-center gap-x-4">
-      <Avatar className="size-12">
+    <div className="flex items-center gap-x-3">
+      <Avatar className="size-8">
         <AvatarImage src={user.avatar ?? undefined} />
         <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
       </Avatar>
@@ -20,10 +20,10 @@ function UserItemHorizontal({ user }: { user: User }) {
               <VerifiedBadge userName={user.name} iconClassName="size-3" />
             )}
           </div>
-          <span className="text-sm text-muted-foreground">{user.username}</span>
+          <span className="text-xs text-muted-foreground">{user.username}</span>
         </div>
 
-        <Button>View Profile</Button>
+        <Button size="sm">View Profile</Button>
       </div>
     </div>
   );

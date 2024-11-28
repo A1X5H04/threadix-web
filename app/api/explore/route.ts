@@ -1,9 +1,21 @@
-import { posts, userFollowers } from "@/db/schemas/tables";
+import { posts } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { desc, sql } from "drizzle-orm";
+import MiniSearch from "minisearch";
 import { NextResponse } from "next/server";
+import words from "@/words.json";
 
+let miniSearch: MiniSearch | null = null;
+
+if (!miniSearch) {
+  miniSearch = new MiniSearch({
+    fields: ["word"], // Fields to index
+    storeFields: ["word"], // Fields to return in search results
+  });
+
+  // Index data only once
+  miniSearch.addAll(words);
+}
 // This is a pretty naive implementation of the explore api, but it can be improved, let me know by creating a PR :)
 
 export async function GET() {
@@ -218,6 +230,15 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid Search Term!", { status: 400 });
   }
 
+  let results = miniSearch
+    ?.search(searchTerm, { fuzzy: 0.4 })
+    .map((r) => ({
+      id: r.id,
+      word: r.word,
+      score: r.score,
+    }))
+    .sort((a, b) => b.score - a.score);
+
   const tags = await db.query.tags.findMany({
     where: (tag, { ilike }) => ilike(tag.name, `%${searchTerm}%`),
     with: {
@@ -236,5 +257,5 @@ export async function POST(req: Request) {
       or(ilike(user.username, searchTerm), ilike(user.name, `%${searchTerm}%`)),
   });
 
-  return NextResponse.json({ tags, users });
+  return NextResponse.json({ results, tags, users });
 }

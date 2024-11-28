@@ -22,18 +22,17 @@ function SearchPage() {
     GET<{ matchedPosts: Post[] }>
   );
 
+  if (!data || isLoading) return <LoaderScreen />;
+
   return (
-    <div className="pt-5 space-y-2">
-      <SearchDialog />
-      <div className="mt-8">
-        {!data || isLoading ? (
-          <LoaderScreen />
-        ) : (
-          data?.matchedPosts.map((post) => (
-            <PostItem key={post.id} data={post} />
-          ))
-        )}
-      </div>
+    <div className="mt-3">
+      {data?.matchedPosts.length > 0 ? (
+        data?.matchedPosts.map((post) => <PostItem key={post.id} data={post} />)
+      ) : (
+        <div>
+          No posts found for <span className="font-semibold">{query}</span>
+        </div>
+      )}
     </div>
   );
 }
