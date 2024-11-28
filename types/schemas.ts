@@ -11,7 +11,7 @@ export const profileSchema = z.object({
         "Username should only contain lowercase, underscore, dashes and digits",
     }),
   bio: z.string().max(160),
-  link: z.string().url().optional(),
+  link: z.string().optional(),
   avatar: z.string().url().optional(),
 });
 

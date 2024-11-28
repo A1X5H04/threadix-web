@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import PostContent from "./content";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import PostDropdown from "./post-dropdown";
 import { useAppStore } from "@/hooks/use-store";
 import { RiDoubleQuotesL } from "@remixicon/react";
+import VerifiedBadge from "@/components/verified-badge";
 
 function PostItemBody({
   data,
@@ -59,9 +60,14 @@ function PostItemBody({
                 </AvatarFallback>
               </Avatar>
             )}
-            <h3 className="font-semibold text-sm">{data.user.username}</h3>•
+            <div className="inline-flex items-center gap-x-2">
+              <h3 className="font-semibold text-sm">{data.user.username}</h3>
+              {data.user.isVerified && (
+                <VerifiedBadge userName={data.user.name} />
+              )}
+            </div>
             <p className="text-xs font-semibold text-muted-foreground">
-              {formatDate(new Date(data.createdAt))}
+              •&nbsp;{formatDate(new Date(data.createdAt))}
             </p>
           </div>
           {showMenu && !isQuoted && (

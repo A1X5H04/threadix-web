@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React, { memo } from "react";
 import reactReplace from "react-string-replace";
@@ -6,7 +7,7 @@ interface PostContentProps extends React.HTMLAttributes<HTMLDivElement> {
   content: string;
 }
 
-function PostContent({ content, ...rest }: PostContentProps) {
+function PostContent({ content, className, ...rest }: PostContentProps) {
   // For Bold Text (**text**)
   let parsedContent = reactReplace(content, /\*\*(.*?)\*\*/g, (match, i) => (
     <strong key={i}>{match}</strong>
@@ -67,7 +68,11 @@ function PostContent({ content, ...rest }: PostContentProps) {
   ));
 
   return (
-    <div {...rest} onClick={(e) => e.preventDefault()} className="text-[15px]">
+    <div
+      {...rest}
+      onClick={(e) => e.preventDefault()}
+      className={cn("text-[15px]", className)}
+    >
       {parsedContent}
     </div>
   );

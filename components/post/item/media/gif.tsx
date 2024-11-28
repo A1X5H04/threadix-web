@@ -14,6 +14,7 @@ function PostMediaGif({ media, onClick }: PostMediaGifProps) {
       className="relative w-fit bg-background flex justify-center items-center overflow-hidden rounded-md border border-muted mb-4"
     >
       <Image
+        unoptimized
         width={media.width}
         height={media.height}
         src={media.url}

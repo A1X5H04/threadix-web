@@ -25,9 +25,10 @@ import PostBody from "../post/activity/post-body";
 import ListItem from "../post/activity/list-item";
 import useSWR from "swr";
 import { GET } from "@/lib/fetcher";
-import { Poll, User } from "@/types/api-responses/common";
+import { PollOption, User } from "@/types/api-responses/common";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import ActivityPostContent from "../post/activity/post-content";
+import ActivityPollContent from "../post/activity/poll-content";
 
 interface PostActivityProps {
   postId: string;
@@ -36,10 +37,15 @@ interface PostActivityProps {
     content: string;
     createdAt: Date;
   };
-  pollData: Poll | null;
+  pollOptions?: PollOption[];
 }
 
-function PostActivity({ postId, user, postData, pollData }: PostActivityProps) {
+function PostActivity({
+  postId,
+  user,
+  postData,
+  pollOptions,
+}: PostActivityProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -72,7 +78,7 @@ function PostActivity({ postId, user, postData, pollData }: PostActivityProps) {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="post">Post Activity</TabsTrigger>
             <TabsTrigger
-              disabled={!pollData}
+              disabled={!pollOptions}
               className="disabled:cursor-not-allowed"
               value="poll"
             >
@@ -82,7 +88,12 @@ function PostActivity({ postId, user, postData, pollData }: PostActivityProps) {
           <TabsContent value="post">
             <ActivityPostContent postId={postId} />
           </TabsContent>
-          <TabsContent value="poll">Poll Activity</TabsContent>
+          <TabsContent value="poll">
+            <ActivityPollContent
+              postId={postId}
+              pollOptions={pollOptions || []}
+            />
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>

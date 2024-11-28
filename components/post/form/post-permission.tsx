@@ -21,7 +21,7 @@ function PostPermission() {
   let value = "Everyone can reply & quote";
   switch (permission) {
     case "followers":
-      value = "Profiles only you follow can reply & quote";
+      value = "Profiles only following you can reply & quote";
       break;
     case "mentions":
       value = "Only mentioned profiles can reply & quote";
@@ -52,8 +52,8 @@ function PostPermission() {
           }}
         >
           <DropdownMenuRadioItem value="anyone">Anyone</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="following">
-            Profiles you follow
+          <DropdownMenuRadioItem value="followers">
+            Profiles following you
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="mentions">
             Mentioned only

@@ -13,7 +13,6 @@ import RepostDropdown from "./repost-dropdown";
 type Props = {
   data: Post;
   postId: string;
-  mentions: string[];
   counts: {
     likes: number;
     replies: number;
@@ -21,7 +20,7 @@ type Props = {
   };
 };
 
-function PostActions({ data, postId, counts, mentions }: Props) {
+function PostActions({ data, postId, counts }: Props) {
   let replyPermission = false;
   const { onOpen } = useModalStore((state) => state.post);
   const { currentUser, repostedPosts, followedUsers } = useAppStore();
@@ -36,7 +35,7 @@ function PostActions({ data, postId, counts, mentions }: Props) {
       replyPermission = followedUsers.includes(data.user.username);
       break;
     case ReplyPermissions.MENTIONS:
-      replyPermission = mentions.includes(currentUser.username ?? "");
+      replyPermission = data.mentions?.includes(currentUser.username) || false;
       break;
     default:
       replyPermission = currentUser.username === data.user.username;

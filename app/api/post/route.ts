@@ -42,6 +42,7 @@ export async function POST(req: Request) {
     const res = await poolDb.transaction(async (txn) => {
       // Console Log 1
       console.log("Transaction Started");
+
       const parentIds: Array<string> = [];
       if (request.postId && request.postType === "reply") {
         await txn
@@ -53,7 +54,10 @@ export async function POST(req: Request) {
         parentIds.push(request.postId);
       }
 
-      for (const post of request.posts) {
+      // Can use a for of loop here, but we need index to determine the repl
+      for (let i = 0; i < request.posts.length; i++) {
+        const post = request.posts[i];
+
         // Inserting posts
         console.log("Inserting posts");
         const [{ id }] = await txn
@@ -66,6 +70,7 @@ export async function POST(req: Request) {
               request.postId && request.postType === "quote"
                 ? request.postId
                 : null,
+            repliesCount: i < request.posts.length - 1 ? 1 : undefined,
             replyPermissions: request.reply ?? "anyone",
             mentions: post.mentions ? post.mentions : [],
             parentId:
@@ -191,7 +196,6 @@ export async function POST(req: Request) {
             }))
           );
         }
-
         parentIds.push(id);
       }
 

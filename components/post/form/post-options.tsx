@@ -249,6 +249,7 @@ function PostOptions({
           </span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <Image
+            unoptimized
             width={watchedGif.width}
             height={watchedGif.height}
             src={watchedGif.url}

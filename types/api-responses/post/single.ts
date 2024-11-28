@@ -13,7 +13,7 @@ export interface Post {
   quotePostId: string | null;
   location: string | null;
   content: string;
-  mentions: null;
+  mentions: string[] | null;
   tags: null;
   likesCount: number;
   repliesCount: number;

@@ -14,8 +14,8 @@ export interface PostState {
   setRegisteredVotes: (
     registeredVotes: { pollId: string; optionId: number }[]
   ) => void;
-  followedUsers: string[];
-  setFollowedUsers: (followedUsers: string[]) => void;
+  followingUser: string[];
+  setFollowingUser: (followingUsers: string[]) => void;
   repostedPosts: string[];
   currentUser: User | null;
   fetchData: () => void;
@@ -27,19 +27,19 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
   registeredVotes: [],
   setRegisteredVotes: (registeredVotes) => set({ registeredVotes }),
   repostedPosts: [],
-  followedUsers: [],
-  setFollowedUsers: (followedUsers) => set({ followedUsers }),
+  followingUser: [],
+  setFollowingUser: (followingUser) => set({ followingUser }),
   currentUser: null,
   fetchData: async () => {
     const likedPosts = await getLikedPosts();
     const registeredVotes = await getRegisteredVote();
     const repostedPostsId = await getRepostedPostsId();
-    const followedUsers = await getFollowingUsers();
+    const followingUser = await getFollowingUsers();
 
     const user = await getCurrentUser();
     set({
       likedPosts,
-      followedUsers: followedUsers,
+      followingUser: followingUser,
       registeredVotes: registeredVotes.data,
       repostedPosts: repostedPostsId,
       currentUser: user,
