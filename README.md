@@ -97,7 +97,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Getting Verified
 
-To get a verified badge for your account create a pull request by adding your **username** in `verified_accounts.txt` file, once it is verified, I will merge your pull request.
+To get your account a **Verified Badge**, all you need to do is create a issue with label `verify-account`, once it is verified I will close the issue
+
+To get your account verified write a detailed information about your account this should include:
+
+- Your name
+- Your username
+- Your email
 
 ## Contributing
 
