@@ -1,21 +1,9 @@
 import { posts } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
-import MiniSearch from "minisearch";
+import miniSearch from "@/lib/minisearch";
 import { NextResponse } from "next/server";
-import words from "@/words.json";
 
-let miniSearch: MiniSearch | null = null;
-
-if (!miniSearch) {
-  miniSearch = new MiniSearch({
-    fields: ["word"], // Fields to index
-    storeFields: ["word"], // Fields to return in search results
-  });
-
-  // Index data only once
-  miniSearch.addAll(words);
-}
 // This is a pretty naive implementation of the explore api, but it can be improved, let me know by creating a PR :)
 
 export async function GET() {
@@ -231,7 +219,7 @@ export async function POST(req: Request) {
   }
 
   let results = miniSearch
-    ?.search(searchTerm, { fuzzy: 0.4 })
+    .search(searchTerm, { fuzzy: 0.4 })
     .map((r) => ({
       id: r.id,
       word: r.word,
