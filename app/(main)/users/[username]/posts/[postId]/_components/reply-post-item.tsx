@@ -89,7 +89,7 @@ function PostItem({ data, showReplyBar, isOriginalPoster }: Props) {
                     OP
                   </Badge>
                 )}
-                &•
+                •
                 <p className="text-xs font-semibold text-muted-foreground">
                   {formatDate(new Date(data.createdAt))}
                 </p>

@@ -80,7 +80,7 @@ function FormAudio({ audio, removeAudio }: FormAudioProps) {
           >
             {audio.name}
           </p>
-          &•
+          •
           <p className="text-xs text-muted-foreground">
             {visualizerControls.formattedDuration}
           </p>

@@ -37,7 +37,7 @@ async function ProfilePage() {
             <FollowDialog username={user.username} />
             {user.link && (
               <>
-                &•
+                •
                 <Link
                   href={user.link}
                   target="_blank"

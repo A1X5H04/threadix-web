@@ -101,7 +101,7 @@ function PostPoll({
 
       <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
         <span className="font-semibold inline-flex gap-x-1">
-          {poll.quizMode ? "Quiz" : "Poll"}&nbsp;&•
+          {poll.quizMode ? "Quiz" : "Poll"}&nbsp;•
           <CountDownTicker targetDate={new Date(poll.duration)} />
         </span>
         <span className="font-semibold">{totalVotes} Votes</span>

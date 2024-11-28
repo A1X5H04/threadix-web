@@ -42,7 +42,7 @@ function PostItem({ data }: Props) {
             {data.user.isVerified && (
               <VerifiedBadge userName={data.user.name} />
             )}
-            &•
+            •
             <p className="text-xs font-semibold text-muted-foreground">
               {formatDate(new Date(data.createdAt))}
             </p>
