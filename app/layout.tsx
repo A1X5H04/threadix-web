@@ -9,6 +9,7 @@ import {
   RiLoader2Line,
 } from "@remixicon/react";
 import RouteProgressBar from "@/components/route-progress";
+import SWRConfig from "@/components/swr-config";
 
 const font = Manrope({ subsets: ["latin"] });
 
@@ -26,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={font.className}>
-        <RouteProgressBar>
-          <EdgeStoreProvider>{children}</EdgeStoreProvider>
-        </RouteProgressBar>
+        <SWRConfig>
+          <RouteProgressBar>
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          </RouteProgressBar>
+        </SWRConfig>
         <Toaster
           position="bottom-center"
           toastOptions={{
