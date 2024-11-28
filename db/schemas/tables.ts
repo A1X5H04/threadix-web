@@ -116,13 +116,32 @@ export const postMedia = pgTable(
   })
 );
 
+export const savedPosts = pgTable(
+  "saved_post",
+  {
+    id: serial("id").primaryKey().notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    postId: varchar("post_id", { length: 32 })
+      .notNull()
+      .references(() => posts.id),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    savedPostIdx: index("saved_post_idx").on(table.userId),
+  })
+);
+
 export const reposts = pgTable(
   "repost",
   {
     id: serial("id").primaryKey().notNull(),
     userId: text("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     postId: varchar("post_id", { length: 32 })
       .notNull()
       .references(() => posts.id),
@@ -230,7 +249,7 @@ export const votes = pgTable(
       mode: "number",
     })
       .notNull()
-      .references(() => pollOptions.id),
+      .references(() => pollOptions.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at")
       .notNull()
       .$default(() => new Date()),
@@ -249,7 +268,7 @@ export const postsTags = pgTable(
     id: serial("id").primaryKey().notNull(),
     postId: varchar("post_id", { length: 32 })
       .notNull()
-      .references(() => posts.id),
+      .references(() => posts.id, { onDelete: "cascade" }),
     tagId: text("tag_id")
       .notNull()
       .references(() => tags.id),
