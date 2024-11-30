@@ -219,6 +219,23 @@ export async function POST(req: Request) {
       return { id: parentIds[0] };
     });
 
+    if (request.postId && request.postType === "quote") {
+      const quotedPost = await db.query.posts.findFirst({
+        where: (post, { eq }) => eq(post.id, request.postId!),
+        columns: { userId: true },
+      });
+
+      if (!quotedPost) return;
+
+      await db.insert(activityFeed).values({
+        actionUserIds: [user.id],
+        userId: quotedPost.userId,
+        postId: res.id,
+        activityType: "quote",
+        title: `${user.name} just quoted you post`,
+      });
+    }
+
     if (!request.postId) {
       const followers = await db.query.userFollowers
         .findMany({
