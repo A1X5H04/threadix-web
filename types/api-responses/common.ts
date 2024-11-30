@@ -42,3 +42,23 @@ export type Tag = {
   postsCount?: number;
   user: User;
 };
+
+export interface Activity {
+  id: number;
+  userId: string;
+  actionUserIds: string[];
+  title: string;
+  postId?: string;
+  redirectionUrl?: string;
+  activityType:
+    | "like"
+    | "repost"
+    | "user"
+    | "poll"
+    | "mention"
+    | "quote"
+    | "other";
+  isUnread: boolean;
+  createdAt: Date;
+  actionUsers: Pick<User, "id" | "username" | "avatar" | "isVerified">[];
+}
