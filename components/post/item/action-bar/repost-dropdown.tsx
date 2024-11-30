@@ -20,7 +20,10 @@ import toast from "react-hot-toast";
 interface RepostDropdownProps {
   reposts: number;
   hasPermission: boolean;
-  postId: string;
+  repostData: {
+    postId: string;
+    userId: string;
+  };
   openQuoteModal: () => void;
   initialIsReposted: boolean;
 }
@@ -28,7 +31,7 @@ interface RepostDropdownProps {
 function RepostDropdown({
   reposts,
   hasPermission,
-  postId,
+  repostData,
   openQuoteModal,
   initialIsReposted,
 }: RepostDropdownProps) {
@@ -39,7 +42,7 @@ function RepostDropdown({
   const handleRepost = () => {
     if (isReposted) {
       startReposting(() => {
-        unRepost(postId)
+        unRepost(repostData.postId, repostData.userId)
           .then(() => {
             toast.success("Remove from reposts successfully");
             setIsReposted(false);
@@ -51,7 +54,7 @@ function RepostDropdown({
       });
     } else {
       startReposting(() => {
-        repost(postId)
+        repost(repostData.postId, repostData.userId)
           .then(() => {
             toast.success("Reposted successfully");
             setIsReposted(true);
