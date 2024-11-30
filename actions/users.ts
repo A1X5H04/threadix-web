@@ -1,9 +1,10 @@
 "use server";
 
-import { userFollowers } from "@/db/schemas/tables";
+import { activityFeed, userFollowers } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { and, eq } from "drizzle-orm";
+import { containsInArray } from "@/lib/queries";
+import { and, arrayContains, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export async function getCurrentUser() {
@@ -47,6 +48,13 @@ export async function followUser(username: string) {
     followerId: user.id, // The user who is following the other user
     userId: userExist.id, // The user who is being followed
   });
+
+  await db.insert(activityFeed).values({
+    userId: userExist.id,
+    actionUserIds: [user.id],
+    activityType: "user",
+    title: `${user.name} just followed you!`,
+  });
 }
 
 export async function unfollowUser(username: string) {
@@ -67,6 +75,16 @@ export async function unfollowUser(username: string) {
       and(
         eq(userFollowers.followerId, user.id),
         eq(userFollowers.userId, userExist.id)
+      )
+    );
+
+  await db
+    .delete(activityFeed)
+    .where(
+      and(
+        eq(activityFeed.userId, userExist.id),
+        containsInArray(activityFeed.actionUserIds, userExist.id),
+        eq(activityFeed.activityType, "user")
       )
     );
 }

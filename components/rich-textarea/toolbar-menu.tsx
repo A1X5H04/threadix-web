@@ -16,8 +16,6 @@ import {
   RiUnderline,
 } from "@remixicon/react";
 
-const style = { width: "400px", height: "300px" };
-
 const boldReg = /\*\*([^*]+)\*\*/g;
 const italicReg = /(?<!\*)\*([^*]+)\*(?!\*)/g;
 const strikeReg = /~~([^~]+)~~/g;
@@ -215,8 +213,8 @@ function useToolbarMenu(
       pos.selectionEnd,
       pos.focused
         ? {
-            top: pos.top - pos.height * 2.5 /* FIXME */,
-            left: pos.left /* FIXME */,
+            top: pos.height * 0.5 /* FIXME */,
+            left: pos.left - pos.top * 1.45 /* FIXME */,
           }
         : undefined,
     ]);

@@ -76,6 +76,7 @@ function RichTextArea(props: RichTextAreaProps) {
       </RTInfoPopover> */}
 
       <RichTextarea
+        id="rich-textarea"
         ref={textAreaRef}
         style={{
           width: "100%",
@@ -108,7 +109,7 @@ function RichTextArea(props: RichTextAreaProps) {
             left={mentionListProps.left}
             top={mentionListProps.top}
           />,
-          document.body
+          document.getElementById("rich-textarea") || document.body
         )}
       {hashtagListProps.left &&
         hashtagListProps.top &&
@@ -121,7 +122,7 @@ function RichTextArea(props: RichTextAreaProps) {
             left={hashtagListProps.left}
             top={hashtagListProps.top}
           />,
-          document.body
+          document.getElementById("rich-textarea") || document.body
         )}
 
       {emojiListProps.left &&
@@ -134,7 +135,7 @@ function RichTextArea(props: RichTextAreaProps) {
             left={emojiListProps.left}
             top={emojiListProps.top}
           />,
-          document.body
+          document.getElementById("rich-textarea") || document.body
         )}
       {isToolbarMenuVisible &&
         createPortal(
@@ -143,7 +144,7 @@ function RichTextArea(props: RichTextAreaProps) {
             left={toolbarMenuProps.left || 0}
             top={toolbarMenuProps.top || 0}
           />,
-          document.body
+          document.getElementById("radix-dialog-content") || document.body
         )}
     </div>
   );

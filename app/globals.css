@@ -106,6 +106,47 @@ body {
   grid-column: span 2;
 }
 
+/* Style the details element */
+.spoiler {
+  display: inline-block;
+  width: fit-content;
+  cursor: pointer;
+}
+
+/* Style the summary element */
+.spoiler summary {
+  background: hsl(var(--muted-foreground));
+  color: transparent;
+  border-radius: 4px;
+
+  /*   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); */
+  user-select: none; /* Prevent text selection */
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hover effect for summary */
+.spoiler summary:hover {
+  background: hsl(var(--muted));
+}
+
+/* Show content when details is open */
+.spoiler[open] summary {
+  background: none;
+  color: white;
+}
+
+.spoiler summary {
+  list-style: none; /* Remove bullet/arrow for summary */
+}
+
+.spoiler summary::-webkit-details-marker {
+  display: none; /* Remove the arrow in WebKit browsers (Chrome, Safari, Edge) */
+}
+
+.spoiler summary::marker {
+  display: none; /* Remove the arrow in modern browsers */
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .embla__slide {
