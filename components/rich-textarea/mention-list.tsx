@@ -33,7 +33,7 @@ const MentionList = ({
     <div
       className="fixed z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md"
       style={{
-        top: top + 10,
+        top: top,
         left: left,
       }}
     >
