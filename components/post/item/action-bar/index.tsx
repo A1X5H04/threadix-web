@@ -23,7 +23,7 @@ type Props = {
 function PostActions({ data, postId, counts }: Props) {
   let replyPermission = false;
   const { onOpen } = useModalStore((state) => state.post);
-  const { currentUser, repostedPosts, followedUsers } = useAppStore();
+  const { currentUser, repostedPosts, followingUser } = useAppStore();
 
   if (!currentUser) redirect("/login");
 
@@ -32,7 +32,7 @@ function PostActions({ data, postId, counts }: Props) {
       replyPermission = true;
       break;
     case ReplyPermissions.FOLLOWERS:
-      replyPermission = followedUsers.includes(data.user.username);
+      replyPermission = followingUser.includes(data.user.username);
       break;
     case ReplyPermissions.MENTIONS:
       replyPermission = data.mentions?.includes(currentUser.username) || false;
@@ -64,7 +64,7 @@ function PostActions({ data, postId, counts }: Props) {
       <RepostDropdown
         reposts={counts.reposts}
         hasPermission={replyPermission}
-        postId={postId}
+        repostData={{ postId: postId, userId: data.userId }}
         openQuoteModal={() => onOpen(data, "quote")}
         initialIsReposted={repostedPosts?.includes(postId) ?? false}
       />
