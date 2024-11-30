@@ -1,30 +1,42 @@
+import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {}
+export async function GET(req: Request) {
+  const { user } = await validateRequest();
 
-export async function POST(req: Request) {
-  const TOKEN = process.env.CRON_JOB_TOKEN;
-
-  // Get authorization token from the request headers
-  const token = req.headers.get("Authorization");
-
-  // Check if the token is not present
-  if (!token || token !== `Bearer ${TOKEN}`) {
-    return new NextResponse("Unauthorized Access", { status: 401 });
+  if (!user) {
+    return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  // Get last added activity timestamp from the request body
-  const lastActivity = await db.query.userActivity.findFirst({
-    orderBy: (activity, { desc }) => desc(activity.createdAt),
-    columns: { createdAt: true },
+  const activities = await db.query.activityFeed.findMany({
+    where: (activity, { eq }) => eq(activity.userId, user.id),
   });
 
-  revalidatePath("/api/activity");
+  const allActionUserIds = Array.from(
+    new Set(activities.flatMap((activity) => activity.actionUserIds))
+  );
 
-  return NextResponse.json({
-    status: "success",
-    lastCreatedAt: lastActivity || null,
+  const actionUsers = await db.query.users.findMany({
+    where: (user, { inArray }) => inArray(user.id, allActionUserIds),
+    columns: {
+      id: true,
+      username: true,
+      avatar: true,
+      isVerified: true,
+    },
   });
+
+  // Map actionUserIds to user objects
+  const actionUsersMap = new Map(actionUsers.map((user) => [user.id, user]));
+
+  // Attach actionUsers to activities
+  const activitiesWithActionUsers = activities.map((activity) => ({
+    ...activity,
+    actionUsers: activity.actionUserIds.map((userId) =>
+      actionUsersMap.get(userId)
+    ),
+  }));
+
+  return NextResponse.json(activitiesWithActionUsers);
 }

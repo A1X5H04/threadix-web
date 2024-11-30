@@ -1,10 +1,28 @@
 import { activityFeed, likes, posts, votes } from "@/db/schemas/tables";
 import { db } from "@/lib/db";
-import { and, eq, gte, inArray, isNotNull, sql } from "drizzle-orm";
+import { and, gte, inArray, isNotNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  // const TOKEN = process.env.CRON_JOB_TOKEN;
+
+  // // Get authorization token from the request headers
+  // const token = req.headers.get("Authorization");
+
+  // // Check if the token is not present
+  // if (!token || token !== `Bearer ${TOKEN}`) {
+  //   return new NextResponse("Unauthorized Access", { status: 401 });
+  // }
+
   const lastActivity = await db.query.activityFeed.findFirst({
+    where: (activity, { or, ne, notIlike }) =>
+      or(
+        ne(activity.activityType, "mention"),
+        ne(activity.activityType, "quote"),
+        ne(activity.activityType, "repost"),
+        ne(activity.activityType, "user"),
+        notIlike(activity.title, "%just started a thread")
+      ),
     orderBy: (activity, { desc }) => desc(activity.createdAt),
     columns: { createdAt: true },
   });
@@ -63,14 +81,14 @@ export async function GET(req: NextRequest) {
       userIds: sql`ARRAY_AGG(${posts.userId})`,
     })
     .from(likes)
-
+    .where(gte(likes.createdAt, lastProcessedAt))
     .groupBy((t) => [t.postId]);
 
   if (likesList && likesList.length > 0) {
     const posts = await db.query.posts.findMany({
       where: (post, { inArray }) =>
         inArray(post.id, likesList.map((like) => like.postId || "") || []),
-      columns: { id: true, userId: true, content: true },
+      columns: { id: true, userId: true },
     });
 
     const likesWithUserIds = likesList
@@ -81,7 +99,7 @@ export async function GET(req: NextRequest) {
         );
 
         return {
-          postContent: post?.content,
+          postId: post?.id,
           userIds: filteredUserId,
           userId: post?.userId!,
         };
@@ -93,8 +111,10 @@ export async function GET(req: NextRequest) {
         userId: like.userId,
         actionUserIds: like.userIds,
         activityType: "like" as "like",
-        title:
-          like.postContent || "announcement: You got new likes on your post",
+        postId: like.postId,
+        title: `Your post got ${
+          like.userIds.length > 1 ? "new likes" : "a new like"
+        }`,
       }))
     );
   }
@@ -102,16 +122,13 @@ export async function GET(req: NextRequest) {
   // Poll
   const poll = await db.query.polls.findMany({
     where: (poll, { gte, and, lt }) =>
-      and(
-        lt(poll.duration, new Date()),
-        and(gte(poll.duration, lastProcessedAt))
-      ),
-    columns: { id: true },
+      and(lt(poll.duration, new Date()), gte(poll.duration, lastProcessedAt)),
+    columns: { id: true, postId: true },
   });
 
   if (poll && poll.length > 0) {
     const votelist = await db
-      .select({ userId: votes.userId })
+      .select({ userId: votes.userId, pollId: votes.pollId })
       .from(votes)
       .where(
         inArray(
@@ -126,7 +143,8 @@ export async function GET(req: NextRequest) {
           userId: vote.userId,
           actionUserIds: [vote.userId],
           activityType: "poll" as "poll",
-          title: "Poll results are out",
+          postId: poll.find((p) => p.id === vote.pollId)?.postId,
+          title: "Poll results are out!",
         }))
       );
     }
