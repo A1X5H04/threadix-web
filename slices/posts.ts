@@ -2,8 +2,7 @@ import { getCurrentUser } from "@/actions/current-user";
 import { getLikedPosts } from "@/actions/liked-posts";
 import { getRepostedPostsId } from "@/actions/post/repost";
 import { getRegisteredVote } from "@/actions/registered-votes";
-import { getFollowingUsers } from "@/actions/users";
-import { validateRequest } from "@/lib/auth";
+import { getFollowingUsers, hasUnreadActivity } from "@/actions/users";
 import { User } from "lucia";
 import { StateCreator } from "zustand";
 
@@ -18,7 +17,8 @@ export interface PostState {
   setFollowingUser: (followingUsers: string[]) => void;
   repostedPosts: string[];
   currentUser: User | null;
-  fetchData: () => void;
+  hasUnreadActivity: boolean;
+  intializeData: () => void;
 }
 
 export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
@@ -29,12 +29,14 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
   repostedPosts: [],
   followingUser: [],
   setFollowingUser: (followingUser) => set({ followingUser }),
+  hasUnreadActivity: false,
   currentUser: null,
-  fetchData: async () => {
+  intializeData: async () => {
     const likedPosts = await getLikedPosts();
     const registeredVotes = await getRegisteredVote();
     const repostedPostsId = await getRepostedPostsId();
     const followingUser = await getFollowingUsers();
+    const unreadActivity = await hasUnreadActivity();
 
     const user = await getCurrentUser();
     set({
@@ -43,6 +45,7 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
       registeredVotes: registeredVotes.data,
       repostedPosts: repostedPostsId,
       currentUser: user,
+      hasUnreadActivity: unreadActivity,
     });
   },
 });
