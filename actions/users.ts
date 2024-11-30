@@ -83,7 +83,7 @@ export async function unfollowUser(username: string) {
     .where(
       and(
         eq(activityFeed.userId, userExist.id),
-        containsInArray(activityFeed.actionUserIds, userExist.id),
+        containsInArray(activityFeed.actionUserIds, user.id),
         eq(activityFeed.activityType, "user")
       )
     );
@@ -106,4 +106,18 @@ export async function getFollowingUsers() {
   });
 
   return followingUsers.map((following) => following.following_user.username);
+}
+
+export async function hasUnreadActivity() {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  const hasUnreadActivity = await db.query.activityFeed.findFirst({
+    where: (activity, { eq }) =>
+      and(eq(activity.userId, user.id), eq(activity.isUnread, true)),
+    columns: { id: true },
+  });
+
+  return !!hasUnreadActivity;
 }
