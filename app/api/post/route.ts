@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ThreadSchema } from "@/components/post/form";
 import { validateRequest } from "@/lib/auth";
 import {
+  activityFeed,
   pollOptions,
   polls,
   postMedia,
@@ -15,8 +16,9 @@ import { convertRelativeDataToDate, shuffleArray } from "@/lib/utils";
 import { db, pool, poolDb } from "@/lib/db";
 import { backendClient } from "@/lib/edgestore-server";
 import { increment } from "@/lib/queries";
-import { eq } from "drizzle-orm";
+import { eq, InferInsertModel } from "drizzle-orm";
 import { repost } from "@/actions/post/repost";
+import { title } from "process";
 
 export async function POST(req: Request) {
   try {
@@ -160,14 +162,29 @@ export async function POST(req: Request) {
 
         if (post.mentions && post.mentions.length > 0) {
           // TODO: check if mentioned users exist
+          const existingUsers = await db.query.users.findMany({
+            where: (user, { inArray }) =>
+              inArray(user.username, post.mentions || []),
+            columns: { id: true },
+          });
+
           // TODO: send notifications to mentioned users
+          if (existingUsers && existingUsers.length > 0) {
+            await db.insert(activityFeed).values(
+              existingUsers.map((existingUser) => ({
+                userId: existingUser.id,
+                actionUserIds: [user.id],
+                activityType: "mention" as "mention",
+                title: `${user.name} just mentioned you in thier post`,
+              }))
+            );
+          }
         }
 
         if (post.tags && post.tags.length > 0) {
           // TODO: create tags if not exist and assign them to the post
           const existingTags = await txn.query.tags.findMany({
-            where: (tag, { inArray }) =>
-              inArray(tag.name, post.tags ? post.tags : []),
+            where: (tag, { inArray }) => inArray(tag.name, post.tags || []),
           });
 
           const newTags = post.tags.filter(
@@ -199,10 +216,40 @@ export async function POST(req: Request) {
         parentIds.push(id);
       }
 
-      return NextResponse.json({ id: parentIds[0] });
+      return { id: parentIds[0] };
     });
+
+    if (!request.postId) {
+      const followers = await db.query.userFollowers
+        .findMany({
+          where: (follower, { eq }) => eq(follower.userId, user.id),
+          with: {
+            followed_user: {
+              columns: {
+                id: true,
+              },
+            },
+          },
+        })
+        .then((following) =>
+          following.map((follower) => follower.followed_user)
+        );
+
+      if (followers && followers.length > 0) {
+        await db.insert(activityFeed).values(
+          followers.map((follower) => ({
+            userId: follower.id,
+            actionUserIds: [user.id],
+            title: `${user.name} just started a thread`,
+            postId: res.id,
+            redirectionUrl: `/users/${user.username}/posts/${res.id}`,
+          }))
+        );
+      }
+    }
+
     console.log("Transaction Completed");
-    return res;
+    return NextResponse.json({ id: res.id });
   } catch (error) {
     console.log("POST_CREATE_ERROR", error);
     return new NextResponse("An error occurred", { status: 500 });
@@ -407,23 +454,3 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
     return new NextResponse("An error occurred", { status: 500 });
   }
 }
-
-// type Post = {
-//   id: string;
-//   content: string;
-//   parentId: string;
-//   poll: {
-//     question: string;
-//     options: { title: string }[];
-//     duration: string;
-//     anonymousVoting: boolean;
-//     multipleAnswers: boolean;
-//     quizMode: boolean;
-//   };
-//   user: {
-//     id: string;
-//     name: string;
-//     username: string;
-//     email: string;
-//   };
-// };
