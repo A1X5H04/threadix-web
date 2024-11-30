@@ -32,12 +32,9 @@ function PostContent({ content, className, ...rest }: PostContentProps) {
 
   // For Spoiler Text (||text||)
   parsedContent = reactReplace(parsedContent, /\|\|(.*?)\|\|/g, (match, i) => (
-    <span
-      key={i}
-      className="bg-zinc-300 hover:bg-transparent hover:text-foreground text-zinc-300 rounded"
-    >
-      {match}
-    </span>
+    <details data-prevent-nprogress className="spoiler">
+      <summary>{match}</summary>
+    </details>
   ));
 
   // For Underline Text (__text__)
@@ -70,7 +67,7 @@ function PostContent({ content, className, ...rest }: PostContentProps) {
   return (
     <div
       {...rest}
-      onClick={(e) => e.preventDefault()}
+      onClick={(e) => e.stopPropagation()}
       className={cn("text-[15px]", className)}
     >
       {parsedContent}
