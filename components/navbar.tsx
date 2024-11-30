@@ -13,11 +13,10 @@ import {
 } from "@remixicon/react";
 
 import Link from "next/link";
-import React from "react";
 import { usePathname } from "next/navigation";
 
 import { User } from "lucia";
-import { useModalStore } from "@/hooks/use-store";
+import { useAppStore, useModalStore } from "@/hooks/use-store";
 
 import {
   Tooltip,
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 
 function Navbar({ user }: { user: User }) {
+  const { hasUnreadActivity } = useAppStore();
   const { onOpen } = useModalStore((state) => state.post);
   const pathname = usePathname();
 
@@ -113,13 +113,22 @@ function Navbar({ user }: { user: User }) {
                         <route.activeIcon className="w-6 h-6 text-black dark:text-white" />
                       </div>
                     ) : (
-                      <route.icon className="w-6 h-6" />
+                      <div className="relative">
+                        <route.icon className="w-6 h-6" />
+                        {route.path === "/activity" && hasUnreadActivity && (
+                          <div className="w-2 h-2 bg-rose-500 border border-black rounded-full absolute top-0 -right-0.5" />
+                        )}
+                      </div>
                     )}
                     <span className="sr-only">{route.name}</span>
                   </Link>
                 </li>
               </TooltipTrigger>
-              <TooltipContent>{route.name}</TooltipContent>
+              <TooltipContent>
+                {route.path === "/activity" && hasUnreadActivity
+                  ? "Activity (Unread)"
+                  : route.name}
+              </TooltipContent>
             </Tooltip>
           ))}
           {/* <li>
