@@ -23,8 +23,10 @@ async function MainLayout({ children }: Props) {
 
   return (
     <main className="relative max-w-2xl mx-auto px-5 w-full h-full">
-      <Navbar user={user} />
-      <DataFetcher>{children}</DataFetcher>
+      <DataFetcher>
+        <Navbar user={user} />
+        <div className="pt-20">{children}</div>
+      </DataFetcher>
       <CreatePostDialog user={user} />
     </main>
   );
