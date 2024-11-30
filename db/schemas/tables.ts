@@ -35,16 +35,15 @@ export const postMediaType = pgEnum("post_media_type", [
   "voice",
 ]);
 
-// export const activityType = pgEnum("activity_type", [
-//   "post",
-//   "like",
-//   "repost",
-//   "follow",
-//   "reply",
-//   "tag",
-//   "mention",
-//   "quote",
-// ])
+export const activityType = pgEnum("activity_type", [
+  "like",
+  "repost",
+  "user",
+  "poll",
+  "mention",
+  "quote",
+  "other",
+]);
 
 export const posts = pgTable(
   "post",
@@ -300,21 +299,30 @@ export const userFollowers = pgTable(
   })
 );
 
-// export const userActivity = pgTable(
-//   "user_activity",
-//   {
-//     id: serial("id").primaryKey().notNull(),
-//     userId: text("user_id")
-//       .notNull()
-//       .references(() => users.id, { onDelete: "cascade" }),
-//     activity: text("activity").notNull(),
-//     activityType: varchar(""),
-//     isUnread: boolean("is_unread")
-//       .notNull()
-//       .$default(() => true),
-//     createdAt: timestamp("created_at").$default(() => new Date()),
-//   },
-//   (table) => ({
-//     userActivityIdx: index("user_activity_idx").on(table.userId),
-//   })
-// );
+export const activityFeed = pgTable(
+  "activity_feed",
+  {
+    id: serial("id").primaryKey().notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    actionUserIds: text("action_user_ids").array().notNull(),
+    title: text("title").notNull(),
+    postId: varchar("post_id", { length: 32 }).references(() => posts.id, {
+      onDelete: "cascade",
+    }),
+    redirectionUrl: text("redirect_url"),
+    activityType: activityType("activity_type")
+      .notNull()
+      .$default(() => "other"),
+    isUnread: boolean("is_unread")
+      .notNull()
+      .$default(() => true),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    userActivityIdx: index("user_activity_idx").on(table.userId),
+  })
+);
