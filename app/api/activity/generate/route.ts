@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         ne(activity.activityType, "quote"),
         ne(activity.activityType, "repost"),
         ne(activity.activityType, "user"),
-        notIlike(activity.title, "%just started a thread")
+        notIlike(activity.title, "%just%")
       ),
     orderBy: (activity, { desc }) => desc(activity.createdAt),
     columns: { createdAt: true },
