@@ -16,13 +16,20 @@ function SplashScreen({ isFetching }: { isFetching: boolean }) {
   return (
     <div>
       <div className="w-full h-screen grid place-items-center bg-background relative">
-        <Image
-          className={cn("-translate-y-32", isFetching && "animate-pulse")}
-          src="/logo.svg"
-          alt="logo"
-          width={100}
-          height={100}
-        />
+        <div className="-translate-y-32 flex flex-col items-center gap-y-2">
+          <Image
+            className={cn("", isFetching && "animate-pulse")}
+            src="/logo.svg"
+            alt="logo"
+            width={50}
+            height={50}
+          />
+          {isFetching && (
+            <h1 className="text-2xl font-extrabold text-primary mt-4 animate-in slide-in-from-bottom-3 font-mono">
+              Threadix
+            </h1>
+          )}
+        </div>
         <div className="absolute bottom-1/4 flex flex-col items-center gap-y-2">
           <div
             className={cn(
