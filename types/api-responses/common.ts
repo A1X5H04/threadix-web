@@ -1,3 +1,5 @@
+import { Post } from "./post/single";
+
 export interface Media {
   postId: string;
   name: string;
@@ -61,4 +63,5 @@ export interface Activity {
   isUnread: boolean;
   createdAt: Date;
   actionUsers: Pick<User, "id" | "username" | "avatar" | "isVerified">[];
+  post: Post;
 }
