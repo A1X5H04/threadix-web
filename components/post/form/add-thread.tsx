@@ -4,8 +4,15 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { ThreadSchema } from ".";
+import { User } from "lucia";
 
-function AddThread({ append }: { append: UseFieldArrayAppend<ThreadSchema> }) {
+function AddThread({
+  append,
+  user,
+}: {
+  append: UseFieldArrayAppend<ThreadSchema>;
+  user: User;
+}) {
   const watchForm = useWatch({
     name: "posts",
   });
@@ -20,8 +27,8 @@ function AddThread({ append }: { append: UseFieldArrayAppend<ThreadSchema> }) {
             inputLength < 1 ? "opacity-75" : "opacity-100"
           )}
         >
-          <AvatarImage src="https://i.pinimg.com/236x/f1/97/0a/f1970a8b5bdf920a2e1977a28e2e8c77.jpg" />
-          <AvatarFallback>A</AvatarFallback>
+          <AvatarImage src={user.avatar ?? undefined} />
+          <AvatarFallback>{user.username.at(0)?.toUpperCase()}</AvatarFallback>
         </Avatar>
       </div>
       <button

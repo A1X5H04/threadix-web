@@ -182,7 +182,7 @@ function PostFormIndex({
                   );
                 })}
               </div>
-              <AddThread append={append} />
+              <AddThread append={append} user={user} />
               <div className="absolute bottom-0 w-full flex justify-between items-center max-w-2xl">
                 <PostPermission />
 

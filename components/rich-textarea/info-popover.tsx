@@ -1,11 +1,16 @@
 import React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
+import { RiTextSnippet } from "@remixicon/react";
 
-function RTInfoPopover({ children }: { children: React.ReactNode }) {
+function RTInfoPopover() {
   return (
     <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverTrigger asChild>
+        <button className="absolute top-2 z-10 right-2 p-1 bg-background hover:bg-muted text-muted-foreground transition-colors rounded ">
+          <RiTextSnippet className="w-4 h-4 text-muted-foreground" />
+        </button>
+      </PopoverTrigger>
       <PopoverContent align="end">
         <h3 className="font-semibold text-center">Text Editor Features</h3>
         <Separator className="mt-2" />
@@ -24,8 +29,8 @@ function RTInfoPopover({ children }: { children: React.ReactNode }) {
               <li>Emoji Picker 😀</li>
               <p className="text-xs text-muted-foreground font-normal">
                 Typing <code>:</code> will show you an emoji picker. You can
-                filter the emoji by it's name and choose your desired emoji by
-                using arrow buttons of your keyboard.
+                filter the emoji by it&apos;s name and choose your desired emoji
+                by using arrow buttons of your keyboard.
               </p>
             </div>
             <div>
