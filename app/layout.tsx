@@ -14,7 +14,7 @@ import SWRConfig from "@/components/swr-config";
 const font = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Cascade - A Threads Clone",
+  title: "Threadix - A Threads Clone",
   description:
     "Explore the world of threads and posts. Share your thoughts and ideas with the world. A Instagram's Threads Clone.",
 };
