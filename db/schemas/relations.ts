@@ -13,6 +13,7 @@ import {
   pollOptions,
   votes,
   reposts,
+  activityFeed,
 } from "./tables";
 
 // export const userRelation = relations(users, ({ many }) => ({
@@ -135,5 +136,12 @@ export const postToTagRelation = relations(postsTags, ({ one }) => ({
   tag: one(tags, {
     fields: [postsTags.tagId],
     references: [tags.id],
+  }),
+}));
+
+export const activityFeedRelation = relations(activityFeed, ({ one }) => ({
+  post: one(posts, {
+    fields: [activityFeed.postId],
+    references: [posts.id],
   }),
 }));
