@@ -149,4 +149,8 @@ export async function GET(req: NextRequest) {
       );
     }
   }
+
+  return new NextResponse("Activity feed generated successfully", {
+    status: 200,
+  });
 }

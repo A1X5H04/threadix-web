@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrayElement, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Activity, User } from "@/types/api-responses/common";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import {
@@ -83,26 +83,29 @@ function ActivityAvatar({ type, actionUsers }: ActivityAvatarProps) {
             {actionUsers[0].username[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        {icon}
+        <div className="relative z-10">{icon}</div>
       </div>
     );
   }
 
+  const totalAvatars = actionUsers.length;
+  const visibleAvatars = actionUsers.slice(0, 4); // Show only first 4 avatars
+
   return (
-    <div className="relative -space-x-5">
-      {actionUsers.slice(0, 3).map((user, index) => (
-        <div key={user.id} className="inline-block">
-          <Avatar className={cn("size-7 border", index == 1 && "z-10 size-8")}>
-            <AvatarImage
-              src={user.avatar ?? undefined}
-              alt={user.username}
-              className="w-8 h-8 rounded-full"
-            />
-            <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </div>
-      ))}
-      {icon}
+    <div>
+      <div className="group-avatar">
+        {totalAvatars > 4 && (
+          <div className="more-count">+{totalAvatars - 4}</div>
+        )}
+        {visibleAvatars.map((avatar, index) => (
+          <div
+            key={index}
+            className={`avatar avatar-${visibleAvatars.length}`}
+            style={{ backgroundImage: `url(${avatar.avatar})` }}
+          />
+        ))}
+      </div>
+      <div className="relative">{icon}</div>
     </div>
   );
 }

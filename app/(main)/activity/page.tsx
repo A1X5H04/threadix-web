@@ -5,8 +5,8 @@ import { Activity } from "@/types/api-responses/common";
 import { Ri24HoursLine, RiHistoryLine } from "@remixicon/react";
 import React from "react";
 import useSWR from "swr";
-import ActivityAvatar from "./_components/activity-avatar";
 import ActivityItem from "./_components/activity-item";
+import { Separator } from "@/components/ui/separator";
 
 function ActivityPage() {
   const { data, isLoading } = useSWR("/api/activity", GET<Activity[]>);
@@ -30,9 +30,12 @@ function ActivityPage() {
   }
 
   return (
-    <div>
-      {data.map((activity) => (
-        <ActivityItem key={activity.id} activity={activity} />
+    <div className="pt-5">
+      {data.map((activity, index) => (
+        <>
+          <ActivityItem key={activity.id} activity={activity} />
+          {index !== data.length - 1 && <Separator className="my-4" />}
+        </>
       ))}
     </div>
   );

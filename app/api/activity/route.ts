@@ -11,6 +11,70 @@ export async function GET(req: Request) {
 
   const activities = await db.query.activityFeed.findMany({
     where: (activity, { eq }) => eq(activity.userId, user.id),
+    with: {
+      post: {
+        with: {
+          user: {
+            columns: {
+              id: true,
+              name: true,
+              username: true,
+              avatar: true,
+              isVerified: true,
+            },
+          },
+          quotePost: {
+            columns: {
+              id: true,
+              content: true,
+              userId: true,
+              createdAt: true,
+              mentions: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  username: true,
+                  avatar: true,
+                  isVerified: true,
+                  createdAt: true,
+                },
+              },
+              media: true,
+              poll: {
+                with: {
+                  poll_options: {
+                    orderBy: (option, { asc }) => asc(option.id),
+                  },
+                },
+              },
+              quotePost: {
+                columns: {
+                  id: true,
+                  content: true,
+                },
+                with: {
+                  user: {
+                    columns: {
+                      id: true,
+                      username: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          media: true,
+          poll: {
+            with: {
+              poll_options: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   const allActionUserIds = Array.from(
