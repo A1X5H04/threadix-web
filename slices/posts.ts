@@ -18,6 +18,7 @@ export interface PostState {
   repostedPosts: string[];
   currentUser: User | null;
   hasUnreadActivity: boolean;
+
   intializeData: () => void;
 }
 
@@ -30,6 +31,7 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
   followingUser: [],
   setFollowingUser: (followingUser) => set({ followingUser }),
   hasUnreadActivity: false,
+  readAllActivity: () => set({ hasUnreadActivity: false }),
   currentUser: null,
   intializeData: async () => {
     const likedPosts = await getLikedPosts();
