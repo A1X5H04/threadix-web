@@ -44,9 +44,9 @@ function PostActions({ data, postId, counts }: Props) {
   return (
     <div
       data-prevent-nprogress={true}
-      className="flex items-center gap-x-2 mt-2"
-      onClick={(e) => e.preventDefault()}
-      onMouseDown={(e) => e.preventDefault()}
+      className="flex items-center gap-x-2 -ml-4 mt-2"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
     >
       <LikeButton postId={postId} likes={counts.likes} />
       {replyPermission && (
