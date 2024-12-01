@@ -4,15 +4,15 @@ import { and, gte, inArray, isNotNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  // const TOKEN = process.env.CRON_JOB_TOKEN;
+  const TOKEN = process.env.CRON_JOB_TOKEN;
 
-  // // Get authorization token from the request headers
-  // const token = req.headers.get("Authorization");
+  // Get authorization token from the request headers
+  const token = req.headers.get("Authorization");
 
-  // // Check if the token is not present
-  // if (!token || token !== `Bearer ${TOKEN}`) {
-  //   return new NextResponse("Unauthorized Access", { status: 401 });
-  // }
+  // Check if the token is not present
+  if (!token || token !== `Bearer ${TOKEN}`) {
+    return new NextResponse("Unauthorized Access", { status: 401 });
+  }
 
   const lastActivity = await db.query.activityFeed.findFirst({
     where: (activity, { or, ne, notIlike }) =>
