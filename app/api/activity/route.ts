@@ -1,5 +1,7 @@
+import { activityFeed } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -95,12 +97,28 @@ export async function GET(req: Request) {
   const actionUsersMap = new Map(actionUsers.map((user) => [user.id, user]));
 
   // Attach actionUsers to activities
-  const activitiesWithActionUsers = activities.map((activity) => ({
-    ...activity,
-    actionUsers: activity.actionUserIds.map((userId) =>
-      actionUsersMap.get(userId)
-    ),
-  }));
+  const activitiesWithActionUsers = activities
+    .map((activity) => ({
+      ...activity,
+      actionUsers: activity.actionUserIds.map((userId) =>
+        actionUsersMap.get(userId)
+      ),
+    }))
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  // Mark all activities as read
+  const hasUnreadActivity = activitiesWithActionUsers.some(
+    (activity) => activity.isUnread
+  );
+
+  if (hasUnreadActivity) {
+    await db
+      .update(activityFeed)
+      .set({
+        isUnread: false,
+      })
+      .where(eq(activityFeed.userId, user.id));
+  }
 
   return NextResponse.json(activitiesWithActionUsers);
 }
