@@ -1,3 +1,4 @@
+import FollowButton from "@/components/profile/follow-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import VerifiedBadge from "@/components/verified-badge";
@@ -15,18 +16,18 @@ function UserItem({ user }: { user: User & { followersCount: number } }) {
           </AvatarFallback>
         </Avatar>
         <div className="inline-flex items-center gap-x-2 mt-2">
-          <p className="font-semibold text-sm">{user.name}</p>
+          <p className="font-semibold text-sm">@{user.username}</p>
           {user.isVerified && <VerifiedBadge userName={user.name} />}
         </div>
-        <p className="text-xs text-muted-foreground">@{user.username}</p>
-        <Button
-          title="Follow user ?"
-          className="mt-2 font-semibold"
+        <p className="text-xs text-muted-foreground">
+          {user.followersCount} followers
+        </p>{" "}
+        <FollowButton
           variant="outline"
           size="sm"
-        >
-          {user.followersCount ?? 0} followers
-        </Button>
+          className="mt-1"
+          username={user.username}
+        />
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ function ExploreIndexPage() {
   const sections = [
     {
       key: "posts",
-      content: (
+      content: data && data.popularPosts.length > 0 && (
         <div className="space-y-2">
           <div className="mt-4 flex justify-between text-muted-foreground text-sm">
             <div className="inline-flex items-center gap-x-2">
@@ -58,29 +58,33 @@ function ExploreIndexPage() {
     },
     {
       key: "users",
-      content: (
-        <>
-          <div className="mb-4 flex justify-between text-muted-foreground text-sm">
-            <div className="inline-flex items-center gap-x-2">
-              <RiUserStarFill className="size-4" /> Recommended / Popular Users
+      content: data &&
+        data.popularUsers.length > 0 &&
+        data?.recommendedUsers.length > 0 && (
+          <>
+            <div className="mb-4 flex justify-between text-muted-foreground text-sm">
+              <div className="inline-flex items-center gap-x-2">
+                <RiUserStarFill className="size-4" /> Recommended / Popular
+                Users
+              </div>
             </div>
-          </div>
-          <div className="mb-4">
-            {data?.recommendedUsers.map((user) => (
-              <UserItemHorizontal key={user.id} user={user} />
-            ))}
-          </div>
-          <UserCarousel>
-            {data?.popularUsers.map((user, index) => (
-              <UserItem key={index} user={user} />
-            ))}
-          </UserCarousel>
-        </>
-      ),
+            <div className="mb-4">
+              {data?.recommendedUsers.map((user) => (
+                <UserItemHorizontal key={user.id} user={user} />
+              ))}
+            </div>
+            <UserCarousel>
+              {data?.popularUsers.map((user, index) => (
+                <UserItem key={index} user={user} />
+              ))}
+            </UserCarousel>
+            <Separator className="my-4" />
+          </>
+        ),
     },
     {
       key: "hashtags",
-      content: (
+      content: data && data?.trendingTags.length > 0 && (
         <>
           <div className="flex justify-between text-muted-foreground text-sm">
             <div className="inline-flex items-center gap-x-2">
@@ -95,6 +99,7 @@ function ExploreIndexPage() {
               )}
             </>
           ))}
+          <Separator className="my-4" />
         </>
       ),
     },
@@ -111,10 +116,7 @@ function ExploreIndexPage() {
   return (
     <div className="mt-5">
       {shuffleArray(sections).map((section) => (
-        <React.Fragment key={section.key}>
-          {section.content}
-          <Separator className="my-4" />
-        </React.Fragment>
+        <React.Fragment key={section.key}>{section.content}</React.Fragment>
       ))}
     </div>
   );

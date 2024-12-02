@@ -3,6 +3,7 @@ import VerifiedBadge from "@/components/verified-badge";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "@/types/api-responses/common";
+import { RiArrowRightSLine } from "@remixicon/react";
 
 function UserItemHorizontal({ user }: { user: User }) {
   return (
@@ -23,7 +24,7 @@ function UserItemHorizontal({ user }: { user: User }) {
           <span className="text-xs text-muted-foreground">{user.username}</span>
         </div>
 
-        <Button size="sm">View Profile</Button>
+        <RiArrowRightSLine className="w-6 h-6 text-muted-foreground" />
       </div>
     </div>
   );
