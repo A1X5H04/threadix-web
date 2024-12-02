@@ -175,7 +175,8 @@ export async function POST(req: Request) {
                 userId: existingUser.id,
                 actionUserIds: [user.id],
                 activityType: "mention" as "mention",
-                title: `${user.name} just mentioned you in thier post`,
+                title: "Just mentioned you in thier post",
+                redirectionUrl: `/users/${user.username}/posts/${id}`,
               }))
             );
           }
@@ -222,7 +223,7 @@ export async function POST(req: Request) {
     if (request.postId && request.postType === "quote") {
       const quotedPost = await db.query.posts.findFirst({
         where: (post, { eq }) => eq(post.id, request.postId!),
-        columns: { userId: true },
+        columns: { userId: true, content: true },
       });
 
       if (!quotedPost) return;
@@ -232,7 +233,7 @@ export async function POST(req: Request) {
         userId: quotedPost.userId,
         postId: res.id,
         activityType: "quote",
-        title: `${user.name} just quoted you post`,
+        title: quotedPost.content,
       });
     }
 

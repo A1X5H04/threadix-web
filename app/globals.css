@@ -169,34 +169,63 @@ body {
   box-sizing: border-box;
 }
 
-.avatar-2:nth-child(1) {
-  clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%);
+.group-avatar .avatar-2:nth-child(1) {
+  /* clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%); */
+  clip-path: inset(0% 52% 0% 0%);
 }
-.avatar-2:nth-child(2) {
-  clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+
+.group-avatar .avatar-2:nth-child(2) {
+  /* clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%); */
+  background-position: left;
+  clip-path: inset(0% 0% 0% 52%);
 }
 
 .group-avatar .avatar-3:nth-child(1) {
-  clip-path: polygon(50% 0%, 100% 100%, 50% 100%);
+  /* clip-path: polygon(50% 0%, 100% 100%, 50% 100%); */
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 0% 0%;
+  clip-path: inset(0% 52% 52% 0%);
 }
 .group-avatar .avatar-3:nth-child(2) {
-  clip-path: polygon(0% 0%, 50% 0%, 50% 100%);
+  /* clip-path: polygon(0% 0%, 50% 0%, 50% 100%); */
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: -10% 110%;
+  clip-path: inset(52% 52% 0% 0%);
 }
 .group-avatar .avatar-3:nth-child(3) {
-  clip-path: polygon(0% 0%, 0% 100%, 50% 100%);
+  /* clip-path: polygon(0% 0%, 0% 100%, 50% 100%); */
+  clip-path: inset(0% 0% 0% 52%);
 }
 
 .group-avatar .avatar-4:nth-child(1) {
-  clip-path: polygon(0% 0%, 50% 0%, 50% 50%, 0% 50%);
+  /* clip-path: polygon(0% 0%, 50% 0%, 50% 50%, 0% 50%); */
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 0% 0%;
+  clip-path: inset(0% 52% 51% 0%);
 }
 .group-avatar .avatar-4:nth-child(2) {
-  clip-path: polygon(50% 0%, 100% 0%, 100% 50%, 50% 50%);
+  /* clip-path: polygon(50% 0%, 100% 0%, 100% 50%, 50% 50%); */
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: -10% 110%;
+  clip-path: inset(52% 52% 0% 0%);
 }
 .group-avatar .avatar-4:nth-child(3) {
-  clip-path: polygon(0% 50%, 50% 50%, 50% 100%, 0% 100%);
+  /* clip-path: polygon(0% 50%, 50% 50%, 50% 100%, 0% 100%); */
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 100% 0%;
+  clip-path: inset(0% 0% 52% 52%);
 }
 .group-avatar .avatar-4:nth-child(4) {
-  clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%);
+  /* clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%); */
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: 100% 150%;
+  clip-path: inset(52% 0% 0% 52%);
 }
 
 .more-count {

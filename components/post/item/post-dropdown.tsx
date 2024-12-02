@@ -11,7 +11,6 @@ import {
   RiBookmark2Fill,
   RiBookmarkLine,
   RiDeleteBin2Line,
-  RiEyeOffLine,
   RiLinkM,
   RiMoreFill,
   RiPencilLine,
@@ -48,14 +47,14 @@ function PostDropdown({ userId, isCurrentUser }: PostDropdownProps) {
           onClick={(e) => e.preventDefault()}
           variant="ghost"
           size="icon"
-          className="-mb-4 size-6 rounded-sm"
+          className="-mb-4 size-7 rounded-sm"
         >
           <RiMoreFill className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         onClick={(e) => e.preventDefault()}
-        className="min-w-56"
+        className="min-w-40"
         align="end"
       >
         <DropdownMenuItem onClick={handleSavePost} className="justify-between">
@@ -66,6 +65,25 @@ function PostDropdown({ userId, isCurrentUser }: PostDropdownProps) {
           Copy Link
           <RiLinkM className="w-4 h-4" />
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {isCurrentUser && (
+          <>
+            {/* <DropdownMenuItem
+              onClick={() => toast.error("Feature not yet implemented!")}
+              className="justify-between"
+            >
+              Edit Post
+              <RiPencilLine className="w-4 h-4" />
+            </DropdownMenuItem> */}
+            <DropdownMenuItem
+              onClick={() => toast.error("Feature not yet implemented!")}
+              className="justify-between text-red-500"
+            >
+              Delete Post
+              <RiDeleteBin2Line className="w-4 h-4" />
+            </DropdownMenuItem>
+          </>
+        )}
         {/* <DropdownMenuItem onClick={handleSavePost} className="justify-between">
           Edit Post
           <RiPencilLine className="w-4 h-4" />

@@ -1,6 +1,6 @@
 import { activityFeed, likes, posts, votes } from "@/db/schemas/tables";
 import { db } from "@/lib/db";
-import { and, gte, inArray, isNotNull, sql } from "drizzle-orm";
+import { and, gte, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         ne(activity.activityType, "quote"),
         ne(activity.activityType, "repost"),
         ne(activity.activityType, "user"),
-        notIlike(activity.title, "%just%")
+        isNull(activity.postId)
       ),
     orderBy: (activity, { desc }) => desc(activity.createdAt),
     columns: { createdAt: true },
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     const posts = await db.query.posts.findMany({
       where: (post, { inArray }) =>
         inArray(post.id, likesList.map((like) => like.postId || "") || []),
-      columns: { id: true, userId: true },
+      columns: { id: true, userId: true, content: true },
     });
 
     const likesWithUserIds = likesList
@@ -99,7 +99,10 @@ export async function GET(req: NextRequest) {
         );
 
         return {
-          postId: post?.id,
+          post: {
+            postId: like.postId,
+            postContent: post?.content,
+          },
           userIds: filteredUserId,
           userId: post?.userId!,
         };
@@ -111,10 +114,8 @@ export async function GET(req: NextRequest) {
         userId: like.userId,
         actionUserIds: like.userIds,
         activityType: "like" as "like",
-        postId: like.postId,
-        title: `Your post got ${
-          like.userIds.length > 1 ? "new likes" : "a new like"
-        }`,
+        title: like.post.postContent || "You got a new like on your post",
+        redirectionUrl: `/users/${like.userId}/posts/${like.post.postId}`,
       }))
     );
   }

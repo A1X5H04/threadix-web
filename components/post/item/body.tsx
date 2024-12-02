@@ -14,6 +14,7 @@ import PostDropdown from "./post-dropdown";
 import { useAppStore } from "@/hooks/use-store";
 import { RiDoubleQuotesL } from "@remixicon/react";
 import VerifiedBadge from "@/components/verified-badge";
+import Link from "next/link";
 
 function PostItemBody({
   data,
@@ -61,7 +62,12 @@ function PostItemBody({
               </Avatar>
             )}
             <div className="inline-flex items-center gap-x-2">
-              <h3 className="font-semibold text-sm">{data.user.username}</h3>
+              <Link
+                href={`/users/${data.user.username}`}
+                className="font-semibold text-sm hover:underline"
+              >
+                {data.user.username}
+              </Link>
               {data.user.isVerified && (
                 <VerifiedBadge userName={data.user.name} />
               )}

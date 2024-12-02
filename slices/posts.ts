@@ -4,6 +4,7 @@ import { getRepostedPostsId } from "@/actions/post/repost";
 import { getRegisteredVote } from "@/actions/registered-votes";
 import { getFollowingUsers, hasUnreadActivity } from "@/actions/users";
 import { User } from "lucia";
+import toast from "react-hot-toast";
 import { StateCreator } from "zustand";
 
 export interface PostState {
@@ -18,7 +19,7 @@ export interface PostState {
   repostedPosts: string[];
   currentUser: User | null;
   hasUnreadActivity: boolean;
-
+  readAllActivity: () => void;
   intializeData: () => void;
 }
 
@@ -34,20 +35,24 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
   readAllActivity: () => set({ hasUnreadActivity: false }),
   currentUser: null,
   intializeData: async () => {
-    const likedPosts = await getLikedPosts();
-    const registeredVotes = await getRegisteredVote();
-    const repostedPostsId = await getRepostedPostsId();
-    const followingUser = await getFollowingUsers();
-    const unreadActivity = await hasUnreadActivity();
+    try {
+      const likedPosts = await getLikedPosts().catch();
+      const registeredVotes = await getRegisteredVote();
+      const repostedPostsId = await getRepostedPostsId();
+      const followingUser = await getFollowingUsers();
+      const unreadActivity = await hasUnreadActivity();
 
-    const user = await getCurrentUser();
-    set({
-      likedPosts,
-      followingUser: followingUser,
-      registeredVotes: registeredVotes.data,
-      repostedPosts: repostedPostsId,
-      currentUser: user,
-      hasUnreadActivity: unreadActivity,
-    });
+      const user = await getCurrentUser();
+      set({
+        likedPosts,
+        followingUser: followingUser,
+        registeredVotes: registeredVotes.data,
+        repostedPosts: repostedPostsId,
+        currentUser: user,
+        hasUnreadActivity: unreadActivity,
+      });
+    } catch (error) {
+      toast.error("Failed to fetch user data, please refresh to try again.");
+    }
   },
 });

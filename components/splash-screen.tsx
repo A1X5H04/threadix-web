@@ -9,7 +9,7 @@ function SplashScreen({ isFetching }: { isFetching: boolean }) {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setShowTip(true);
-    }, Math.floor(Math.random() * 8000) + 5000);
+    }, Math.floor(Math.random() * 10000) + 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -17,15 +17,17 @@ function SplashScreen({ isFetching }: { isFetching: boolean }) {
     <div>
       <div className="w-full h-screen grid place-items-center bg-background relative">
         <div className="-translate-y-32 flex flex-col items-center gap-y-2">
-          <Image
-            className={cn("", isFetching && "animate-pulse")}
-            src="/logo.svg"
-            alt="logo"
-            width={50}
-            height={50}
-          />
+          <div className="p-5 rounded-lg bg-muted/20 border border-muted">
+            <Image
+              className={cn("", isFetching && "animate-pulse")}
+              src="/logo.svg"
+              alt="logo"
+              width={50}
+              height={50}
+            />
+          </div>
           {isFetching && (
-            <h1 className="text-2xl font-extrabold text-primary mt-4 animate-in slide-in-from-bottom-3 font-mono">
+            <h1 className="text-2xl font-extrabold text-primary mt-4 animate-in slide-in-from-bottom-3">
               Threadix
             </h1>
           )}
