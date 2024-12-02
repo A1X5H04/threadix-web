@@ -59,21 +59,8 @@ async function ProfilePage() {
             <TabsTrigger value="replies">Replies</TabsTrigger>
             <TabsTrigger value="repost">Reposts</TabsTrigger>
           </TabsList>
-          {user.isPublic ? (
-            <ProfileTabsContent username={user.username} />
-          ) : (
-            <div className="grid place-items-center w-full h-60">
-              <div className="grid place-items-center">
-                <RiLockFill className="w-16 h-16 text-muted mb-2" />
-                <h4 className="font-semibold text-lg">
-                  {user.name} has a private account.
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Only followers can see their posts.
-                </p>
-              </div>
-            </div>
-          )}
+
+          <ProfileTabsContent username={user.username} />
         </Tabs>
       </div>
     </div>

@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import React, { useEffect, useTransition } from "react";
 import FollowDialog from "@/components/profile/follow-dialog";
 import { cn } from "@/lib/utils";
-import ProfileMenu from "@/components/profile/profile-menu";
+import ProfileMenu from "./_components/profile-menu";
 
 import { useAppStore } from "@/hooks/use-store";
 import useSWR from "swr";
@@ -21,6 +21,7 @@ import useConfirmDialog from "@/hooks/use-confirm";
 import ProfileTabsContent from "@/components/profile/tabs-content";
 import UserProfileSkeleton from "@/components/skeletons/user-profile";
 import { RiLockFill } from "@remixicon/react";
+import Content from "@/components/post/item/content";
 
 function ProfilePage({
   params: { username },
@@ -84,14 +85,18 @@ function ProfilePage({
     <div className="w-full p-5">
       <ProfileHeader user={user} />
       <div className="mt-3.5 space-y-3">
-        <p
+        <div
           className={cn(
             "text-[15px]",
             !user.bio && "text-sm italic text-muted-foreground"
           )}
         >
-          {user.bio || `${user.name} has not set a bio yet.`}
-        </p>
+          {user.bio ? (
+            <Content content={user.bio} />
+          ) : (
+            <span>{user.name} has not set a bio yet.</span>
+          )}
+        </div>
         <div className="flex items-center justify-between gap-x-2">
           <div className="inline-flex items-center gap-x-2">
             <FollowDialog username={user.username} />

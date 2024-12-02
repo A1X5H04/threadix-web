@@ -3,7 +3,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import { Button } from "../../ui/button";
@@ -11,10 +17,13 @@ import {
   RiBookmark2Fill,
   RiBookmarkLine,
   RiDeleteBin2Line,
+  RiEyeOffFill,
+  RiEyeOffLine,
   RiLinkM,
   RiMoreFill,
   RiPencilLine,
   RiUserForbidLine,
+  RiUserUnfollowLine,
 } from "@remixicon/react";
 import toast from "react-hot-toast";
 
@@ -24,6 +33,11 @@ interface PostDropdownProps {
 }
 
 function PostDropdown({ userId, isCurrentUser }: PostDropdownProps) {
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Link Copied!");
+  };
+
   const handleSavePost = () => {
     toast.success(
       <div className="flex items-center gap-x-2 justify-between min-w-52">
@@ -54,27 +68,41 @@ function PostDropdown({ userId, isCurrentUser }: PostDropdownProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         onClick={(e) => e.preventDefault()}
-        className="min-w-40"
+        className="min-w-48"
         align="end"
       >
         <DropdownMenuItem onClick={handleSavePost} className="justify-between">
           Save Post
           <RiBookmarkLine className="w-4 h-4" />
         </DropdownMenuItem>
-        <DropdownMenuItem className="justify-between">
-          Copy Link
-          <RiLinkM className="w-4 h-4" />
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
+
         {isCurrentUser && (
           <>
-            {/* <DropdownMenuItem
-              onClick={() => toast.error("Feature not yet implemented!")}
-              className="justify-between"
-            >
-              Edit Post
-              <RiPencilLine className="w-4 h-4" />
-            </DropdownMenuItem> */}
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span>Who can reply & quote</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuRadioGroup
+                    value={"top"}
+                    onValueChange={() => {}}
+                  >
+                    <DropdownMenuRadioItem value="top">
+                      Anyone
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="bottom">
+                      Followers
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="right">
+                      Mentions
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+
             <DropdownMenuItem
               onClick={() => toast.error("Feature not yet implemented!")}
               className="justify-between text-red-500"
@@ -84,6 +112,38 @@ function PostDropdown({ userId, isCurrentUser }: PostDropdownProps) {
             </DropdownMenuItem>
           </>
         )}
+        {!isCurrentUser && (
+          <>
+            <DropdownMenuItem
+              onClick={() => toast.error("Feature not yet implemented!")}
+              className="justify-between"
+            >
+              Not Interested
+              <RiEyeOffLine className="w-4 h-4" />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => toast.error("Feature not yet implemented!")}
+              className="justify-between"
+            >
+              Mute User
+              <RiUserUnfollowLine className="w-4 h-4" />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => toast.error("Feature not yet implemented!")}
+              className="text-red-500 justify-between"
+            >
+              Block User
+              <RiUserForbidLine className="w-4 h-4" />
+            </DropdownMenuItem>
+          </>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleCopyLink} className="justify-between">
+          Copy Link
+          <RiLinkM className="w-4 h-4" />
+        </DropdownMenuItem>
+
         {/* <DropdownMenuItem onClick={handleSavePost} className="justify-between">
           Edit Post
           <RiPencilLine className="w-4 h-4" />

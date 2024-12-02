@@ -45,6 +45,48 @@ export const activityType = pgEnum("activity_type", [
   "other",
 ]);
 
+// Users Schema
+export const mutedUsers = pgTable("muted_user", {
+  id: serial("id").primaryKey().notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  mutedUserId: text("muted_user_id").notNull(),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .$default(() => new Date()),
+});
+
+export const blockedUsers = pgTable("blocked_user", {
+  id: serial("id").primaryKey().notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  blockedUserId: text("blocked_user_id").notNull(),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .$default(() => new Date()),
+});
+
+export const userFollowers = pgTable(
+  "user_followers",
+  {
+    id: serial("id").primaryKey().notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    followerId: text("follower_id")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at")
+      .notNull()
+      .$default(() => new Date()),
+  },
+  (table) => ({
+    userFollowerIdx: index("user_follower").on(table.userId, table.followerId),
+  })
+);
+
 export const posts = pgTable(
   "post",
   {
@@ -114,6 +156,19 @@ export const postMedia = pgTable(
     compositeKey: primaryKey({ columns: [table.postId, table.url] }),
   })
 );
+
+export const hiddenPosts = pgTable("hidden_post", {
+  id: serial("id").primaryKey().notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  postId: varchar("post_id", { length: 32 })
+    .notNull()
+    .references(() => posts.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .$default(() => new Date()),
+});
 
 export const savedPosts = pgTable(
   "saved_post",
@@ -277,25 +332,6 @@ export const postsTags = pgTable(
   },
   (table) => ({
     postTagIdx: index("post_tag_idx").on(table.postId, table.tagId),
-  })
-);
-
-export const userFollowers = pgTable(
-  "user_followers",
-  {
-    id: serial("id").primaryKey().notNull(),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    followerId: text("follower_id")
-      .notNull()
-      .references(() => users.id),
-    createdAt: timestamp("created_at")
-      .notNull()
-      .$default(() => new Date()),
-  },
-  (table) => ({
-    userFollowerIdx: index("user_follower").on(table.userId, table.followerId),
   })
 );
 

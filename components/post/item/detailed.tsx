@@ -31,7 +31,7 @@ function PostItem({ data }: Props) {
     <div className="p-4 border-b space-y-2">
       <div className="flex items-start justify-between">
         <div className="flex gap-x-3 relative h-fit">
-          <Avatar className="size-9 border">
+          <Avatar className="size-7 border">
             <AvatarImage src={data.user.avatar ?? undefined} />
             <AvatarFallback className="uppercase">
               {data.user.username.charAt(0)}
