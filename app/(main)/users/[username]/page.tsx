@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 import useConfirmDialog from "@/hooks/use-confirm";
 import ProfileTabsContent from "@/components/profile/tabs-content";
 import UserProfileSkeleton from "@/components/skeletons/user-profile";
+import { RiLockFill } from "@remixicon/react";
 
 function ProfilePage({
   params: { username },
@@ -122,9 +123,9 @@ function ProfilePage({
             <TabsTrigger value="replies">Replies</TabsTrigger>
             <TabsTrigger value="repost">Reposts</TabsTrigger>
           </TabsList>
-          <ProfileTabsContent username={user.username} />
 
-          {/* <div className="grid place-items-center w-full h-60">
+          {!user.isPublic && !isFollowing ? (
+            <div className="grid place-items-center w-full h-60">
               <div className="grid place-items-center">
                 <RiLockFill className="w-16 h-16 text-muted mb-2" />
                 <h4 className="font-semibold text-lg">
@@ -134,7 +135,10 @@ function ProfilePage({
                   Only followers can see their posts.
                 </p>
               </div>
-            </div> */}
+            </div>
+          ) : (
+            <ProfileTabsContent username={user.username} />
+          )}
         </Tabs>
       </div>
       <ConfirmDialog />
