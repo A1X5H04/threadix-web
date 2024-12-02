@@ -18,12 +18,15 @@ export async function repost(postId: string, postUserId: string) {
     userId: session.userId,
   });
 
+  const postData = await db.query.posts.findFirst({
+    where: (post, { eq }) => eq(post.id, postId),
+  });
+
   await db.insert(activityFeed).values({
     actionUserIds: [session.userId],
     userId: postUserId,
-    postId,
     activityType: "repost",
-    title: "Just reposted your post",
+    title: postData?.content || "Just reposted your post",
   });
 }
 
@@ -33,14 +36,6 @@ export async function unRepost(postId: string, postUserId: string) {
   if (!session) {
     throw new Error("Unauthorized");
   }
-
-  await db.insert(activityFeed).values({
-    actionUserIds: [session.userId],
-    userId: postUserId,
-    postId,
-    activityType: "repost",
-    title: "Just reposted your post",
-  });
 
   await db.delete(reposts).where(eq(reposts.postId, postId));
 

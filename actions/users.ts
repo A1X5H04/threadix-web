@@ -121,14 +121,3 @@ export async function hasUnreadActivity() {
 
   return !!hasUnreadActivity;
 }
-
-export async function readAllActivity() {
-  const { user } = await validateRequest();
-
-  if (!user) return redirect("/login");
-
-  await db
-    .update(activityFeed)
-    .set({ isUnread: false })
-    .where(eq(activityFeed.userId, user.id));
-}
