@@ -89,8 +89,7 @@ function ActivityAvatar({ type, actionUsers }: ActivityAvatarProps) {
   }
 
   const totalAvatars = actionUsers.length;
-  const visibleAvatars = actionUsers.slice(0, 4); // Show only first 4 avatars
-
+  const visibleAvatars = actionUsers.slice(0, 4);
   return (
     <div>
       <div className="group-avatar">

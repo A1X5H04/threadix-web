@@ -2,14 +2,22 @@
 
 import { GET } from "@/lib/fetcher";
 import { Activity } from "@/types/api-responses/common";
-import { Ri24HoursLine, RiHistoryLine } from "@remixicon/react";
-import React from "react";
+import { RiHistoryLine } from "@remixicon/react";
+import React, { useEffect } from "react";
 import useSWR from "swr";
 import ActivityItem from "./_components/activity-item";
 import { Separator } from "@/components/ui/separator";
+import { useAppStore } from "@/hooks/use-store";
 
 function ActivityPage() {
+  const { readAllActivity } = useAppStore();
   const { data, isLoading } = useSWR("/api/activity", GET<Activity[]>);
+  useEffect(() => {
+    if (data && data.length > 0) {
+      readAllActivity();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   if (!data || isLoading) {
     return "Loading...";

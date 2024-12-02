@@ -7,12 +7,15 @@ import { useRouter } from "next-nprogress-bar";
 import Content from "@/components/post/item/content";
 import PostActions from "@/components/post/item/action-bar";
 import VerifiedBadge from "@/components/verified-badge";
+import { cn } from "@/lib/utils";
 
 interface ActivityItemProps {
   activity: Activity;
 }
 
 function ActivityItem({ activity }: ActivityItemProps) {
+  console.log(activity);
+
   const router = useRouter();
 
   return (
@@ -21,7 +24,10 @@ function ActivityItem({ activity }: ActivityItemProps) {
         activity.redirectionUrl && router.push(activity.redirectionUrl)
       }
       key={activity.id}
-      className="flex gap-x-2 cursor-pointer"
+      className={cn(
+        "flex gap-x-2",
+        activity.redirectionUrl && " cursor-pointer"
+      )}
     >
       <ActivityAvatar
         type={activity.activityType}
@@ -46,10 +52,10 @@ function ActivityItem({ activity }: ActivityItemProps) {
             {formatRelativeDate(new Date(activity.createdAt))}
           </span>
         </p>
-        <p className="text-muted-foreground">{activity.title}</p>
+        <p className="text-muted-foreground mt-1">{activity.title}</p>
 
         {activity.post && (
-          <div className="mt-2">
+          <div className="w-full mt-2 ">
             <Content content={activity.post.content} />
             <PostActions
               data={activity.post}
