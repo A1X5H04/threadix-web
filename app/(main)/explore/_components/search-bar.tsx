@@ -23,6 +23,7 @@ function SearchBar({
 
   useEffect(() => {
     onChange(debouncedsearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedsearch]);
 
   return (
