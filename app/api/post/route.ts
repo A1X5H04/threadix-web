@@ -286,9 +286,21 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const blockedUsers = await db.query.blockedUsers.findMany({
+      columns: { blockedUserId: true },
+      where: (blockedUser, { eq }) => eq(blockedUser.userId, session.userId),
+    });
+
     const postsList = await db.query.posts.findMany({
-      where: (post, { isNull, and, ne }) =>
-        and(isNull(post.parentId), ne(post.userId, session.userId)),
+      where: (post, { isNull, and, ne, notInArray }) =>
+        and(
+          isNull(post.parentId),
+          ne(post.userId, session.userId),
+          notInArray(
+            post.userId,
+            blockedUsers.map((user) => user.blockedUserId)
+          )
+        ),
       with: {
         user: {
           columns: {

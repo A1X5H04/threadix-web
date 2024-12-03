@@ -1,6 +1,9 @@
 import { users } from "@/db/schemas/auth";
+import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
+
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -9,10 +12,18 @@ export async function GET(
 ) {
   const { profileId } = params;
 
+  const { user: currentUser } = await validateRequest();
+
+  if (!currentUser) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
   try {
     const user = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.username, profileId),
+      where: (user, { eq, or }) =>
+        or(eq(user.username, profileId), eq(user.id, profileId)),
       columns: {
+        id: true,
         avatar: true,
         name: true,
         username: true,
@@ -27,7 +38,28 @@ export async function GET(
       return new NextResponse("User Not Found", { status: 404 });
     }
 
-    return NextResponse.json(user, { status: 200 });
+    const isBlocked = await db.query.blockedUsers.findFirst({
+      columns: { id: true },
+      where: (blockedUser, { and, eq }) =>
+        and(
+          eq(blockedUser.blockedUserId, user.id),
+          eq(blockedUser.userId, currentUser.id)
+        ),
+    });
+
+    const hasBlockedYou = await db.query.blockedUsers.findFirst({
+      columns: { id: true },
+      where: (blockedUser, { and, eq }) =>
+        and(
+          eq(blockedUser.blockedUserId, currentUser.id),
+          eq(blockedUser.userId, user.id)
+        ),
+    });
+
+    return NextResponse.json(
+      { ...user, isBlocked: !!isBlocked, hasBlockedYou: !!hasBlockedYou },
+      { status: 200 }
+    );
   } catch (error) {
     console.log("PROFILE_GET_ERROR", error);
     return new NextResponse("Internal Server Error", { status: 500 });

@@ -13,12 +13,14 @@ export async function GET(
 
   const votes = await db.query.votes.findMany({
     where: (vote, { eq }) => eq(vote.pollId, pollId),
+    columns: { optionId: true, createdAt: true },
     with: {
       user: {
         columns: {
           name: true,
           avatar: true,
           username: true,
+          isVerified: true,
         },
       },
     },

@@ -1,6 +1,7 @@
 import { activityFeed } from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { notInArrayForArray } from "@/lib/queries";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -11,8 +12,29 @@ export async function GET(req: Request) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
+  const mutedUsers = await db.query.mutedUsers.findMany({
+    columns: { mutedUserId: true },
+    where: (mutedUser, { eq }) => eq(mutedUser.userId, user.id),
+  });
+
+  const blockedUsers = await db.query.blockedUsers.findMany({
+    columns: { blockedUserId: true },
+    where: (blockedUser, { eq }) => eq(blockedUser.userId, user.id),
+  });
+
   const activities = await db.query.activityFeed.findMany({
-    where: (activity, { eq }) => eq(activity.userId, user.id),
+    where: (activity, { and, eq, notInArray }) =>
+      and(
+        eq(activity.userId, user.id),
+        notInArrayForArray(
+          activity.actionUserIds,
+          mutedUsers.map((mutedUser) => mutedUser.mutedUserId)
+        ),
+        notInArrayForArray(
+          activity.actionUserIds,
+          blockedUsers.map((blockedUser) => blockedUser.blockedUserId)
+        )
+      ),
     with: {
       post: {
         with: {

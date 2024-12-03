@@ -1,5 +1,6 @@
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -12,9 +13,29 @@ export async function GET(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  console.log("POSTID_GET", postId);
-
   try {
+    const blockedUsers = await db.query.blockedUsers.findMany({
+      columns: { blockedUserId: true },
+      where: (blockedUser, { eq }) => eq(blockedUser.userId, user.id),
+    });
+
+    const postWithoutData = await db.query.posts.findFirst({
+      columns: { userId: true },
+      where: (post, { eq }) => eq(post.id, postId),
+    });
+
+    if (!postWithoutData) {
+      return new NextResponse("Post not found", { status: 404 });
+    }
+
+    const isBlocked = blockedUsers.some(
+      (blockedUser) => blockedUser.blockedUserId === postWithoutData.userId
+    );
+
+    if (isBlocked) {
+      return redirect(`/users/${postWithoutData.userId}`);
+    }
+
     const post = await db.query.posts.findFirst({
       where: (post, { eq }) => eq(post.id, postId),
       with: {
