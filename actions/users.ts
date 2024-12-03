@@ -1,10 +1,17 @@
 "use server";
 
-import { activityFeed, userFollowers } from "@/db/schemas/tables";
+import {
+  activityFeed,
+  blockedUsers,
+  mutedUsers,
+  posts,
+  userFollowers,
+} from "@/db/schemas/tables";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { containsInArray } from "@/lib/queries";
-import { and, arrayContains, eq } from "drizzle-orm";
+import { ReplyPermissions } from "@/types/api-responses/post/single";
+import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export async function getCurrentUser() {
@@ -20,8 +27,20 @@ export async function getUsers() {
 
   if (!user) return redirect("/login");
 
+  const blockedUsers = await db.query.blockedUsers.findMany({
+    columns: { userId: true },
+    where: (blockedUsers, { eq }) => eq(blockedUsers.blockedUserId, user.id),
+  });
+
   const otherUsers = await db.query.users.findMany({
-    where: (dbUser, { ne }) => ne(dbUser.id, user.id),
+    where: (dbUser, { ne, and, notInArray }) =>
+      and(
+        ne(dbUser.id, user.id),
+        notInArray(
+          dbUser.id,
+          blockedUsers.map((blockedUser) => blockedUser.userId)
+        )
+      ),
     columns: {
       name: true,
       username: true,
@@ -120,4 +139,90 @@ export async function hasUnreadActivity() {
   });
 
   return !!hasUnreadActivity;
+}
+
+export async function deletePost(postId: string) {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  await db.delete(posts).where(eq(posts.id, postId));
+}
+
+export async function changeReplyPermissions(
+  postId: string,
+  permission: ReplyPermissions
+) {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  await db
+    .update(posts)
+    .set({
+      replyPermissions: permission,
+    })
+    .where(eq(posts.id, postId));
+}
+
+export async function blockUser(userId: string) {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  await db.insert(blockedUsers).values({
+    userId: user.id,
+    blockedUserId: userId,
+  });
+}
+
+export async function unblockUser(userId: string) {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  await db
+    .delete(blockedUsers)
+    .where(
+      and(
+        eq(blockedUsers.userId, user.id),
+        eq(blockedUsers.blockedUserId, userId)
+      )
+    );
+}
+
+export async function muteUser(userId: string) {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  await db.insert(mutedUsers).values({
+    userId: user.id,
+    mutedUserId: userId,
+  });
+}
+
+export async function unMuteUser(userId: string) {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  await db
+    .delete(mutedUsers)
+    .where(
+      and(eq(mutedUsers.userId, user.id), eq(mutedUsers.mutedUserId, userId))
+    );
+}
+
+export async function getMutedUsers() {
+  const { user } = await validateRequest();
+
+  if (!user) return redirect("/login");
+
+  return await db.query.mutedUsers
+    .findMany({
+      columns: { mutedUserId: true },
+      where: (mutedUser, { eq }) => eq(mutedUser.userId, user.id),
+    })
+    .then((mutedUsers) => mutedUsers.map((mutedUser) => mutedUser.mutedUserId));
 }
