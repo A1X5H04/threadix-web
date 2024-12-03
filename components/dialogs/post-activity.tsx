@@ -25,7 +25,7 @@ import PostBody from "../post/activity/post-body";
 import ListItem from "../post/activity/list-item";
 import useSWR from "swr";
 import { GET } from "@/lib/fetcher";
-import { PollOption, User } from "@/types/api-responses/common";
+import { Poll, PollOption, User } from "@/types/api-responses/common";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import ActivityPostContent from "../post/activity/post-content";
 import ActivityPollContent from "../post/activity/poll-content";
@@ -37,15 +37,11 @@ interface PostActivityProps {
     content: string;
     createdAt: Date;
   };
-  pollOptions?: PollOption[];
+  pollData: Poll | null;
 }
 
-function PostActivity({
-  postId,
-  user,
-  postData,
-  pollOptions,
-}: PostActivityProps) {
+function PostActivity({ postId, user, postData, pollData }: PostActivityProps) {
+  const [tabValue, setTabValue] = React.useState<"post" | "poll">("post");
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -67,6 +63,8 @@ function PostActivity({
             user={user}
             content={postData.content}
             createdAt={postData.createdAt.toString()}
+            tabValue={tabValue}
+            pollData={pollData}
           />
 
           <DialogDescription className="sr-only">
@@ -74,11 +72,15 @@ function PostActivity({
             and shares.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="post">
+        <Tabs
+          value={tabValue}
+          onValueChange={(value) => setTabValue(value as "post" | "poll")}
+          defaultValue="post"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="post">Post Activity</TabsTrigger>
             <TabsTrigger
-              disabled={!pollOptions}
+              disabled={pollData === null}
               className="disabled:cursor-not-allowed"
               value="poll"
             >
@@ -90,8 +92,9 @@ function PostActivity({
           </TabsContent>
           <TabsContent value="poll">
             <ActivityPollContent
+              pollId={pollData?.id || ""}
               postId={postId}
-              pollOptions={pollOptions || []}
+              pollOptions={pollData?.poll_options || []}
             />
           </TabsContent>
         </Tabs>

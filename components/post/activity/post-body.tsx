@@ -4,6 +4,8 @@ import { formatRelativeDate } from "@/lib/format";
 import Content from "@/components/post/item/content";
 
 import React from "react";
+import PostPoll from "../item/poll";
+import { Poll } from "@/types/api-responses/common";
 
 interface PostBodyProps {
   user: {
@@ -14,11 +16,17 @@ interface PostBodyProps {
   };
   content: string;
   createdAt: string;
+  tabValue: "post" | "poll";
+  pollData: Poll | null;
 }
 
-function PostBody({ user, content, createdAt }: PostBodyProps) {
-  console.log("cotnet", content);
-
+function PostBody({
+  user,
+  content,
+  createdAt,
+  tabValue,
+  pollData,
+}: PostBodyProps) {
   return (
     <div className="border border-muted px-2.5 py-3 rounded-md pointer-events-none">
       <div className="flex gap-x-1 items-center mb-2">
@@ -35,7 +43,12 @@ function PostBody({ user, content, createdAt }: PostBodyProps) {
           {formatRelativeDate(new Date(createdAt))}
         </p>
       </div>
-      <Content content={content} />
+      {tabValue === "poll" && pollData && (
+        <div className="p-1">
+          <PostPoll poll={pollData} isCurrentUser={true} />
+        </div>
+      )}
+      {tabValue === "post" && <Content content={content} />}
     </div>
   );
 }

@@ -72,7 +72,7 @@ function ActivityPostContent({ postId }: { postId: string }) {
               <RiHeart2Fill className="size-5 text-accent-foreground" />
               <span className="font-bold">Likes</span>
             </div>
-            <span className="absolute right-5 text-base text-muted-foreground">
+            <span className="absolute right-5 text-sm text-muted-foreground">
               {data?.likes.length ?? 0}
             </span>
           </AccordionTrigger>
@@ -89,7 +89,7 @@ function ActivityPostContent({ postId }: { postId: string }) {
                 <RiRepeat2Fill className="size-5 text-accent-foreground" />
                 <span className="font-bold">Reposts</span>
               </div>
-              <span className="absolute right-5 text-base text-muted-foreground">
+              <span className="absolute right-5 text-sm text-muted-foreground">
                 {data?.reposts.length}
               </span>
             </AccordionTrigger>
@@ -111,7 +111,7 @@ function ActivityPostContent({ postId }: { postId: string }) {
                 <RiChatQuoteFill className="size-5 text-accent-foreground" />
                 <span className="font-bold">Quoted</span>
               </div>
-              <span className="absolute right-5 text-base text-muted-foreground">
+              <span className="absolute right-5 text-sm text-muted-foreground">
                 {data?.quotedPosts.length}
               </span>
             </AccordionTrigger>
