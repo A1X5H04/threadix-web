@@ -7,7 +7,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, MouseEventHandler } from "react";
 
 interface ConfirmOptions {
   title?: string;
@@ -30,19 +30,28 @@ const useConfirmDialog = (): [
     setIsOpen(true);
   }, []);
 
-  const closeConfirm = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+  const closeConfirm = useCallback(
+    (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (e) {
+        e.stopPropagation();
+      }
+      setIsOpen(false);
+    },
+    []
+  );
 
-  const handleConfirm = useCallback(() => {
-    if (options.onConfirm) {
-      options.onConfirm();
-    }
-    closeConfirm();
-  }, [options, closeConfirm]);
+  const handleConfirm = useCallback(
+    (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (options.onConfirm) {
+        options.onConfirm();
+      }
+      closeConfirm(e);
+    },
+    [options, closeConfirm]
+  );
 
   const ConfirmDialog = () => (
-    <AlertDialog open={isOpen} onOpenChange={closeConfirm}>
+    <AlertDialog open={isOpen} onOpenChange={() => closeConfirm()}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{options.title || "Confirm"}</AlertDialogTitle>
@@ -51,7 +60,7 @@ const useConfirmDialog = (): [
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex justify-end gap-2 mt-4">
-          <Button variant="secondary" onClick={closeConfirm}>
+          <Button variant="secondary" onClick={(e) => closeConfirm(e)}>
             {options.cancelText || "Cancel"}
           </Button>
           <Button
