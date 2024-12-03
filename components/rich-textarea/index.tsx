@@ -10,7 +10,6 @@ import { TextareaProps } from "../ui/textarea";
 import MentionList, { useMentionList } from "./mention-list";
 import { createPortal } from "react-dom";
 import ToolbarMenu, { useToolbarMenu } from "./toolbar-menu";
-import RTInfoPopover from "./info-popover";
 
 import EmojiList, { useEmojiList } from "./emoji-list";
 import { Username } from "@/types";
@@ -69,9 +68,7 @@ function RichTextArea(props: RichTextAreaProps) {
   ]);
 
   return (
-    <div className="relative">
-      <RTInfoPopover></RTInfoPopover>
-
+    <div>
       <RichTextarea
         id="rich-textarea"
         ref={textAreaRef}
@@ -141,7 +138,7 @@ function RichTextArea(props: RichTextAreaProps) {
             left={toolbarMenuProps.left || 0}
             top={toolbarMenuProps.top || 0}
           />,
-          document.getElementById("radix-dialog-content") || document.body
+          document.getElementById("rich-textarea") || document.body
         )}
     </div>
   );
