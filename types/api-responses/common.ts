@@ -65,3 +65,9 @@ export interface Activity {
   actionUsers: Pick<User, "id" | "username" | "avatar" | "isVerified">[];
   post: Post;
 }
+
+export type Vote = {
+  optionId: number;
+  createdAt: Date;
+  user: Pick<User, "name" | "username" | "avatar" | "isVerified">;
+};
