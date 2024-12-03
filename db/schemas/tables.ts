@@ -157,19 +157,6 @@ export const postMedia = pgTable(
   })
 );
 
-export const hiddenPosts = pgTable("hidden_post", {
-  id: serial("id").primaryKey().notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  postId: varchar("post_id", { length: 32 })
-    .notNull()
-    .references(() => posts.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at")
-    .notNull()
-    .$default(() => new Date()),
-});
-
 export const savedPosts = pgTable(
   "saved_post",
   {

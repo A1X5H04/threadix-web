@@ -1,8 +1,13 @@
 import { getCurrentUser } from "@/actions/current-user";
 import { getLikedPosts } from "@/actions/liked-posts";
 import { getRepostedPostsId } from "@/actions/post/repost";
+import { getSavedPosts } from "@/actions/post/save";
 import { getRegisteredVote } from "@/actions/registered-votes";
-import { getFollowingUsers, hasUnreadActivity } from "@/actions/users";
+import {
+  getFollowingUsers,
+  getMutedUsers,
+  hasUnreadActivity,
+} from "@/actions/users";
 import { User } from "lucia";
 import toast from "react-hot-toast";
 import { StateCreator } from "zustand";
@@ -16,6 +21,10 @@ export interface PostState {
   ) => void;
   followingUser: string[];
   setFollowingUser: (followingUsers: string[]) => void;
+  savedPosts: string[];
+  setSavedPosts: (savedPosts: string[]) => void;
+  mutedUsers: string[];
+  setMutedUsers: (mutedUsers: string[]) => void;
   repostedPosts: string[];
   currentUser: User | null;
   hasUnreadActivity: boolean;
@@ -24,23 +33,46 @@ export interface PostState {
 }
 
 export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
+  // Liked Posts
   likedPosts: [],
   setLikedPosts: (likedPosts) => set({ likedPosts }),
+  // Registered Votes
   registeredVotes: [],
   setRegisteredVotes: (registeredVotes) => set({ registeredVotes }),
+  // Reposted Posts
   repostedPosts: [],
+  // Following Users
   followingUser: [],
   setFollowingUser: (followingUser) => set({ followingUser }),
+  // Saved Posts
+  savedPosts: [],
+  setSavedPosts: (savedPosts) => set({ savedPosts }),
+  // Muted Users
+  mutedUsers: [],
+  setMutedUsers: (mutedUsers) => set({ mutedUsers }),
+  // Current User
   hasUnreadActivity: false,
   readAllActivity: () => set({ hasUnreadActivity: false }),
   currentUser: null,
   intializeData: async () => {
     try {
-      const likedPosts = await getLikedPosts().catch();
-      const registeredVotes = await getRegisteredVote();
-      const repostedPostsId = await getRepostedPostsId();
-      const followingUser = await getFollowingUsers();
-      const unreadActivity = await hasUnreadActivity();
+      const [
+        likedPosts,
+        registeredVotes,
+        followingUser,
+        repostedPostsId,
+        unreadActivity,
+        savedPosts,
+        mutedUsers,
+      ] = await Promise.all([
+        getLikedPosts(),
+        getRegisteredVote(),
+        getRepostedPostsId(),
+        getFollowingUsers(),
+        hasUnreadActivity(),
+        getSavedPosts(),
+        getMutedUsers(),
+      ]);
 
       const user = await getCurrentUser();
       set({
@@ -50,6 +82,8 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
         repostedPosts: repostedPostsId,
         currentUser: user,
         hasUnreadActivity: unreadActivity,
+        mutedUsers: mutedUsers,
+        savedPosts: savedPosts,
       });
     } catch (error) {
       toast.error("Failed to fetch user data, please refresh to try again.");
