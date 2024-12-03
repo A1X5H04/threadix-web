@@ -78,7 +78,13 @@ function PostItemBody({
           </div>
           {showMenu && !isQuoted && (
             <PostDropdown
-              userId={currentUser?.id}
+              userData={{
+                id: data.user.id,
+
+                username: data.user.username,
+              }}
+              replyPermissions={data.replyPermissions}
+              postId={data.id}
               isCurrentUser={currentUser?.id === data.userId}
             />
           )}

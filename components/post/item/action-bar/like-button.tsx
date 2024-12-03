@@ -87,6 +87,7 @@ function LikeButton({ postId, likes }: Props) {
   const debouncedAction = useDebounceFn(handleAction, 750);
 
   const handleLike = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     e.preventDefault();
     setLiked((prev) => {
       const newLiked = !prev;

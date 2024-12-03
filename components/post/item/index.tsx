@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -19,7 +19,6 @@ import PostActions from "./action-bar";
 
 import PostItemBody from "./body";
 import { formatRelativeDate } from "@/lib/format";
-import { useAppStore } from "@/hooks/use-store";
 
 type Props = {
   data: Post;
@@ -90,7 +89,6 @@ function PostItem({ data }: Props) {
             )}
           </div>
           <PostActions
-            mentions={data.mentions ?? []}
             data={data}
             counts={{
               likes: data.likesCount,

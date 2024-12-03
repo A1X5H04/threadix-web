@@ -5,10 +5,10 @@ import { RiChat1Line, RiShareForwardLine } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Post, ReplyPermissions } from "@/types/api-responses/post/single";
 import { useAppStore, useModalStore } from "@/hooks/use-store";
-import { cn } from "@/lib/utils";
 
 import LikeButton from "./like-button";
 import RepostDropdown from "./repost-dropdown";
+import ShareDialog from "@/components/dialogs/share-dialog";
 
 type Props = {
   data: Post;
@@ -68,9 +68,7 @@ function PostActions({ data, postId, counts }: Props) {
         openQuoteModal={() => onOpen(data, "quote")}
         initialIsReposted={repostedPosts?.includes(postId) ?? false}
       />
-      <Button variant="ghost" size="icon">
-        <RiShareForwardLine className="w-5 h-5 text-muted-foreground" />
-      </Button>
+      <ShareDialog />
     </div>
   );
 }

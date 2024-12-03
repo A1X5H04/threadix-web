@@ -48,7 +48,16 @@ function PostItem({ data }: Props) {
             </p>
           </div>
         </div>
-        <PostDropdown isCurrentUser={data.userId === currentUser?.id} />
+        <PostDropdown
+          userData={{
+            id: data.user.id,
+
+            username: data.user.username,
+          }}
+          replyPermissions={data.replyPermissions}
+          postId={data.id}
+          isCurrentUser={data.userId === currentUser?.id}
+        />
       </div>
 
       <div className="flex flex-col gap-y-1 w-full h-full">

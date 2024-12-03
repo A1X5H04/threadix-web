@@ -55,7 +55,13 @@ function ReplyPostItem({ data }: ReplyPostItemProps) {
               </div>
 
               <PostDropdown
-                userId={currentUser?.id}
+                userData={{
+                  id: data.user.id,
+
+                  username: data.user.username,
+                }}
+                replyPermissions={data.replyPermissions}
+                postId={data.id}
                 isCurrentUser={currentUser?.id === data.parentPost.userId}
               />
             </div>
