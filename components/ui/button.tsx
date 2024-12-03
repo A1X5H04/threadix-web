@@ -63,6 +63,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, className }))}
         onClick={(e) => {
           if (isWrappedInLink) {
+            e.stopPropagation();
             e.preventDefault();
             onClick?.(e);
           }
