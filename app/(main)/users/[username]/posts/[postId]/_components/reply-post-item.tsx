@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAppStore } from "@/hooks/use-store";
+import VerifiedBadge from "@/components/verified-badge";
 
 type Props = { data: Post; showReplyBar?: boolean };
 
@@ -63,23 +64,7 @@ function PostItem({ data, showReplyBar }: Props) {
               <div className="inline-flex items-center gap-x-2">
                 <h3 className="font-semibold text-sm">{data.user.username}</h3>
                 {data.user.isVerified && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <a
-                          href="https://github.com/A1X5H04/caskade-web?tab=readme-ov-file#getting-verified"
-                          target="_blank"
-                        >
-                          <RiVerifiedBadgeFill className="-ml-1 size-4" />
-                        </a>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs font-semibold">
-                          This is account is <b>Verified</b>
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <VerifiedBadge userName={data.user.username} />
                 )}
                 •
                 <p className="text-xs font-semibold text-muted-foreground">

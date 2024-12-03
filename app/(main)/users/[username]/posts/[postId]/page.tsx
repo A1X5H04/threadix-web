@@ -26,7 +26,7 @@ function PostIdPage({ params: { postId } }: { params: { postId: string } }) {
   }
 
   if (!data) {
-    return <div>Post not found</div>;
+    return <div>Post Not Found</div>;
   }
 
   return (

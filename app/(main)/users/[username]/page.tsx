@@ -14,7 +14,12 @@ import useSWR from "swr";
 import { GET } from "@/lib/fetcher";
 import ProfileHeader from "@/components/profile/header";
 import { User } from "lucia";
-import { followUser, getFollowingUsers, unfollowUser } from "@/actions/users";
+import {
+  followUser,
+  getFollowingUsers,
+  unblockUser,
+  unfollowUser,
+} from "@/actions/users";
 import toast from "react-hot-toast";
 
 import useConfirmDialog from "@/hooks/use-confirm";
@@ -22,6 +27,7 @@ import ProfileTabsContent from "@/components/profile/tabs-content";
 import UserProfileSkeleton from "@/components/skeletons/user-profile";
 import { RiLockFill } from "@remixicon/react";
 import Content from "@/components/post/item/content";
+import BlockedOverlay from "./_components/blocked-overlay";
 
 function ProfilePage({
   params: { username },
@@ -35,11 +41,16 @@ function ProfilePage({
 
   const isFollowing = followingUser.includes(username);
 
-  if (currentUser?.username === username) redirect("/me");
+  if (currentUser?.username === username || currentUser?.id === username)
+    redirect("/me");
 
-  const { data: user, isLoading } = useSWR(
+  const {
+    data: user,
+    isLoading,
+    mutate,
+  } = useSWR(
     `/api/profile/${username}`,
-    GET<User>
+    GET<User & { isBlocked: boolean; hasBlockedYou: boolean }>
   );
 
   if (!user || isLoading) return <UserProfileSkeleton />;
@@ -81,8 +92,26 @@ function ProfilePage({
     }
   };
 
+  const handleUnblock = () => {
+    startTransition(() => {
+      unblockUser(user.id)
+        .then(() => {
+          toast.success(`Unblocked ${user.name}`);
+          mutate();
+        })
+        .catch(() => toast.error("Failed to unblock user"));
+    });
+  };
+
   return (
-    <div className="w-full p-5">
+    <div
+      className={cn(
+        "relative w-full p-5",
+        user.hasBlockedYou && "h-[calc(100vh-5rem)] overflow-hidden"
+      )}
+    >
+      {user.hasBlockedYou && <BlockedOverlay name={user.name} />}
+
       <ProfileHeader user={user} />
       <div className="mt-3.5 space-y-3">
         <div
@@ -109,43 +138,63 @@ function ProfilePage({
               </>
             )}
           </div>
-          <ProfileMenu username={user.username} />
-        </div>
-
-        <Button
-          variant={isFollowing ? "outline" : "default"}
-          onClick={handleFollowUnfollow}
-          isLoading={pending}
-          className="w-full"
-        >
-          {isFollowing ? `Unfollow ${user.name}` : `Follow ${user.name}`}
-        </Button>
-      </div>
-      <div className="mt-6">
-        <Tabs defaultValue="posts">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="replies">Replies</TabsTrigger>
-            <TabsTrigger value="repost">Reposts</TabsTrigger>
-          </TabsList>
-
-          {!user.isPublic && !isFollowing ? (
-            <div className="grid place-items-center w-full h-60">
-              <div className="grid place-items-center">
-                <RiLockFill className="w-16 h-16 text-muted mb-2" />
-                <h4 className="font-semibold text-lg">
-                  {user.name} has a private account.
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Only followers can see their posts.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <ProfileTabsContent username={user.username} />
+          {!user.isBlocked && (
+            <ProfileMenu
+              user={{
+                id: user.id,
+                username: user.username,
+                name: user.name,
+              }}
+            />
           )}
-        </Tabs>
+        </div>
+        {user.isBlocked ? (
+          <Button
+            onClick={handleUnblock}
+            isLoading={pending}
+            variant="outline"
+            className="w-full"
+          >
+            Unblock
+          </Button>
+        ) : (
+          <Button
+            variant={isFollowing ? "outline" : "default"}
+            onClick={handleFollowUnfollow}
+            isLoading={pending}
+            className="w-full"
+          >
+            {isFollowing ? `Unfollow ${user.name}` : `Follow ${user.name}`}
+          </Button>
+        )}
       </div>
+      {!user.hasBlockedYou && (
+        <div className="mt-6">
+          <Tabs defaultValue="posts">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="posts">Posts</TabsTrigger>
+              <TabsTrigger value="replies">Replies</TabsTrigger>
+              <TabsTrigger value="repost">Reposts</TabsTrigger>
+            </TabsList>
+
+            {!user.isPublic && !isFollowing ? (
+              <div className="grid place-items-center w-full h-60">
+                <div className="grid place-items-center">
+                  <RiLockFill className="w-16 h-16 text-muted mb-2" />
+                  <h4 className="font-semibold text-lg">
+                    {user.name} has a private account.
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Only followers can see their posts.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <ProfileTabsContent username={user.username} />
+            )}
+          </Tabs>
+        </div>
+      )}
       <ConfirmDialog />
     </div>
   );
