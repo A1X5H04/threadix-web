@@ -4,7 +4,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { RiFacebookCircleFill, RiGithubFill } from "@remixicon/react";
+import {RiFacebookCircleFill, RiGithubFill, RiGoogleFill} from "@remixicon/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -38,7 +38,7 @@ function LoginPage() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
   });
@@ -46,8 +46,8 @@ function LoginPage() {
   const onFormSubmit = (data: z.infer<typeof loginSchema>) => {
     startTransition(() => {
       login(data)
-        .then((msg) => {
-          toast.success(msg);
+        .then(() => {
+          toast.success("Logged in successfully!");
           router.push("/");
         })
         .catch((err) => toast.error(err.message || "An error occurred"));
@@ -55,28 +55,27 @@ function LoginPage() {
   };
 
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto w-96">
       <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardTitle className="text-xl font-black">Welcome back!</CardTitle>
         <CardDescription>
-          Enter your email below to login to your account
+          Login to your account to continue
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onFormSubmit)}>
-            <div className="grid gap-4">
+          <form onSubmit={form.handleSubmit(onFormSubmit)} >
+            <div className="grid gap-4 w-full">
               <div className="grid gap-2">
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="login"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Username / Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="johndoe@example.com"
-                          type="email"
+                          placeholder="john_doe12"
                           {...field}
                         />
                       </FormControl>
@@ -116,7 +115,7 @@ function LoginPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Button variant="outline" type="button" className="w-full">
-                    <RiFacebookCircleFill />
+                    <RiGoogleFill />
                   </Button>
                 </div>
                 <div className="grid gap-2">
@@ -129,8 +128,8 @@ function LoginPage() {
           </form>
         </Form>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="register" className="underline">
+          Don&apos;t have an account?&nbsp;
+          <Link href="register" className="hover:underline font-bold">
             Sign up
           </Link>
         </div>

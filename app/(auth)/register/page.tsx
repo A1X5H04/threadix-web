@@ -77,8 +77,8 @@ function RegisterPage() {
   const onFormSubmit = (values: z.infer<typeof registerSchema>) => {
     startTransition(() => {
       register(values)
-        .then((msg) => {
-          toast.success(msg);
+        .then(() => {
+          toast.success("User registered successfully!");
           router.replace("/login");
         })
         .catch((err: any) => toast.error(err.message || "An error occurred"));
@@ -86,12 +86,10 @@ function RegisterPage() {
   };
 
   return (
-    <Card className="mx-auto max-w-sm w-full">
+    <Card className="mx-auto w-96">
       <CardHeader>
-        <CardTitle className="text-xl">Sign Up</CardTitle>
-        <CardDescription>
-          Enter your information to create an account
-        </CardDescription>
+        <CardTitle className="text-xl font-black">Create an Account</CardTitle>
+        <CardDescription>Get started with your account</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -102,7 +100,7 @@ function RegisterPage() {
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-1">
                       <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input placeholder="John Doe" {...field} />
@@ -117,7 +115,7 @@ function RegisterPage() {
                   control={form.control}
                   name="username"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-1">
                       <FormLabel>Username</FormLabel>
                       <FormControl>
                         <Input
@@ -137,15 +135,15 @@ function RegisterPage() {
                                 isCheckingUsername
                                   ? "text-gray-600"
                                   : isUsernameAvailable
-                                  ? "text-emerald-600"
-                                  : "text-rose-600"
+                                    ? "text-emerald-600"
+                                    : "text-rose-600",
                               )}
                             >
                               {isCheckingUsername
                                 ? "Checking username..."
                                 : isUsernameAvailable
-                                ? `${debouncedUsername} is available`
-                                : `${debouncedUsername} is not available`}
+                                  ? `${debouncedUsername} is available`
+                                  : `${debouncedUsername} is not available`}
                             </span>
                           )}
                       </FormDescription>
@@ -160,7 +158,7 @@ function RegisterPage() {
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-1">
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
@@ -179,7 +177,7 @@ function RegisterPage() {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-1">
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
@@ -218,7 +216,7 @@ function RegisterPage() {
         </Form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <Link href="/login" className="underline">
+          <Link href="/login" className="hover:underline font-bold">
             Sign in
           </Link>
         </div>
