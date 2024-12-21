@@ -44,7 +44,7 @@ const MentionList = ({
             <li
               key={c.name || i}
               className={cn(
-                "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45",
+                "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45 hover:bg-accent/50 hover:text-accent-foreground",
                 index === i && "bg-accent text-accent-foreground"
               )}
               onMouseDown={(e) => {
@@ -228,8 +228,8 @@ function useMentionList(
       MENTION_REG.test(value?.slice(0, caretPos.selectionStart) || "")
     ) {
       setPos({
-        top: caretPos.top + caretPos.height,
-        left: caretPos.left,
+        top: caretPos.height * 4 /* FIXME */,
+        left: caretPos.left - caretPos.top * 1.30 /* FIXME */,
         caret: caretPos.selectionStart,
       });
       setIndex(0);

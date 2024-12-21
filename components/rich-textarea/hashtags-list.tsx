@@ -46,7 +46,7 @@ const HashTagList = ({
             <li
               key={c}
               className={cn(
-                "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45",
+                "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors animate-in fade-in-45",
                 index === i && "bg-accent text-accent-foreground"
               )}
               onMouseDown={(e) => {
@@ -258,8 +258,8 @@ function useHashTagList(
       HASHTAG_REG.test(value?.slice(0, caretPos.selectionStart) || "")
     ) {
       setPos({
-        top: caretPos.top + caretPos.height,
-        left: caretPos.left,
+        top: caretPos.height * 4 /* FIXME */,
+        left: caretPos.left - caretPos.top * 1.30 /* FIXME */,
         caret: caretPos.selectionStart,
       });
       filteredHashtags.length > 0 ? setIndex(0) : setIndex(-1);

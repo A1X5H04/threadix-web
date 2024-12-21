@@ -1,10 +1,9 @@
 // Too lazy to combine this with the mention list, maybe send a PR? 😜
 
 import React, { useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 
 import * as emoji from "node-emoji";
-import { CaretPosition, RichTextarea, RichTextareaHandle } from "rich-textarea";
+import { CaretPosition, RichTextareaHandle } from "rich-textarea";
 
 const style = { width: "400px", height: "300px" };
 
@@ -119,8 +118,8 @@ const useEmojiList = (
       MENTION_REG.test(value?.slice(0, caretPos.selectionStart) || "")
     ) {
       setPos({
-        top: caretPos.top + caretPos.height,
-        left: caretPos.left,
+        top: caretPos.height * 4 /* FIXME */,
+        left: caretPos.left - caretPos.top * 1.30 /* FIXME */,
         caret: caretPos.selectionStart,
       });
       setIndex(0);
