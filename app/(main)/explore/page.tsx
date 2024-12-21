@@ -2,12 +2,7 @@
 
 import React from "react";
 
-import {
-  RiFireFill,
-  RiHashtag,
-  RiLoader2Line,
-  RiUserStarFill,
-} from "@remixicon/react";
+import { RiFireFill, RiHashtag, RiUserStarFill } from "@remixicon/react";
 import useSWR from "swr";
 import { GET } from "@/lib/fetcher";
 import { Post } from "@/types/api-responses/post/single";
@@ -23,6 +18,7 @@ import HashtagItem from "./_components/hashtag-item";
 import { shuffleArray } from "@/lib/utils";
 import toast from "react-hot-toast";
 import SearchDialog from "./_components/search-dialog";
+import ExplorePageSkeleton from "@/components/skeletons/explore-page";
 
 type ExtendedUser = User & { followersCount: number };
 
@@ -36,8 +32,6 @@ type ResponseType = {
 function ExploreIndexPage() {
   const { data, isLoading } = useSWR("/api/explore", GET<ResponseType>, {
     onError: () => toast.error("Failed to fetch explore feed.."),
-
-    revalidateOnMount: false,
   });
 
   const sections = [
@@ -106,11 +100,7 @@ function ExploreIndexPage() {
   ];
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-80">
-        <RiLoader2Line className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <ExplorePageSkeleton />;
   }
 
   return (
