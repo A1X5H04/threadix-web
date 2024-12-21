@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { RiLoader2Line } from "@remixicon/react";
 import Image from "next/image";
 import React from "react";
+import logo from "../public/logo.svg"
 
 function SplashScreen({ isFetching }: { isFetching: boolean }) {
   const [showTip, setShowTip] = React.useState(false);
@@ -17,13 +18,12 @@ function SplashScreen({ isFetching }: { isFetching: boolean }) {
     <div>
       <div className="w-full h-screen grid place-items-center bg-background relative">
         <div className="-translate-y-32 flex flex-col items-center gap-y-2">
-          <div className="p-5 rounded-lg bg-muted/20 border border-muted">
+          <div className="p-4 rounded-lg bg-muted/20 border border-muted">
             <Image
-              className={cn("", isFetching && "animate-pulse")}
-              src="/logo.svg"
+              src={logo}
               alt="logo"
-              width={50}
-              height={50}
+              width={35}
+              height={35}
             />
           </div>
           {isFetching && (
@@ -40,7 +40,7 @@ function SplashScreen({ isFetching }: { isFetching: boolean }) {
             )}
           >
             <RiLoader2Line
-              className={cn("w-6 h-6 animate-spin text-muted-foreground ")}
+              className={cn("w-6 h-6 animate-spin text-muted-foreground")}
             />
           </div>
           {showTip && (
