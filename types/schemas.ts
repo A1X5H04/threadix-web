@@ -10,9 +10,15 @@ export const profileSchema = z.object({
       message:
         "Username should only contain lowercase, underscore, dashes and digits",
     }),
+  isPublic: z.boolean(),
   bio: z.string().max(160),
-  link: z.string().optional(),
-  avatar: z.string().url().optional(),
+  link: z
+    .string()
+    .optional()
+    .refine((val) => val === "" || z.string().url().safeParse(val).success, {
+      message: "Invalid URL",
+    }),
+  avatar: z.string().optional(),
 });
 
 export const registerSchema = z.object({
@@ -30,7 +36,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  login: z.string().min(4),
   password: z.string().min(6).max(255),
 });
 
@@ -63,7 +69,7 @@ export const pollSchema = z.object({
       z.object({
         title: z.string().max(30),
         isCorrect: z.boolean().optional(),
-      })
+      }),
     )
     .min(3, { message: "A poll must have at least 2 options" }) // min(3) because we need at least 2 options + 1 is a blank placeholder
     .max(4),
