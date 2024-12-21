@@ -6,6 +6,8 @@ import "yet-another-react-lightbox-lite/styles.css";
 
 import { PostMediaSchema } from "@/types";
 import { calculateSlideDimensions } from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {RiArrowLeftSLine, RiArrowRightSLine, RiCloseLine} from "@remixicon/react";
 
 interface MediaViewerProps {
   media: PostMediaSchema[];
@@ -27,6 +29,7 @@ function MediaViewer({ media, mediaIndex, setMediaIndex }: MediaViewerProps) {
       toolbar={{
         fixed: true,
       }}
+
       render={{
         slide: ({ slide, rect }) => {
           const { width, height } = calculateSlideDimensions(rect, slide);
@@ -36,7 +39,8 @@ function MediaViewer({ media, mediaIndex, setMediaIndex }: MediaViewerProps) {
           ) {
             return (
               <Image
-                src={slide.src}
+                    onClick={(e) => e.preventDefault()}
+                src={slide.src} unoptimized={media[mediaIndex ?? 0].type === "gif"}
                 alt={slide.alt || ""}
                 width={width}
                 height={height}
@@ -55,12 +59,27 @@ function MediaViewer({ media, mediaIndex, setMediaIndex }: MediaViewerProps) {
             );
           } else {
             return (
-              <div className="p-10">
+              <div className="p-10" onClick={(e) => e.preventDefault()}>
                 <video width={width} height={height} src={slide.src} controls />
               </div>
             );
           }
         },
+          iconClose: () => (
+            <Button onClick={(e) => e.preventDefault()} size='icon' variant='ghost'>
+                <RiCloseLine className="w-6 h-6"/>
+            </Button>
+          ),
+          iconNext: () => (
+              <Button disabled={mediaIndex === media.length - 1} onClick={(e) => e.preventDefault()} size='icon' variant='ghost'>
+                  <RiArrowRightSLine className="w-6 h-6"/>
+              </Button>
+          ),
+          iconPrev: () => (
+              <Button disabled={mediaIndex === 0} onClick={(e) => e.preventDefault()} size='icon' variant='ghost'>
+                  <RiArrowLeftSLine className="w-6 h-6"/>
+              </Button>
+          )
       }}
       index={mediaIndex}
       setIndex={setMediaIndex}

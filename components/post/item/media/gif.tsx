@@ -10,7 +10,11 @@ interface PostMediaGifProps {
 function PostMediaGif({ media, onClick }: PostMediaGifProps) {
   return (
     <div
-      onClick={onClick}
+      data-prevent-nprogress
+      onClick={(e) => {
+        e.preventDefault();
+        onClick()
+      }}
       className="relative w-fit bg-background flex justify-center items-center overflow-hidden rounded-md border border-muted mb-4"
     >
       <Image

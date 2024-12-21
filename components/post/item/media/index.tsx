@@ -29,23 +29,20 @@ function PostMedia({ media }: { media: Media[] }) {
   const isGif = media.some((m) => m.type === "gif");
 
   return (
-    <div
-      data-prevent-nprogress
-      onClick={(e) => e.preventDefault()}
-      onMouseDown={(e) => e.preventDefault()}
-    >
+    <>
       {isGif && (
         <PostMediaGif media={media.at(0)!} onClick={() => setMediaIndex(0)} />
       )}
       {isAudioFile && <PostMediaAudio media={media.at(0)!} />}
       {isMediaFiles && (
         <div
-          className="overflow-hidden w-full"
+
+          className="overflow-hidden"
           ref={media.length > 1 ? emblaRef : undefined}
         >
           <div className="flex flex-nowrap gap-x-2 w-full max-h-80">
             {media.map((mediaItem, index) => (
-              <div
+              <div data-prevent-nprogress
                 onClick={(evt) => {
                   evt.stopPropagation();
                   evt.preventDefault();
@@ -114,13 +111,12 @@ function PostMedia({ media }: { media: Media[] }) {
           </div>
         </div>
       )}
-
       <MediaViewer
         media={media}
         mediaIndex={mediaIndex}
         setMediaIndex={setMediaIndex}
       />
-    </div>
+    </>
   );
 }
 
