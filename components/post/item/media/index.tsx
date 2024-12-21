@@ -44,9 +44,7 @@ function PostMedia({ media }: { media: Media[] }) {
             {media.map((mediaItem, index) => (
               <div data-prevent-nprogress
                 onClick={(evt) => {
-                  evt.stopPropagation();
                   evt.preventDefault();
-
                   /* The video should be paused when the lightbox is open but there is now way to resume 
                     it when lightbox is closed (there is no callback for that), so I have to mute it, as it will
                     interfere with the lightbox playback also there is a performance drawback... */
@@ -82,6 +80,7 @@ function PostMedia({ media }: { media: Media[] }) {
                     />
                     <button
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         if (videoRef.current) {
                           videoRef.current.muted = !videoRef.current.muted;

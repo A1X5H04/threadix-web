@@ -67,7 +67,6 @@ function PostContent({ content, className, ...rest }: PostContentProps) {
   return (
     <div
       {...rest}
-      onClick={(e) => e.stopPropagation()}
       className={cn("text-[15px]", className)}
     >
       {parsedContent}
