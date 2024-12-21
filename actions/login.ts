@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import {eq, or} from "drizzle-orm";
 import * as z from "zod";
 
 import { db } from "@/lib/db";
@@ -16,10 +16,10 @@ export async function login(values: z.infer<typeof loginSchema>) {
   if (!validatedForm.success) {
     throw new Error("Invalid form data");
   }
-  const { email, password } = validatedForm.data;
+  const { login, password } = validatedForm.data;
 
   const existingUser = await db.query.users.findFirst({
-    where: eq(users.email, email),
+    where: or(eq(users.email, login), eq(users.username, login)),
   });
 
   if (!existingUser || !existingUser.password) {
@@ -43,6 +43,4 @@ export async function login(values: z.infer<typeof loginSchema>) {
     sessionCookie.value,
     sessionCookie.attributes
   );
-
-  return "Welcome back!";
 }

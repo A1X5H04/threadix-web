@@ -36,5 +36,4 @@ export async function register(formValues: z.infer<typeof registerSchema>) {
     email,
     password: hashedPassword,
   });
-  return "User registered successfully!";
 }
