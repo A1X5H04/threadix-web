@@ -2,8 +2,6 @@
 
 import React, { useEffect, useTransition } from "react";
 import { useAppStore } from "@/hooks/use-store";
-import { RiLoader2Line } from "@remixicon/react";
-import Image from "next/image";
 import SplashScreen from "./splash-screen";
 
 function DataFetcher({ children }: { children: React.ReactNode }) {

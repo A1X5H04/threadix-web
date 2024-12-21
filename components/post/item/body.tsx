@@ -33,7 +33,7 @@ function PostItemBody({
     <div
       className={cn(
         `flex gap-x-3 relative h-fit`,
-        isQuoted && "pointer-events-none"
+        isQuoted && "pointer-events-none",
       )}
     >
       {!isQuoted && (
@@ -80,7 +80,6 @@ function PostItemBody({
             <PostDropdown
               userData={{
                 id: data.user.id,
-
                 username: data.user.username,
               }}
               replyPermissions={data.replyPermissions}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -22,10 +22,7 @@ import {
 
 import { Button } from "../ui/button";
 import PostBody from "../post/activity/post-body";
-import ListItem from "../post/activity/list-item";
-import useSWR from "swr";
-import { GET } from "@/lib/fetcher";
-import { Poll, PollOption, User } from "@/types/api-responses/common";
+import { Poll, User } from "@/types/api-responses/common";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import ActivityPostContent from "../post/activity/post-content";
 import ActivityPollContent from "../post/activity/poll-content";
