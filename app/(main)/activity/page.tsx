@@ -2,7 +2,7 @@
 
 import { GET } from "@/lib/fetcher";
 import { Activity } from "@/types/api-responses/common";
-import { RiHistoryLine } from "@remixicon/react";
+import { RiHistoryLine, RiLoader2Line } from "@remixicon/react";
 import React, { useEffect } from "react";
 import useSWR from "swr";
 import ActivityItem from "./_components/activity-item";
@@ -20,7 +20,11 @@ function ActivityPage() {
   }, [data]);
 
   if (!data || isLoading) {
-    return "Loading...";
+    return (
+      <div className="flex justify-center items-center h-80">
+        <RiLoader2Line className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   if (data.length === 0) {
