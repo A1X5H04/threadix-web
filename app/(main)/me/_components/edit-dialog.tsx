@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { RiAtFill, RiImageAddFill } from "@remixicon/react";
+import { RiImageAddFill } from "@remixicon/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucia";
 import useSWRMutation from "swr/mutation";
@@ -33,6 +34,7 @@ import { PATCH } from "@/lib/fetcher";
 import toast from "react-hot-toast";
 import { useEdgeStore } from "@/lib/edgestore";
 import { useRouter } from "next/navigation";
+import { Switch } from "@/components/ui/switch";
 
 export function EditDialog({ user }: { user: User }) {
   const router = useRouter();
@@ -45,6 +47,7 @@ export function EditDialog({ user }: { user: User }) {
       name: user.name || "",
       username: user.username || "",
       bio: user.bio || "",
+      isPublic: user.isPublic || false,
       link: user.link || "",
       avatar: user.avatar || "",
     },
@@ -53,13 +56,12 @@ export function EditDialog({ user }: { user: User }) {
 
   const { trigger, isMutating } = useSWRMutation(
     `/api/profile/${user.username}`,
-    PATCH<z.infer<typeof profileSchema>>
+    PATCH<z.infer<typeof profileSchema>>,
   );
 
   const onFormSubmit = async (data: z.infer<typeof profileSchema>) => {
     if (avatarImage) {
       const res = await edgestore.publicFiles.upload({ file: avatarImage });
-
       form.setValue("avatar", res.url);
     }
 
@@ -126,7 +128,7 @@ export function EditDialog({ user }: { user: User }) {
                     control={form.control}
                     name="name"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="space-y-1">
                         <FormLabel>Name</FormLabel>
                         <FormControl>
                           <Input
@@ -143,7 +145,7 @@ export function EditDialog({ user }: { user: User }) {
                     control={form.control}
                     name="username"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="space-y-1">
                         <FormLabel>Username</FormLabel>
                         <FormControl>
                           <Input
@@ -157,19 +159,44 @@ export function EditDialog({ user }: { user: User }) {
                     )}
                   />
                 </div>
+
                 <FormField
                   control={form.control}
                   name="link"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-1">
                       <FormLabel>Link</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your website or social link"
-                        />
+                        <Input {...field} placeholder="https://example.com" />
                       </FormControl>
                       <FormMessage />
+                      <FormDescription>
+                        <span className="text-sm text-muted-foreground">
+                          Add your website or social link
+                        </span>
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="isPublic"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between shadow-sm border rounded p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Public Profile </FormLabel>
+                        <FormDescription>
+                          {field.value
+                            ? "Everyone on threadix can see your posts"
+                            : "Only your followers can see your posts"}
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -177,16 +204,19 @@ export function EditDialog({ user }: { user: User }) {
                   control={form.control}
                   name="bio"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-1">
                       <FormLabel>Bio</FormLabel>
                       <FormControl>
                         <Textarea
                           rows={5}
                           {...field}
-                          placeholder="Enter your bio"
+                          placeholder="18 y.o developer, designer and writer from earth, currently living in Mars etc.."
                         />
                       </FormControl>
                       <FormMessage />
+                      <FormDescription className="text-sm text-muted-foreground">
+                        Add a short bio of yourself
+                      </FormDescription>
                     </FormItem>
                   )}
                 />

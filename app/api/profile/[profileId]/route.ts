@@ -2,13 +2,12 @@ import { users } from "@/db/schemas/auth";
 import { validateRequest } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 
 import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { profileId: string } }
+  { params }: { params: { profileId: string } },
 ) {
   const { profileId } = params;
 
@@ -43,7 +42,7 @@ export async function GET(
       where: (blockedUser, { and, eq }) =>
         and(
           eq(blockedUser.blockedUserId, user.id),
-          eq(blockedUser.userId, currentUser.id)
+          eq(blockedUser.userId, currentUser.id),
         ),
     });
 
@@ -52,13 +51,13 @@ export async function GET(
       where: (blockedUser, { and, eq }) =>
         and(
           eq(blockedUser.blockedUserId, currentUser.id),
-          eq(blockedUser.userId, user.id)
+          eq(blockedUser.userId, user.id),
         ),
     });
 
     return NextResponse.json(
       { ...user, isBlocked: !!isBlocked, hasBlockedYou: !!hasBlockedYou },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("PROFILE_GET_ERROR", error);
@@ -68,7 +67,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { profileId: string } }
+  { params }: { params: { profileId: string } },
 ) {
   const { profileId } = params;
 
@@ -87,6 +86,7 @@ export async function PATCH(
         username: body.username,
         link: body.link,
         bio: body.bio,
+        isPublic: body.isPublic,
       })
       .where(eq(users.username, profileId))
       .returning({ id: users.id });
