@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { profileId: string } }
+  { params }: { params: { profileId: string } },
 ) {
   const { user } = await validateRequest();
 
@@ -20,6 +20,7 @@ export async function GET(
   const posts = await db.query.posts.findMany({
     where: (post, { eq, and, isNull }) =>
       and(eq(post.userId, userExist.id), isNull(post.parentId)),
+    orderBy: (post, { desc }) => desc(post.createdAt),
     with: {
       user: {
         columns: {
@@ -105,6 +106,7 @@ export async function GET(
 
   const reposts = await db.query.reposts.findMany({
     where: (repost, { eq }) => eq(repost.userId, userExist.id),
+    orderBy: (repost, { desc }) => desc(repost.createdAt),
     with: {
       post: {
         with: {
@@ -179,6 +181,7 @@ export async function GET(
   const replies = await db.query.posts.findMany({
     where: (post, { eq, and, isNotNull }) =>
       and(eq(post.userId, userExist.id), isNotNull(post.parentId)),
+    orderBy: (reply, { desc }) => desc(reply.createdAt),
     with: {
       user: {
         columns: {
