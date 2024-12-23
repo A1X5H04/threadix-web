@@ -8,6 +8,7 @@ import useSWR from "swr";
 import ActivityItem from "./_components/activity-item";
 import { Separator } from "@/components/ui/separator";
 import { useAppStore } from "@/hooks/use-store";
+import ActivityListSkeleton from "@/components/skeletons/activity-list";
 
 function ActivityPage() {
   const { readAllActivity } = useAppStore();
@@ -20,11 +21,7 @@ function ActivityPage() {
   }, [data]);
 
   if (!data || isLoading) {
-    return (
-      <div className="flex justify-center items-center h-80">
-        <RiLoader2Line className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <ActivityListSkeleton />;
   }
 
   if (data.length === 0) {
