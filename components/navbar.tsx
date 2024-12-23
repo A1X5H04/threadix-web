@@ -116,7 +116,7 @@ function Navbar({ user }: { user: User }) {
                       <div className="relative">
                         <route.icon className="w-6 h-6" />
                         {route.path === "/activity" && hasUnreadActivity && (
-                          <div className="w-2 h-2 bg-rose-500 border border-black rounded-full absolute top-0 -right-0.5" />
+                          <div className="w-2 h-2 bg-rose-500 border-2 border-white dark:border-black rounded-full absolute top-0 -right-0.5" />
                         )}
                       </div>
                     )}

@@ -36,13 +36,15 @@ function PollOption({
       //     ? "You can't vote on your own poll!"
       //     : undefined
       // }
-      className="relative flex items-center justify-between text-sm gap-2 px-3 py-1.5 w-full rounded-md text-white border border-muted overflow-hidden disabled:cursor-default"
+      className="relative flex items-center justify-between text-sm gap-2 px-3 py-1.5 w-full rounded-md text-white border border-muted overflow-hidden disabled:cursor-default bg-background"
     >
       <div
         className={cn(
-          "absolute inset-0 h-full transition-all duration-150 bg-foreground",
-          isEnded && "bg-muted",
-          isEnded && option.voteCount === highestVotes && "bg-foreground"
+          "absolute inset-0 h-full transition-all duration-150 bg-foreground dark:bg-foreground",
+          isEnded && "bg-muted-foreground/50 dark:bg-muted",
+          isEnded &&
+            option.voteCount === highestVotes &&
+            "bg-foreground dark:bg-foreground",
         )}
         style={{
           width: `${calculateVotePercentage(option.voteCount)}%`,
@@ -90,7 +92,7 @@ function PollOption({
             </AvatarFallback>
           </Avatar>
         )}
-        <span className="mix-blend-difference text-foreground">
+        <span className="mix-blend-difference">
           {calculateVotePercentage(option.voteCount)}%
         </span>
       </div>

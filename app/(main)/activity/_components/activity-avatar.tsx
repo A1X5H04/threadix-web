@@ -47,14 +47,15 @@ function ActivityAvatar({ type, actionUsers }: ActivityAvatarProps) {
       break;
     case "user":
       icon = (
-        <div className="absolute -bottom-1 -right-0.5 bg-purple-500-500 p-0.5 rounded-full border-2 border-background">
+        <div className="absolute -bottom-1 -right-0.5 bg-purple-500 p-0.5 rounded-full border-2 border-background">
           <RiUserFill className="size-2.5 text-white" />
         </div>
       );
+      break;
     case "mention":
       icon = (
         <div className="absolute -bottom-1 -right-0.5 bg-yellow-500 p-0.5 rounded-full border-2 border-background">
-          <RiAtFill className="size-2.5 text-white" />
+          <RiAtFill className="size-2.5 text-black" />
         </div>
       );
       break;
