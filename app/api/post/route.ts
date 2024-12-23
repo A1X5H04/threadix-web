@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     if (!request.posts) {
       return new NextResponse(
         "Atleast one post is required to create a thread!",
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
               height: m.height,
               width: m.width,
               name: m.name,
-            }))
+            })),
           );
 
           // Confirming the upload of the media
@@ -145,7 +145,7 @@ export async function POST(req: Request) {
           console.log(
             "Poll Duration and Relative Data",
             post.poll.duration,
-            convertRelativeDataToDate(post.poll.duration)
+            convertRelativeDataToDate(post.poll.duration),
           );
 
           // insert poll options
@@ -156,7 +156,7 @@ export async function POST(req: Request) {
               title: option.title,
               voteCount: 0,
               isCorrect: option.isCorrect || null,
-            }))
+            })),
           );
         }
 
@@ -175,9 +175,9 @@ export async function POST(req: Request) {
                 userId: existingUser.id,
                 actionUserIds: [user.id],
                 activityType: "mention" as "mention",
-                title: "Just mentioned you in thier post",
+                title: "just mentioned you in their post",
                 redirectionUrl: `/users/${user.username}/posts/${id}`,
-              }))
+              })),
             );
           }
         }
@@ -189,7 +189,7 @@ export async function POST(req: Request) {
           });
 
           const newTags = post.tags.filter(
-            (tag) => !existingTags.map((t) => t.name).includes(tag)
+            (tag) => !existingTags.map((t) => t.name).includes(tag),
           );
 
           if (newTags.length > 0) {
@@ -197,7 +197,7 @@ export async function POST(req: Request) {
               newTags.map((tag) => ({
                 name: tag,
                 userId: user.id,
-              }))
+              })),
             );
           }
 
@@ -211,7 +211,7 @@ export async function POST(req: Request) {
             tagsToAssign.map((tag) => ({
               postId: id,
               tagId: tag.id,
-            }))
+            })),
           );
         }
         parentIds.push(id);
@@ -250,7 +250,7 @@ export async function POST(req: Request) {
           },
         })
         .then((following) =>
-          following.map((follower) => follower.followed_user)
+          following.map((follower) => follower.followed_user),
         );
 
       if (followers && followers.length > 0) {
@@ -258,10 +258,10 @@ export async function POST(req: Request) {
           followers.map((follower) => ({
             userId: follower.id,
             actionUserIds: [user.id],
-            title: `${user.name} just started a thread`,
+            title: "just started a new thread",
             postId: res.id,
             redirectionUrl: `/users/${user.username}/posts/${res.id}`,
-          }))
+          })),
         );
       }
     }
@@ -298,8 +298,8 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
           ne(post.userId, session.userId),
           notInArray(
             post.userId,
-            blockedUsers.map((user) => user.blockedUserId)
-          )
+            blockedUsers.map((user) => user.blockedUserId),
+          ),
         ),
       with: {
         user: {
@@ -475,7 +475,7 @@ export async function GET(req: Request): Promise<NextResponse<{ posts: {} }>> {
 
     const combinedArray = [...formattedPosts, ...formattedReposts].sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
     return NextResponse.json({ posts: combinedArray });
