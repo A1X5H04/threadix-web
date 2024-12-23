@@ -14,6 +14,7 @@ import {
   votes,
   reposts,
   activityFeed,
+  savedPosts,
 } from "./tables";
 
 // export const userRelation = relations(users, ({ many }) => ({
@@ -142,6 +143,13 @@ export const postToTagRelation = relations(postsTags, ({ one }) => ({
 export const activityFeedRelation = relations(activityFeed, ({ one }) => ({
   post: one(posts, {
     fields: [activityFeed.postId],
+    references: [posts.id],
+  }),
+}));
+
+export const savedPostsRelation = relations(savedPosts, ({ one }) => ({
+  post: one(posts, {
+    fields: [savedPosts.postId],
     references: [posts.id],
   }),
 }));
