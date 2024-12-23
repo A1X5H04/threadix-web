@@ -17,7 +17,7 @@ export interface PostState {
   setLikedPosts: (likedPosts: string[]) => void;
   registeredVotes: { pollId: string; optionId: number }[];
   setRegisteredVotes: (
-    registeredVotes: { pollId: string; optionId: number }[]
+    registeredVotes: { pollId: string; optionId: number }[],
   ) => void;
   followingUser: string[];
   setFollowingUser: (followingUsers: string[]) => void;
@@ -67,8 +67,8 @@ export const postSlice: StateCreator<PostState, [], [], PostState> = (set) => ({
       ] = await Promise.all([
         getLikedPosts(),
         getRegisteredVote(),
-        getRepostedPostsId(),
         getFollowingUsers(),
+        getRepostedPostsId(),
         hasUnreadActivity(),
         getSavedPosts(),
         getMutedUsers(),
