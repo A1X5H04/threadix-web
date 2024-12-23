@@ -20,7 +20,7 @@ import {
   RiUserUnfollowLine,
 } from "@remixicon/react";
 import { User } from "lucia";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import React, { useMemo } from "react";
 import toast from "react-hot-toast";
 
@@ -41,7 +41,7 @@ function ProfileMenu({
 
   const isMutedUser = useMemo(
     () => mutedUsers.includes(user.id),
-    [mutedUsers, user.id]
+    [mutedUsers, user.id],
   );
 
   const handleMuteUser = () => {
@@ -53,7 +53,7 @@ function ProfileMenu({
           toast.success("User Unmuted!", { id: loadingToast });
         })
         .catch(() =>
-          toast.error("Failed to unmute user", { id: loadingToast })
+          toast.error("Failed to unmute user", { id: loadingToast }),
         );
     } else {
       const loadingToast = toast.loading("Muting User...");
@@ -65,7 +65,7 @@ function ProfileMenu({
             "You won't be notified about activities from this user anymore.",
             {
               id: loadingToast,
-            }
+            },
           );
         })
         .catch(() => toast.error("Failed to mute user", { id: loadingToast }));
