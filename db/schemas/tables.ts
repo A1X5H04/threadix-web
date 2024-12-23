@@ -83,8 +83,11 @@ export const userFollowers = pgTable(
       .$default(() => new Date()),
   },
   (table) => ({
-    userFollowerIdx: index("user_follower").on(table.userId, table.followerId),
-  })
+    userFollowerUniqueIdx: uniqueIndex("user_follower").on(
+      table.userId,
+      table.followerId,
+    ),
+  }),
 );
 
 export const posts = pgTable(
@@ -127,9 +130,9 @@ export const posts = pgTable(
     userIdx: index("user_post_idx").on(table.userId),
     contentSearchIdx: index("content_search_idx").using(
       "gin",
-      sql`to_tsvector('english', ${table.content})`
+      sql`to_tsvector('english', ${table.content})`,
     ),
-  })
+  }),
 );
 
 export const postMedia = pgTable(
@@ -154,7 +157,7 @@ export const postMedia = pgTable(
   (table) => ({
     postMediaIdx: index("post_media_idx").on(table.postId),
     compositeKey: primaryKey({ columns: [table.postId, table.url] }),
-  })
+  }),
 );
 
 export const savedPosts = pgTable(
@@ -173,7 +176,7 @@ export const savedPosts = pgTable(
   },
   (table) => ({
     savedPostIdx: index("saved_post_idx").on(table.userId),
-  })
+  }),
 );
 
 export const reposts = pgTable(
@@ -192,7 +195,7 @@ export const reposts = pgTable(
   },
   (table) => ({
     repostUserIdx: index("repost_post_id").on(table.userId),
-  })
+  }),
 );
 
 export const likes = pgTable(
@@ -211,9 +214,9 @@ export const likes = pgTable(
     postIdx: index("postId").on(table.postId),
     userPostCompositeKey: uniqueIndex("user_post_unique_idx").on(
       table.userId,
-      table.postId
+      table.postId,
     ),
-  })
+  }),
 );
 
 export const tags = pgTable(
@@ -232,7 +235,7 @@ export const tags = pgTable(
   },
   (table) => ({
     tagNameIdx: index("tag_name_idx").on(table.name),
-  })
+  }),
 );
 
 export const polls = pgTable(
@@ -254,7 +257,7 @@ export const polls = pgTable(
   },
   (table) => ({
     postPollIdx: index("post_poll_idx").on(table.postId),
-  })
+  }),
 );
 
 export const pollOptions = pgTable(
@@ -275,7 +278,7 @@ export const pollOptions = pgTable(
   },
   (table) => ({
     pollOptionIdx: index("poll_option_idx").on(table.pollId),
-  })
+  }),
 );
 
 // Only create votes when the anonymousVotes is false in the poll (for performance reasons)
@@ -300,7 +303,7 @@ export const votes = pgTable(
     userPollCompositeKey: primaryKey({
       columns: [table.userId, table.optionId],
     }),
-  })
+  }),
 );
 
 export const postsTags = pgTable(
@@ -319,7 +322,7 @@ export const postsTags = pgTable(
   },
   (table) => ({
     postTagIdx: index("post_tag_idx").on(table.postId, table.tagId),
-  })
+  }),
 );
 
 export const activityFeed = pgTable(
@@ -347,5 +350,5 @@ export const activityFeed = pgTable(
   },
   (table) => ({
     userActivityIdx: index("user_activity_idx").on(table.userId),
-  })
+  }),
 );
