@@ -13,6 +13,7 @@ import ProfileHeader from "@/components/profile/header";
 import ProfileTabsContent from "@/components/profile/tabs-content";
 import UserProfileSkeleton from "@/components/skeletons/user-profile";
 import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
 
 async function ProfilePage() {
   const { user } = await validateRequest();
@@ -27,7 +28,7 @@ async function ProfilePage() {
         <p
           className={cn(
             "text-[15px]",
-            !user.bio && "text-sm italic text-muted-foreground"
+            !user.bio && "text-sm italic text-muted-foreground",
           )}
         >
           {user.bio || `${user.name} has not set a bio yet.`}
@@ -48,7 +49,10 @@ async function ProfilePage() {
               </>
             )}
           </div>
-          <ProfileMenu username={user.username} />
+          <div className="inline-flex gap-x-2">
+            <ModeToggle />
+            <ProfileMenu username={user.username} />
+          </div>
         </div>
         <EditDialog user={user} />
       </div>
