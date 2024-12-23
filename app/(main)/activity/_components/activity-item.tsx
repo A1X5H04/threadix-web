@@ -26,7 +26,7 @@ function ActivityItem({ activity }: ActivityItemProps) {
       key={activity.id}
       className={cn(
         "flex gap-x-2",
-        activity.redirectionUrl && " cursor-pointer"
+        activity.redirectionUrl && " cursor-pointer",
       )}
     >
       <ActivityAvatar
@@ -52,10 +52,12 @@ function ActivityItem({ activity }: ActivityItemProps) {
             {formatRelativeDate(new Date(activity.createdAt))}
           </span>
         </p>
-        <p className="text-muted-foreground mt-1">{activity.title}</p>
-
+        <Content
+          className="text-muted-foreground mt-0.5 text-sm"
+          content={activity.title}
+        />
         {activity.post && (
-          <div className="w-full mt-2 ">
+          <div className="w-full mt-3">
             <Content content={activity.post.content} />
             <PostActions
               data={activity.post}

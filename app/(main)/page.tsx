@@ -14,7 +14,7 @@ function HomePage() {
     GET<{ posts: Post[] }>,
     {
       revalidateOnFocus: false,
-    }
+    },
   );
 
   if (isLoading) return <PostListSkeleton />;
@@ -36,11 +36,7 @@ function HomePage() {
   }
 
   return (
-    <>
-      {data?.posts.map((post) => (
-        <PostItem key={post.id} data={post} />
-      ))}
-    </>
+    <>{data?.posts.map((post) => <PostItem key={post.id} data={post} />)}</>
   );
 }
 
