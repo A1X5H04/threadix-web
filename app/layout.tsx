@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { EdgeStoreProvider } from "@/lib/edgestore";
@@ -10,8 +10,9 @@ import {
 } from "@remixicon/react";
 import RouteProgressBar from "@/components/route-progress";
 import SWRConfig from "@/components/swr-config";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const font = Manrope({ subsets: ["latin"] });
+const font = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Threadix - A Threads Clone",
@@ -25,35 +26,42 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
-        <SWRConfig>
-          <RouteProgressBar>
-            <EdgeStoreProvider>{children}</EdgeStoreProvider>
-          </RouteProgressBar>
-        </SWRConfig>
-        <Toaster
-          position="bottom-center"
-          toastOptions={{
-            style: {
-              background: "hsl(var(--background))",
-              color: "hsl(var(--foreground))",
-              borderRadius: "var(--radius)",
-              border: "1px solid hsl(var(--muted))",
-            },
-            className: "text-sm shadow-lg",
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SWRConfig>
+            <RouteProgressBar>
+              <EdgeStoreProvider>{children}</EdgeStoreProvider>
+            </RouteProgressBar>
+          </SWRConfig>
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              style: {
+                background: "hsl(var(--background))",
+                color: "hsl(var(--foreground))",
+                borderRadius: "var(--radius)",
+                border: "1px solid hsl(var(--muted))",
+              },
+              className: "text-sm shadow-lg",
 
-            success: {
-              icon: <RiCheckboxCircleFill className="w-5 h-5" />,
-            },
-            error: {
-              icon: <RiErrorWarningFill className="w-5 h-5" />,
-            },
-            loading: {
-              icon: <RiLoader2Line className="w-4 h-4 animate-spin" />,
-            },
-          }}
-        />
+              success: {
+                icon: <RiCheckboxCircleFill className="w-5 h-5" />,
+              },
+              error: {
+                icon: <RiErrorWarningFill className="w-5 h-5" />,
+              },
+              loading: {
+                icon: <RiLoader2Line className="w-4 h-4 animate-spin" />,
+              },
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );
