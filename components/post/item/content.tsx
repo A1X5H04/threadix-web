@@ -32,7 +32,11 @@ function PostContent({ content, className, ...rest }: PostContentProps) {
 
   // For Spoiler Text (||text||)
   parsedContent = reactReplace(parsedContent, /\|\|(.*?)\|\|/g, (match, i) => (
-    <details data-prevent-nprogress className="spoiler">
+    <details
+      data-prevent-nprogress
+      onClick={(e) => e.stopPropagation()}
+      className="spoiler"
+    >
       <summary>{match}</summary>
     </details>
   ));
@@ -65,10 +69,7 @@ function PostContent({ content, className, ...rest }: PostContentProps) {
   ));
 
   return (
-    <div
-      {...rest}
-      className={cn("text-[15px]", className)}
-    >
+    <div {...rest} className={cn("text-[15px]", className)}>
       {parsedContent}
     </div>
   );

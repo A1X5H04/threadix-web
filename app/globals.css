@@ -111,28 +111,30 @@ body {
   display: inline-block;
   width: fit-content;
   cursor: pointer;
+
 }
 
 /* Style the summary element */
 .spoiler summary {
-  background: hsl(var(--muted-foreground));
+  background: hsl(var(--foreground));
   color: transparent;
-  border-radius: 4px;
-
-  /*   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); */
+  height: fit-content;
+  line-height: 1.25;
+  border-radius: 2px;
+  /*text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);*/
   user-select: none; /* Prevent text selection */
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 /* Hover effect for summary */
 .spoiler summary:hover {
-  background: hsl(var(--muted));
+  opacity: 0.8;
 }
 
 /* Show content when details is open */
 .spoiler[open] summary {
   background: none;
-  color: white;
+  color: hsl(var(--foreground));
 }
 
 .spoiler summary {
@@ -290,8 +292,8 @@ body {
 }
 
 .bg-long-bars {
-  background: linear-gradient(135deg, #0000 18.75%, #0c0c0c 0 31.25%, #0000 0),
-    repeating-linear-gradient(45deg, #0c0c0c -6.25% 6.25%, #000000 0 18.75%);
+  background: linear-gradient(135deg, hsl(var(--background)) 18.75%, hsl(var(--muted)) 0 31.25%, hsl(var(--background)) 0),
+    repeating-linear-gradient(45deg, hsl(var(--muted)) -6.25% 6.25%, hsl(var(--background)) 0 18.75%);
   background-size: 26px 26px;
 }
 
