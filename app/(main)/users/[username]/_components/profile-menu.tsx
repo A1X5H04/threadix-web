@@ -23,12 +23,17 @@ import { User } from "lucia";
 import { useRouter } from "next-nprogress-bar";
 import React, { useMemo } from "react";
 import toast from "react-hot-toast";
+import UserInfoDialog from "@/components/dialogs/user-info";
 
 function ProfileMenu({
   user,
 }: {
-  user: Pick<User, "id" | "name" | "username">;
+  user: Pick<User, "id" | "name" | "username" | "avatar"> & {
+    email: string;
+    createdAt: string;
+  };
 }) {
+  const [userDialog, setUserDialog] = React.useState(false);
   const router = useRouter();
   const { mutedUsers, setMutedUsers } = useAppStore();
   const [openDialogFn, ConfirmDialog] = useConfirmDialog();
@@ -108,7 +113,7 @@ function ProfileMenu({
           <RiLink className="w-4 h-4" />
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={handleLinkCopy}
+          onClick={() => setUserDialog(true)}
           className="justify-between w-full"
         >
           About This User
@@ -132,6 +137,7 @@ function ProfileMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
       <ConfirmDialog />
+      <UserInfoDialog open={userDialog} setOpen={setUserDialog} user={user} />
     </DropdownMenu>
   );
 }

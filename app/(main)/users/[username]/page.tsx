@@ -50,7 +50,14 @@ function ProfilePage({
     mutate,
   } = useSWR(
     `/api/profile/${username}`,
-    GET<User & { isBlocked: boolean; hasBlockedYou: boolean }>
+    GET<
+      User & {
+        isBlocked: boolean;
+        hasBlockedYou: boolean;
+        email: string;
+        createdAt: string;
+      }
+    >,
   );
 
   if (!user || isLoading) return <UserProfileSkeleton />;
@@ -68,7 +75,7 @@ function ProfilePage({
             unfollowUser(user.username)
               .then(() => {
                 setFollowingUser(
-                  followingUser.filter((u) => u !== user.username)
+                  followingUser.filter((u) => u !== user.username),
                 );
                 toast.success(`Unfollowed ${user.name}`);
               })
@@ -107,7 +114,7 @@ function ProfilePage({
     <div
       className={cn(
         "relative w-full p-5",
-        user.hasBlockedYou && "h-[calc(100vh-5rem)] overflow-hidden"
+        user.hasBlockedYou && "h-[calc(100vh-5rem)] overflow-hidden",
       )}
     >
       {user.hasBlockedYou && <BlockedOverlay name={user.name} />}
@@ -117,7 +124,7 @@ function ProfilePage({
         <div
           className={cn(
             "text-[15px]",
-            !user.bio && "text-sm italic text-muted-foreground"
+            !user.bio && "text-sm italic text-muted-foreground",
           )}
         >
           {user.bio ? (
@@ -144,6 +151,9 @@ function ProfilePage({
                 id: user.id,
                 username: user.username,
                 name: user.name,
+                avatar: user.avatar,
+                email: user.email,
+                createdAt: user.createdAt,
               }}
             />
           )}
@@ -180,7 +190,7 @@ function ProfilePage({
             {!user.isPublic && !isFollowing ? (
               <div className="grid place-items-center w-full h-60">
                 <div className="grid place-items-center">
-                  <RiLockFill className="w-16 h-16 text-muted mb-2" />
+                  <RiLockFill className="w-16 h-16 text-muted-foreground/50 dark:text-muted mb-2" />
                   <h4 className="font-semibold text-lg">
                     {user.name} has a private account.
                   </h4>

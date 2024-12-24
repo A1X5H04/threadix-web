@@ -30,6 +30,8 @@ export async function GET(
         bio: true,
         isPublic: true,
         isVerified: true,
+        email: true,
+        createdAt: true,
       },
     });
 
