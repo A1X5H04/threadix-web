@@ -42,7 +42,10 @@ function ActivityItem({ activity }: ActivityItemProps) {
             {activity.actionUsers[0].username}
           </Link>
           {activity.actionUsers[0].isVerified && (
-            <VerifiedBadge userName={activity.actionUsers[0].username} />
+            <VerifiedBadge
+              iconClassName="-ml-0.5"
+              userName={activity.actionUsers[0].username}
+            />
           )}
           {activity.actionUsers.length > 1 && (
             <span>and {activity.actionUsers.length - 1} other(s) </span>
